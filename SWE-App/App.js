@@ -13,7 +13,6 @@ import I_SuccessfulUI from "./app/dist/I_SuccessfulUI";
 
 const Stack = createStackNavigator();
 
-
 export default function App() {
 	
 	return (
