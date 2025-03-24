@@ -1,4 +1,3 @@
-import { where } from 'firebase/firestore';
 import carparkData from '../../HDBCarparkInformation.json' with { type: 'json' };
 // const carparkData: Carpark[] = carparkDataImport.default;
 
