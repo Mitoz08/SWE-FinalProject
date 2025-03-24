@@ -15,6 +15,9 @@ enum TableNames_App {
 }
 
 enum ColumnNames_App {
+    userFirebaseID = "userFirebaseID",
+    firstName = "firstName",
+    lastName = "lastName",
     userID = "userID",
     userEmail = "userEmail",
     userPhoneNo = "userPhoneNo",
@@ -86,7 +89,8 @@ const pool = mysql.createPool({
 async function Create( table:TableNames, data:object): Promise<ResultSetHeader|null>{
     const variables = Object.keys(data).join(",");
     const values = Object.values(data);
-    const parameter = values.map(() => "?").join(",");
+    const parameter = values.map(() => "?").join(",")
+
 
     try {
         const [result] = await pool.execute<ResultSetHeader>(`
@@ -96,6 +100,7 @@ async function Create( table:TableNames, data:object): Promise<ResultSetHeader|n
         );
         return result;
     } catch (error) {
+        // console.log(error)
         return null;
     }
 }
