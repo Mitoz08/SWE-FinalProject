@@ -1,5 +1,9 @@
-import {TableNames_App, ColumnNames_App, TableNames_HDBInfo, ColumnNames_HDBInfo, Operator, ConditionVariable, UpdateQueryData, Create, Read, Update, Delete, endDBConnection} from "../boundary/databaseAccess.js"
-import { OpenTickets } from "../entity/databaseTypes.js";
+import { 
+    TableNames_App, ColumnNames_App, TableNames_HDBInfo, ColumnNames_HDBInfo, Operator, 
+    ConditionVariable, UpdateQueryData, Create, Read, Update, Delete, 
+    endDBConnection
+} from "../boundary/databaseAccess.js";
+import { OpenTickets, UserInformation } from "../entity/databaseTypes.js";
 
 enum feeTypes {
     motorcycle = 0.65,
@@ -26,14 +30,14 @@ function ErrorMsg_DeletionFailed() {
 // Functions needed for the application
 
 /**
- * Function to add new users to the database and generate a unique user ID
- * @param userEmail Email to be taken when they first register their account
+ * Function to add new users' FirebaseID to the database and generate a unique user ID
+ * @param userFirebaseID FirebaseID to be taken when they first register their account
  * @returns the inserted ID which is their user ID
  */
-export async function AddUserEmail( userEmail:String ) : Promise<number|null>{
+export async function AddNewUser( userFirebaseID:String ) : Promise<number|null>{
     const res = await Create(TableNames_App.UserID, 
         {
-            [ColumnNames_App.userEmail] : userEmail
+            [ColumnNames_App.userFirebaseID] : userFirebaseID
         }
     )
     if (res === null) {
@@ -43,17 +47,17 @@ export async function AddUserEmail( userEmail:String ) : Promise<number|null>{
 }
 
 /**
- * Function to request for the user ID of the given email
- * @param userEmail Email of the user ID to be searched
- * @returns user ID of given email
+ * Function to request for the user ID of the given FirebaseID
+ * @param userFirebaseID FirebaseID of the user to be searched
+ * @returns user ID of given FirebaseID
  */
-export async function GetUserID( userEmail:String ) : Promise<number|null> {
+export async function GetUserID( userFirebaseID:String ) : Promise<number|null> {
     const res = await Read(TableNames_App.UserID, 
         {  
-            [ColumnNames_App.userEmail]:
+            [ColumnNames_App.userFirebaseID]:
             {
                 [ConditionVariable.operator]: Operator.EqualTo, 
-                [ConditionVariable.values]: userEmail
+                [ConditionVariable.values]: userFirebaseID
             }
         }
     );
@@ -68,64 +72,64 @@ export async function GetUserID( userEmail:String ) : Promise<number|null> {
     return res[0][ColumnNames_App.userID];
 }
 
-/**
- * Function to request for the user email of the given ID
- * @param userID user ID of the email to be searched
- * @returns user email of given email
- */
-export async function GetUserEmail( userID:number ) : Promise<String|null> {
-    const res = await Read(TableNames_App.UserID, 
-        {  
-            [ColumnNames_App.userID]:
-            {
-                [ConditionVariable.operator]: Operator.EqualTo, 
-                [ConditionVariable.values]: userID
-            }
-        }
-    );
+// /**
+//  * Function to request for the user email of the given ID
+//  * @param userID user ID of the email to be searched
+//  * @returns user email of given email
+//  */
+// export async function GetUserEmail( userID:number ) : Promise<String|null> {
+//     const res = await Read(TableNames_App.UserID, 
+//         {  
+//             [ColumnNames_App.userID]:
+//             {
+//                 [ConditionVariable.operator]: Operator.EqualTo, 
+//                 [ConditionVariable.values]: userID
+//             }
+//         }
+//     );
     
-    if (res === null) {
-        return ErrorMsg_MySQL();
-    }
-    if (res[0] === undefined) {
-        return ErrorMsg_NoEntry();
-    }
+//     if (res === null) {
+//         return ErrorMsg_MySQL();
+//     }
+//     if (res[0] === undefined) {
+//         return ErrorMsg_NoEntry();
+//     }
 
-    return res[0][ColumnNames_App.userEmail];
-}
+//     return res[0][ColumnNames_App.userEmail];
+// }
 
-/**
- * Function to update the user email of the given user ID
- * @param userID user ID of email to be updated
- * @param userEmail new email to be written
- * @returns true if successful
- */
-export async function UpdateUserEmail(userID:number, userEmail:String) : Promise<boolean|null> {
-    const res = await Update(TableNames_App.UserID, 
-        {  
-            "set":
-            {
-                [ColumnNames_App.userEmail] : userEmail
-            },
-            "where":
-            {
-                [ColumnNames_App.userID] : 
-                {
-                    [ConditionVariable.operator] : Operator.EqualTo,
-                    [ConditionVariable.values] : userID
-                }
-            }
-        }
-    );
-    if (res === null) {
-        return ErrorMsg_MySQL();
-    }
-    if (res.affectedRows === 0) {
-        return ErrorMsg_NoEntry();
-    } 
+// /**
+//  * Function to update the user email of the given user ID
+//  * @param userID user ID of email to be updated
+//  * @param userEmail new email to be written
+//  * @returns true if successful
+//  */
+// export async function UpdateUserEmail(userID:number, userEmail:String) : Promise<boolean|null> {
+//     const res = await Update(TableNames_App.UserID, 
+//         {  
+//             "set":
+//             {
+//                 [ColumnNames_App.userEmail] : userEmail
+//             },
+//             "where":
+//             {
+//                 [ColumnNames_App.userID] : 
+//                 {
+//                     [ConditionVariable.operator] : Operator.EqualTo,
+//                     [ConditionVariable.values] : userID
+//                 }
+//             }
+//         }
+//     );
+//     if (res === null) {
+//         return ErrorMsg_MySQL();
+//     }
+//     if (res.affectedRows === 0) {
+//         return ErrorMsg_NoEntry();
+//     } 
     
-    return true;
-} 
+//     return true;
+// } 
 
 /**
  * Function to delete the user email from the database (user is removed from our system)
@@ -156,15 +160,34 @@ export async function DeleteUser(userID:number) : Promise<boolean|null> {
  * @param userPhoneNo phone number to be added (String of length 8)
  * @returns true if successful
  */
-export async function AddUserInfo( userID:number, userPhoneNo:String) : Promise<boolean|null> {
+
+/**
+ * Function to add user information by given user ID
+ * @param userID user ID to be added
+ * @param userEmail email following (name@domain.com.sg etc.)
+ * @param firstName first name of user
+ * @param lastName last name of user
+ * @param userPhoneNo phone number to be added (String of length 8)
+ * @returns true if successful
+ */
+export async function AddUserInfo( userID:number, userEmail:string, firstName:string, lastName:string, userPhoneNo:string) : Promise<boolean|null> {
     
     if (userPhoneNo.length != 8) { // Phone number is 8 char long
-        throw new Error("Phone number is not 8 characters long")
+        console.error("Phone number not 8 characters long")
+        return null;
     }
 
+    if (!isValidEmail(userEmail)) {
+        console.error("Email does not follow the right regex")
+        return null;
+    }
+    
     const res = await Create(TableNames_App.UserInformation, 
         {
             [ColumnNames_App.userID] : userID,
+            [ColumnNames_App.userEmail] : userEmail,
+            [ColumnNames_App.firstName] : firstName,
+            [ColumnNames_App.lastName] : lastName,
             [ColumnNames_App.userPhoneNo] : userPhoneNo
         }
     )
@@ -175,11 +198,11 @@ export async function AddUserInfo( userID:number, userPhoneNo:String) : Promise<
 }
 
 /**
- * Function to request for the phone number of the given user ID
- * @param userID user ID of the phone number to be searched
- * @returns String of length 8
+ * Function to request for the information of the given user ID
+ * @param userID user ID of the informationto be searched
+ * @returns UserInfomation object
  */
-export async function GetUserPhoneNo( userID:number ) : Promise<String|null> {
+export async function GetUserInfo( userID:number ) : Promise<UserInformation|null> {
     const res = await Read(TableNames_App.UserInformation, 
         {  
             [ColumnNames_App.userID]:
@@ -197,25 +220,63 @@ export async function GetUserPhoneNo( userID:number ) : Promise<String|null> {
         return ErrorMsg_NoEntry();
     }
 
-    return res[0][ColumnNames_App.userPhoneNo];
+    return res[0] as UserInformation;
 }
 
 /**
- * Function to update the user phone number of the given user ID
+ * Function to request for the user email of the given user ID
+ * @param userID user ID of the informationto be searched
+ * @returns String of length 8
+ */
+export async function GetUserEmail( userID:number ) : Promise<string|null> {
+    const res = await Read(TableNames_App.UserInformation, 
+        {  
+            [ColumnNames_App.userID]:
+            {
+                [ConditionVariable.operator]: Operator.EqualTo, 
+                [ConditionVariable.values]: userID
+            }
+        }
+    );
+    
+    if (res === null) {
+        return ErrorMsg_MySQL();
+    }
+    if (res[0] === undefined) {
+        return ErrorMsg_NoEntry();
+    }
+
+    return (res[0] as UserInformation).userEmail;
+}
+
+/** 
+ * Function to update the user info of the given user ID
  * @param userID user ID of phone number to be updated
+ * @param userEmail new email to be written
+ * @param firstName new name?
+ * @param lastName new name?
  * @param userPhoneNo new phone number to be written (String of length 8)
  * @returns 
  */
-export async function UpdateUserPhoneNo(userID:number, userPhoneNo:String) : Promise<boolean|null> {
+export async function UpdateUserInfo(userID:number, userEmail:string, firstName:string, lastName:string, userPhoneNo:string) : Promise<boolean|null> {
 
     if (userPhoneNo.length != 8) { // Phone number is 8 char long
-        throw new Error("Phone number is not 8 characters long")
+        console.error("Phone number not 8 characters long")
+        return null;
+    }
+
+    if (!isValidEmail(userEmail)) {
+        console.error("Email does not follow the right regex")
+        return null;
     }
 
     const res = await Update(TableNames_App.UserInformation, 
         {  
             "set":
             {
+                [ColumnNames_App.userEmail] : userEmail,
+                [ColumnNames_App.firstName] : firstName,
+                [ColumnNames_App.lastName] : lastName,
                 [ColumnNames_App.userPhoneNo] : userPhoneNo
             },
             "where":
@@ -616,6 +677,16 @@ export async function GetUserClosedTicket(userID: number): Promise<object|null> 
 }
 
 /**
+ * Function to check regex of email
+ * @param email email to be checked
+ * @returns true if valid
+ */
+function isValidEmail(email: string): boolean {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(email);
+}
+
+/**
  * Function to convert Date to String
  * @param date Date to be converted
  * @returns Formatted string
@@ -746,4 +817,16 @@ export async function GetRate(carparkID: String, vehType : "Car"|"MCycle"|"HVehi
 
 // console.log(await GetRate("Y16","MCycle"))
 
+// console.log(isValidEmail("test@example.com")); // true
+// console.log(isValidEmail("invalid-email")); // false
+// console.log(isValidEmail("user@domain.")); // false
+// console.log(isValidEmail("user@domain.c")); // false
+// console.log(isValidEmail("user@ntu.edu.sg")); // true
 
+// const res1 = await AddNewUser("ADAWDA"); 
+
+// const res = await AddUserInfo(1,"tim@gmai.com","Tim","Ong","88881111")
+
+// console.log((await GetUserInfo(1))?.firstName)
+
+// endDBConnection()

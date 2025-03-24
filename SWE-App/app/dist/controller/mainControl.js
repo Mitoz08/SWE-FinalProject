@@ -1,1 +1,2 @@
-"use strict";
+export function InitaliseUser(UserID) {
+}

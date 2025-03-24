@@ -1,4 +1,4 @@
-import {InitaliseUser} from "./mainControl";
+import { InitaliseUser } from "./mainControl.js";
 
 // AuC1
 export function VerifyLogin(Email:string, Password: string) {

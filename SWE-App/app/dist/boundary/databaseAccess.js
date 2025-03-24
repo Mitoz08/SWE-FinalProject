@@ -1,26 +1,6 @@
-"use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ConditionVariable = exports.Operator = exports.ColumnNames_HDBInfo = exports.TableNames_HDBInfo = exports.ColumnNames_App = exports.TableNames_App = void 0;
-exports.Create = Create;
-exports.Read = Read;
-exports.Update = Update;
-exports.Delete = Delete;
-exports.endDBConnection = endDBConnection;
-const mysql2_1 = __importDefault(require("mysql2"));
-const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config();
+import mysql from "mysql2";
+import dotenv from "dotenv";
+dotenv.config();
 var TableNames_App;
 (function (TableNames_App) {
     TableNames_App["UserID"] = "UserID";
@@ -29,9 +9,12 @@ var TableNames_App;
     TableNames_App["OpenTickets"] = "OpenTickets";
     TableNames_App["ClosedTickets"] = "ClosedTickets";
     TableNames_App["UserClosedTickets"] = "UserClosedTickets";
-})(TableNames_App || (exports.TableNames_App = TableNames_App = {}));
+})(TableNames_App || (TableNames_App = {}));
 var ColumnNames_App;
 (function (ColumnNames_App) {
+    ColumnNames_App["userFirebaseID"] = "userFirebaseID";
+    ColumnNames_App["firstName"] = "firstName";
+    ColumnNames_App["lastName"] = "lastName";
     ColumnNames_App["userID"] = "userID";
     ColumnNames_App["userEmail"] = "userEmail";
     ColumnNames_App["userPhoneNo"] = "userPhoneNo";
@@ -42,7 +25,7 @@ var ColumnNames_App;
     ColumnNames_App["ticketStartTime"] = "ticketStartTime";
     ColumnNames_App["ticketEndTime"] = "ticketEndTime";
     ColumnNames_App["actualEndTime"] = "actualEndTime";
-})(ColumnNames_App || (exports.ColumnNames_App = ColumnNames_App = {}));
+})(ColumnNames_App || (ColumnNames_App = {}));
 var TableNames_HDBInfo;
 (function (TableNames_HDBInfo) {
     TableNames_HDBInfo["WithinCtrlArea"] = "CarparkWithinCentralArea";
@@ -51,7 +34,7 @@ var TableNames_HDBInfo;
     TableNames_HDBInfo["FreeParkingType"] = "FreeParkingType";
     TableNames_HDBInfo["ShortTermParkingType"] = "ShortTermParkingType";
     TableNames_HDBInfo["HDBCarpark"] = "HDBCarpark";
-})(TableNames_HDBInfo || (exports.TableNames_HDBInfo = TableNames_HDBInfo = {}));
+})(TableNames_HDBInfo || (TableNames_HDBInfo = {}));
 var ColumnNames_HDBInfo;
 (function (ColumnNames_HDBInfo) {
     ColumnNames_HDBInfo["typeID"] = "typeID";
@@ -68,7 +51,7 @@ var ColumnNames_HDBInfo;
     ColumnNames_HDBInfo["cpDecks"] = "carparkDecks";
     ColumnNames_HDBInfo["gantryH"] = "gantryHeight";
     ColumnNames_HDBInfo["cpBasment"] = "carparkBasement";
-})(ColumnNames_HDBInfo || (exports.ColumnNames_HDBInfo = ColumnNames_HDBInfo = {}));
+})(ColumnNames_HDBInfo || (ColumnNames_HDBInfo = {}));
 var Operator;
 (function (Operator) {
     Operator["EqualTo"] = "=";
@@ -77,13 +60,13 @@ var Operator;
     Operator["MTorEq"] = ">=";
     Operator["LTorEq"] = "<=";
     Operator["NotEql"] = "<>";
-})(Operator || (exports.Operator = Operator = {}));
+})(Operator || (Operator = {}));
 var ConditionVariable;
 (function (ConditionVariable) {
     ConditionVariable["operator"] = "operator";
     ConditionVariable["values"] = "values";
-})(ConditionVariable || (exports.ConditionVariable = ConditionVariable = {}));
-const pool = mysql2_1.default.createPool({
+})(ConditionVariable || (ConditionVariable = {}));
+const pool = mysql.createPool({
     host: process.env.MYSQL_HOST,
     user: process.env.MYSQL_USER,
     password: process.env.MYSQL_PASSWORD,
@@ -93,109 +76,102 @@ const pool = mysql2_1.default.createPool({
     connectionLimit: 10,
     queueLimit: 0,
 }).promise();
-function Create(table, data) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const variables = Object.keys(data).join(",");
-        const values = Object.values(data);
-        const parameter = values.map(() => "?").join(",");
-        try {
-            const [result] = yield pool.execute(`
+async function Create(table, data) {
+    const variables = Object.keys(data).join(",");
+    const values = Object.values(data);
+    const parameter = values.map(() => "?").join(",");
+    try {
+        const [result] = await pool.execute(`
             INSERT INTO ${[table]} (${variables})
             VALUES (${parameter})
             `, values);
-            return result;
-        }
-        catch (error) {
-            return null;
-        }
-    });
+        return result;
+    }
+    catch (error) {
+        return null;
+    }
 }
-function Read(table_1, data_1) {
-    return __awaiter(this, arguments, void 0, function* (table, data, by = "AND") {
-        const conditionStatment = [];
-        const values = [];
-        try {
-            var whereStatement = "";
-            if (typeof data === "object") {
-                for (const [column, conditions] of Object.entries(data)) {
-                    conditionStatment.push(`${column} ${[conditions.operator]} ?`);
-                    values.push(conditions.values);
-                }
-                whereStatement = conditionStatment.length ? `WHERE ${conditionStatment.join(` ${by} `)}` : "";
+async function Read(table, data, by = "AND") {
+    const conditionStatment = [];
+    const values = [];
+    try {
+        var whereStatement = "";
+        if (typeof data === "object") {
+            for (const [column, conditions] of Object.entries(data)) {
+                conditionStatment.push(`${column} ${[conditions.operator]} ?`);
+                values.push(conditions.values);
             }
-            const [result] = yield pool.execute(`
+            whereStatement = conditionStatment.length ? `WHERE ${conditionStatment.join(` ${by} `)}` : "";
+        }
+        const [result] = await pool.execute(`
             SELECT * 
             FROM ${[table]}
             ${whereStatement} 
             `, values);
-            return result;
-        }
-        catch (error) {
-            return null;
-        }
-    });
+        return result;
+    }
+    catch (error) {
+        return null;
+    }
 }
-function Update(table_1, data_1) {
-    return __awaiter(this, arguments, void 0, function* (table, data, by = "AND") {
-        const variablesStatement = [];
-        const conditionStatment = [];
-        const values = [];
-        var setStatement = "";
-        var whereStatement = "";
-        try {
-            const setData = data.set;
-            const whereData = data.where;
-            for (const [column, value] of Object.entries(setData)) {
-                variablesStatement.push(`${column} = ?`);
-                values.push(value);
+async function Update(table, data, by = "AND") {
+    const variablesStatement = [];
+    const conditionStatment = [];
+    const values = [];
+    var setStatement = "";
+    var whereStatement = "";
+    try {
+        const setData = data.set;
+        const whereData = data.where;
+        for (const [column, value] of Object.entries(setData)) {
+            variablesStatement.push(`${column} = ?`);
+            values.push(value);
+        }
+        setStatement = `SET ${variablesStatement.join(",")}`;
+        if (typeof whereData === "object") {
+            for (const [column, conditions] of Object.entries(whereData)) {
+                conditionStatment.push(`${column} ${[conditions.operator]} ?`);
+                values.push(conditions.values);
             }
-            setStatement = `SET ${variablesStatement.join(",")}`;
-            if (typeof whereData === "object") {
-                for (const [column, conditions] of Object.entries(whereData)) {
-                    conditionStatment.push(`${column} ${[conditions.operator]} ?`);
-                    values.push(conditions.values);
-                }
-                whereStatement = conditionStatment.length ? `WHERE ${conditionStatment.join(` ${by} `)}` : "";
-            }
-            const [result] = yield pool.execute(`
+            whereStatement = conditionStatment.length ? `WHERE ${conditionStatment.join(` ${by} `)}` : "";
+        }
+        const [result] = await pool.execute(`
             UPDATE ${[table]}
             ${setStatement}
             ${whereStatement} 
             `, values);
-            return result;
-        }
-        catch (error) {
-            console.log(error);
-            return null;
-        }
-    });
+        return result;
+    }
+    catch (error) {
+        console.log(error);
+        return null;
+    }
 }
-function Delete(table_1, data_1) {
-    return __awaiter(this, arguments, void 0, function* (table, data, by = "AND") {
-        const conditionStatment = [];
-        const values = [];
-        try {
-            var whereStatement = "";
-            if (typeof data === "object") {
-                for (const [column, conditions] of Object.entries(data)) {
-                    conditionStatment.push(`${column} ${[conditions.operator]} ?`);
-                    values.push(conditions.values);
-                }
-                whereStatement = conditionStatment.length ? `WHERE ${conditionStatment.join(` ${by} `)}` : "";
+async function Delete(table, data, by = "AND") {
+    const conditionStatment = [];
+    const values = [];
+    try {
+        var whereStatement = "";
+        if (typeof data === "object") {
+            for (const [column, conditions] of Object.entries(data)) {
+                conditionStatment.push(`${column} ${[conditions.operator]} ?`);
+                values.push(conditions.values);
             }
-            const [result] = yield pool.execute(`
+            whereStatement = conditionStatment.length ? `WHERE ${conditionStatment.join(` ${by} `)}` : "";
+        }
+        const [result] = await pool.execute(`
             DELETE 
             FROM ${[table]}
             ${whereStatement} 
             `, values);
-            return result;
-        }
-        catch (error) {
-            console.log(error);
-            return null;
-        }
-    });
+        return result;
+    }
+    catch (error) {
+        console.log(error);
+        return null;
+    }
 }
 function endDBConnection() {
     pool.end();
 }
+export { TableNames_App, ColumnNames_App, TableNames_HDBInfo, ColumnNames_HDBInfo, Operator, ConditionVariable, Create, Read, Update, Delete, endDBConnection };

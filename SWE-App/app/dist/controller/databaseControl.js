@@ -1,38 +1,4 @@
-"use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.AddUserEmail = AddUserEmail;
-exports.GetUserID = GetUserID;
-exports.GetUserEmail = GetUserEmail;
-exports.UpdateUserEmail = UpdateUserEmail;
-exports.DeleteUser = DeleteUser;
-exports.AddUserInfo = AddUserInfo;
-exports.GetUserPhoneNo = GetUserPhoneNo;
-exports.UpdateUserPhoneNo = UpdateUserPhoneNo;
-exports.AddUserPayment = AddUserPayment;
-exports.GetUserPayment = GetUserPayment;
-exports.UpdateUserPayment = UpdateUserPayment;
-exports.CreateOpenTicket = CreateOpenTicket;
-exports.GetOpenTicketByUserID = GetOpenTicketByUserID;
-exports.GetOpenTicketByTicketID = GetOpenTicketByTicketID;
-exports.UpdateOpenTicketEndTime = UpdateOpenTicketEndTime;
-exports.DeleteOpenTicket = DeleteOpenTicket;
-exports.CreateClosedTicket = CreateClosedTicket;
-exports.GetClosedTicket = GetClosedTicket;
-exports.CreateUserClosedTicket = CreateUserClosedTicket;
-exports.GetUserClosedTicket = GetUserClosedTicket;
-exports.dateToString = dateToString;
-exports.GetCarparkAddress = GetCarparkAddress;
-exports.GetRate = GetRate;
-const databaseAccess_js_1 = require("../boundary/databaseAccess.js");
+import { TableNames_App, ColumnNames_App, TableNames_HDBInfo, ColumnNames_HDBInfo, Operator, ConditionVariable, Create, Read, Update, Delete } from "../boundary/databaseAccess.js";
 var feeTypes;
 (function (feeTypes) {
     feeTypes[feeTypes["motorcycle"] = 0.65] = "motorcycle";
@@ -52,385 +18,341 @@ function ErrorMsg_DeletionFailed() {
     console.error("Entry does not exist");
     return null;
 }
-function AddUserEmail(userEmail) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const res = yield (0, databaseAccess_js_1.Create)(databaseAccess_js_1.TableNames_App.UserID, {
-            [databaseAccess_js_1.ColumnNames_App.userEmail]: userEmail
-        });
-        if (res === null) {
-            return ErrorMsg_MySQL();
-        }
-        return res.insertId;
+export async function AddNewUser(userFirebaseID) {
+    const res = await Create(TableNames_App.UserID, {
+        [ColumnNames_App.userFirebaseID]: userFirebaseID
     });
+    if (res === null) {
+        return ErrorMsg_MySQL();
+    }
+    return res.insertId;
 }
-function GetUserID(userEmail) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const res = yield (0, databaseAccess_js_1.Read)(databaseAccess_js_1.TableNames_App.UserID, {
-            [databaseAccess_js_1.ColumnNames_App.userEmail]: {
-                [databaseAccess_js_1.ConditionVariable.operator]: databaseAccess_js_1.Operator.EqualTo,
-                [databaseAccess_js_1.ConditionVariable.values]: userEmail
+export async function GetUserID(userFirebaseID) {
+    const res = await Read(TableNames_App.UserID, {
+        [ColumnNames_App.userFirebaseID]: {
+            [ConditionVariable.operator]: Operator.EqualTo,
+            [ConditionVariable.values]: userFirebaseID
+        }
+    });
+    if (res === null) {
+        return ErrorMsg_MySQL();
+    }
+    if (res[0] === undefined) {
+        return ErrorMsg_NoEntry();
+    }
+    return res[0][ColumnNames_App.userID];
+}
+export async function DeleteUser(userID) {
+    const res = await Delete(TableNames_App.UserID, {
+        [ColumnNames_App.userID]: {
+            [ConditionVariable.operator]: Operator.EqualTo,
+            [ConditionVariable.values]: userID
+        }
+    });
+    if (res === null) {
+        return ErrorMsg_MySQL();
+    }
+    return true;
+}
+export async function AddUserInfo(userID, userEmail, firstName, lastName, userPhoneNo) {
+    if (userPhoneNo.length != 8) {
+        console.error("Phone number not 8 characters long");
+        return null;
+    }
+    if (!isValidEmail(userEmail)) {
+        console.error("Email does not follow the right regex");
+        return null;
+    }
+    const res = await Create(TableNames_App.UserInformation, {
+        [ColumnNames_App.userID]: userID,
+        [ColumnNames_App.userEmail]: userEmail,
+        [ColumnNames_App.firstName]: firstName,
+        [ColumnNames_App.lastName]: lastName,
+        [ColumnNames_App.userPhoneNo]: userPhoneNo
+    });
+    if (res === null) {
+        return ErrorMsg_MySQL();
+    }
+    return true;
+}
+export async function GetUserInfo(userID) {
+    const res = await Read(TableNames_App.UserInformation, {
+        [ColumnNames_App.userID]: {
+            [ConditionVariable.operator]: Operator.EqualTo,
+            [ConditionVariable.values]: userID
+        }
+    });
+    if (res === null) {
+        return ErrorMsg_MySQL();
+    }
+    if (res[0] === undefined) {
+        return ErrorMsg_NoEntry();
+    }
+    return res[0];
+}
+export async function GetUserEmail(userID) {
+    const res = await Read(TableNames_App.UserInformation, {
+        [ColumnNames_App.userID]: {
+            [ConditionVariable.operator]: Operator.EqualTo,
+            [ConditionVariable.values]: userID
+        }
+    });
+    if (res === null) {
+        return ErrorMsg_MySQL();
+    }
+    if (res[0] === undefined) {
+        return ErrorMsg_NoEntry();
+    }
+    return res[0].userEmail;
+}
+export async function UpdateUserInfo(userID, userEmail, firstName, lastName, userPhoneNo) {
+    if (userPhoneNo.length != 8) {
+        console.error("Phone number not 8 characters long");
+        return null;
+    }
+    if (!isValidEmail(userEmail)) {
+        console.error("Email does not follow the right regex");
+        return null;
+    }
+    const res = await Update(TableNames_App.UserInformation, {
+        "set": {
+            [ColumnNames_App.userEmail]: userEmail,
+            [ColumnNames_App.firstName]: firstName,
+            [ColumnNames_App.lastName]: lastName,
+            [ColumnNames_App.userPhoneNo]: userPhoneNo
+        },
+        "where": {
+            [ColumnNames_App.userID]: {
+                [ConditionVariable.operator]: Operator.EqualTo,
+                [ConditionVariable.values]: userID
             }
-        });
-        if (res === null) {
-            return ErrorMsg_MySQL();
         }
-        if (res[0] === undefined) {
-            return ErrorMsg_NoEntry();
-        }
-        return res[0][databaseAccess_js_1.ColumnNames_App.userID];
     });
+    if (res === null) {
+        return ErrorMsg_MySQL();
+    }
+    if (res.affectedRows) {
+        return ErrorMsg_NoEntry();
+    }
+    return true;
 }
-function GetUserEmail(userID) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const res = yield (0, databaseAccess_js_1.Read)(databaseAccess_js_1.TableNames_App.UserID, {
-            [databaseAccess_js_1.ColumnNames_App.userID]: {
-                [databaseAccess_js_1.ConditionVariable.operator]: databaseAccess_js_1.Operator.EqualTo,
-                [databaseAccess_js_1.ConditionVariable.values]: userID
+export async function AddUserPayment(userID, customerID) {
+    const res = await Create(TableNames_App.UserPayment, {
+        [ColumnNames_App.userID]: userID,
+        [ColumnNames_App.customerID]: customerID
+    });
+    if (res === null) {
+        return ErrorMsg_MySQL();
+    }
+    return true;
+}
+export async function GetUserPayment(userID) {
+    const res = await Read(TableNames_App.UserPayment, {
+        [ColumnNames_App.userID]: {
+            [ConditionVariable.operator]: Operator.EqualTo,
+            [ConditionVariable.values]: userID
+        }
+    });
+    if (res === null) {
+        return ErrorMsg_MySQL();
+    }
+    if (res[0] === undefined) {
+        return ErrorMsg_NoEntry();
+    }
+    return res[0][ColumnNames_App.customerID];
+}
+export async function UpdateUserPayment(userID, customerID) {
+    const res = await Update(TableNames_App.UserPayment, {
+        "set": {
+            [ColumnNames_App.customerID]: customerID
+        },
+        "where": {
+            [ColumnNames_App.userID]: {
+                [ConditionVariable.operator]: Operator.EqualTo,
+                [ConditionVariable.values]: userID
             }
-        });
-        if (res === null) {
-            return ErrorMsg_MySQL();
         }
-        if (res[0] === undefined) {
-            return ErrorMsg_NoEntry();
-        }
-        return res[0][databaseAccess_js_1.ColumnNames_App.userEmail];
     });
+    if (res === null) {
+        return ErrorMsg_MySQL();
+    }
+    if (res.affectedRows === 0) {
+        return ErrorMsg_NoEntry();
+    }
+    return true;
 }
-function UpdateUserEmail(userID, userEmail) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const res = yield (0, databaseAccess_js_1.Update)(databaseAccess_js_1.TableNames_App.UserID, {
-            "set": {
-                [databaseAccess_js_1.ColumnNames_App.userEmail]: userEmail
-            },
-            "where": {
-                [databaseAccess_js_1.ColumnNames_App.userID]: {
-                    [databaseAccess_js_1.ConditionVariable.operator]: databaseAccess_js_1.Operator.EqualTo,
-                    [databaseAccess_js_1.ConditionVariable.values]: userID
-                }
+export async function CreateOpenTicket(parkingLotID, licensePlate, ticketStartTime, ticketEndTime, userID) {
+    const res = await Create(TableNames_App.OpenTickets, {
+        [ColumnNames_App.parkingLotID]: parkingLotID,
+        [ColumnNames_App.licensePlate]: licensePlate,
+        [ColumnNames_App.ticketStartTime]: dateToString(ticketStartTime),
+        [ColumnNames_App.ticketEndTime]: dateToString(ticketEndTime),
+        [ColumnNames_App.userID]: userID
+    });
+    if (res === null) {
+        return ErrorMsg_MySQL();
+    }
+    return res.insertId;
+}
+export async function GetOpenTicketByUserID(userID) {
+    const res = await Read(TableNames_App.OpenTickets, {
+        [ColumnNames_App.userID]: {
+            [ConditionVariable.operator]: Operator.EqualTo,
+            [ConditionVariable.values]: userID
+        }
+    });
+    if (res === null) {
+        return ErrorMsg_MySQL();
+    }
+    if (res[0] === undefined) {
+        return ErrorMsg_NoEntry();
+    }
+    return res[0];
+}
+export async function GetOpenTicketByTicketID(ticketID) {
+    const res = await Read(TableNames_App.OpenTickets, {
+        [ColumnNames_App.ticketID]: {
+            [ConditionVariable.operator]: Operator.EqualTo,
+            [ConditionVariable.values]: ticketID
+        }
+    });
+    if (res === null) {
+        return ErrorMsg_MySQL();
+    }
+    if (res[0] === undefined) {
+        return ErrorMsg_NoEntry();
+    }
+    return res[0];
+}
+export async function UpdateOpenTicketEndTime(ticketID, ticketEndTime) {
+    const res = await Update(TableNames_App.OpenTickets, {
+        "set": {
+            [ColumnNames_App.ticketEndTime]: dateToString(ticketEndTime)
+        },
+        "where": {
+            [ColumnNames_App.ticketID]: {
+                [ConditionVariable.operator]: Operator.EqualTo,
+                [ConditionVariable.values]: ticketID
             }
-        });
-        if (res === null) {
-            return ErrorMsg_MySQL();
         }
-        if (res.affectedRows === 0) {
-            return ErrorMsg_NoEntry();
-        }
-        return true;
     });
+    if (res === null) {
+        return ErrorMsg_MySQL();
+    }
+    if (res.affectedRows === 0) {
+        return ErrorMsg_NoEntry();
+    }
+    return true;
 }
-function DeleteUser(userID) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const res = yield (0, databaseAccess_js_1.Delete)(databaseAccess_js_1.TableNames_App.UserID, {
-            [databaseAccess_js_1.ColumnNames_App.userID]: {
-                [databaseAccess_js_1.ConditionVariable.operator]: databaseAccess_js_1.Operator.EqualTo,
-                [databaseAccess_js_1.ConditionVariable.values]: userID
-            }
-        });
-        if (res === null) {
-            return ErrorMsg_MySQL();
+export async function DeleteOpenTicket(ticketID) {
+    const res = await Delete(TableNames_App.OpenTickets, {
+        [ColumnNames_App.ticketID]: {
+            [ConditionVariable.operator]: Operator.EqualTo,
+            [ConditionVariable.values]: ticketID
         }
-        return true;
     });
+    if (res === null) {
+        return ErrorMsg_MySQL();
+    }
+    return true;
 }
-function AddUserInfo(userID, userPhoneNo) {
-    return __awaiter(this, void 0, void 0, function* () {
-        if (userPhoneNo.length != 8) {
-            throw new Error("Phone number is not 8 characters long");
-        }
-        const res = yield (0, databaseAccess_js_1.Create)(databaseAccess_js_1.TableNames_App.UserInformation, {
-            [databaseAccess_js_1.ColumnNames_App.userID]: userID,
-            [databaseAccess_js_1.ColumnNames_App.userPhoneNo]: userPhoneNo
-        });
-        if (res === null) {
-            return ErrorMsg_MySQL();
-        }
-        return true;
+export async function CreateClosedTicket(ticketID, parkingLotID, licensePlate, ticketStartTime, ticketEndTime, actualEndTime) {
+    const res = await Create(TableNames_App.ClosedTickets, {
+        [ColumnNames_App.ticketID]: ticketID,
+        [ColumnNames_App.parkingLotID]: parkingLotID,
+        [ColumnNames_App.licensePlate]: licensePlate,
+        [ColumnNames_App.ticketStartTime]: dateToString(ticketStartTime),
+        [ColumnNames_App.ticketEndTime]: dateToString(ticketEndTime),
+        [ColumnNames_App.actualEndTime]: dateToString(actualEndTime)
     });
+    if (res === null) {
+        return ErrorMsg_MySQL();
+    }
+    return true;
 }
-function GetUserPhoneNo(userID) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const res = yield (0, databaseAccess_js_1.Read)(databaseAccess_js_1.TableNames_App.UserInformation, {
-            [databaseAccess_js_1.ColumnNames_App.userID]: {
-                [databaseAccess_js_1.ConditionVariable.operator]: databaseAccess_js_1.Operator.EqualTo,
-                [databaseAccess_js_1.ConditionVariable.values]: userID
-            }
-        });
-        if (res === null) {
-            return ErrorMsg_MySQL();
+export async function GetClosedTicket(ticketID) {
+    const res = await Read(TableNames_App.ClosedTickets, {
+        [ColumnNames_App.ticketID]: {
+            [ConditionVariable.operator]: Operator.EqualTo,
+            [ConditionVariable.values]: ticketID
         }
-        if (res[0] === undefined) {
-            return ErrorMsg_NoEntry();
-        }
-        return res[0][databaseAccess_js_1.ColumnNames_App.userPhoneNo];
     });
+    if (res === null) {
+        return ErrorMsg_MySQL();
+    }
+    if (res[0] === undefined) {
+        return ErrorMsg_NoEntry();
+    }
+    return res[0];
 }
-function UpdateUserPhoneNo(userID, userPhoneNo) {
-    return __awaiter(this, void 0, void 0, function* () {
-        if (userPhoneNo.length != 8) {
-            throw new Error("Phone number is not 8 characters long");
-        }
-        const res = yield (0, databaseAccess_js_1.Update)(databaseAccess_js_1.TableNames_App.UserInformation, {
-            "set": {
-                [databaseAccess_js_1.ColumnNames_App.userPhoneNo]: userPhoneNo
-            },
-            "where": {
-                [databaseAccess_js_1.ColumnNames_App.userID]: {
-                    [databaseAccess_js_1.ConditionVariable.operator]: databaseAccess_js_1.Operator.EqualTo,
-                    [databaseAccess_js_1.ConditionVariable.values]: userID
-                }
-            }
-        });
-        if (res === null) {
-            return ErrorMsg_MySQL();
-        }
-        if (res.affectedRows) {
-            return ErrorMsg_NoEntry();
-        }
-        return true;
+export async function CreateUserClosedTicket(ticketID, userID) {
+    const res = await Create(TableNames_App.UserClosedTickets, {
+        [ColumnNames_App.userID]: userID,
+        [ColumnNames_App.ticketID]: ticketID
     });
+    if (res === null) {
+        return ErrorMsg_MySQL();
+    }
+    return true;
 }
-function AddUserPayment(userID, customerID) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const res = yield (0, databaseAccess_js_1.Create)(databaseAccess_js_1.TableNames_App.UserPayment, {
-            [databaseAccess_js_1.ColumnNames_App.userID]: userID,
-            [databaseAccess_js_1.ColumnNames_App.customerID]: customerID
-        });
-        if (res === null) {
-            return ErrorMsg_MySQL();
+export async function GetUserClosedTicket(userID) {
+    const res = await Read(TableNames_App.UserClosedTickets, {
+        [ColumnNames_App.userID]: {
+            [ConditionVariable.operator]: Operator.EqualTo,
+            [ConditionVariable.values]: userID
         }
-        return true;
     });
+    if (res === null) {
+        return ErrorMsg_MySQL();
+    }
+    if (res[0] === undefined) {
+        return ErrorMsg_NoEntry();
+    }
+    return res;
 }
-function GetUserPayment(userID) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const res = yield (0, databaseAccess_js_1.Read)(databaseAccess_js_1.TableNames_App.UserPayment, {
-            [databaseAccess_js_1.ColumnNames_App.userID]: {
-                [databaseAccess_js_1.ConditionVariable.operator]: databaseAccess_js_1.Operator.EqualTo,
-                [databaseAccess_js_1.ConditionVariable.values]: userID
-            }
-        });
-        if (res === null) {
-            return ErrorMsg_MySQL();
-        }
-        if (res[0] === undefined) {
-            return ErrorMsg_NoEntry();
-        }
-        return res[0][databaseAccess_js_1.ColumnNames_App.customerID];
-    });
+function isValidEmail(email) {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(email);
 }
-function UpdateUserPayment(userID, customerID) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const res = yield (0, databaseAccess_js_1.Update)(databaseAccess_js_1.TableNames_App.UserPayment, {
-            "set": {
-                [databaseAccess_js_1.ColumnNames_App.customerID]: customerID
-            },
-            "where": {
-                [databaseAccess_js_1.ColumnNames_App.userID]: {
-                    [databaseAccess_js_1.ConditionVariable.operator]: databaseAccess_js_1.Operator.EqualTo,
-                    [databaseAccess_js_1.ConditionVariable.values]: userID
-                }
-            }
-        });
-        if (res === null) {
-            return ErrorMsg_MySQL();
-        }
-        if (res.affectedRows === 0) {
-            return ErrorMsg_NoEntry();
-        }
-        return true;
-    });
-}
-function CreateOpenTicket(parkingLotID, licensePlate, ticketStartTime, ticketEndTime, userID) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const res = yield (0, databaseAccess_js_1.Create)(databaseAccess_js_1.TableNames_App.OpenTickets, {
-            [databaseAccess_js_1.ColumnNames_App.parkingLotID]: parkingLotID,
-            [databaseAccess_js_1.ColumnNames_App.licensePlate]: licensePlate,
-            [databaseAccess_js_1.ColumnNames_App.ticketStartTime]: dateToString(ticketStartTime),
-            [databaseAccess_js_1.ColumnNames_App.ticketEndTime]: dateToString(ticketEndTime),
-            [databaseAccess_js_1.ColumnNames_App.userID]: userID
-        });
-        if (res === null) {
-            return ErrorMsg_MySQL();
-        }
-        return res.insertId;
-    });
-}
-function GetOpenTicketByUserID(userID) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const res = yield (0, databaseAccess_js_1.Read)(databaseAccess_js_1.TableNames_App.OpenTickets, {
-            [databaseAccess_js_1.ColumnNames_App.userID]: {
-                [databaseAccess_js_1.ConditionVariable.operator]: databaseAccess_js_1.Operator.EqualTo,
-                [databaseAccess_js_1.ConditionVariable.values]: userID
-            }
-        });
-        if (res === null) {
-            return ErrorMsg_MySQL();
-        }
-        if (res[0] === undefined) {
-            return ErrorMsg_NoEntry();
-        }
-        return res[0];
-    });
-}
-function GetOpenTicketByTicketID(ticketID) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const res = yield (0, databaseAccess_js_1.Read)(databaseAccess_js_1.TableNames_App.OpenTickets, {
-            [databaseAccess_js_1.ColumnNames_App.ticketID]: {
-                [databaseAccess_js_1.ConditionVariable.operator]: databaseAccess_js_1.Operator.EqualTo,
-                [databaseAccess_js_1.ConditionVariable.values]: ticketID
-            }
-        });
-        if (res === null) {
-            return ErrorMsg_MySQL();
-        }
-        if (res[0] === undefined) {
-            return ErrorMsg_NoEntry();
-        }
-        return res[0];
-    });
-}
-function UpdateOpenTicketEndTime(ticketID, ticketEndTime) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const res = yield (0, databaseAccess_js_1.Update)(databaseAccess_js_1.TableNames_App.OpenTickets, {
-            "set": {
-                [databaseAccess_js_1.ColumnNames_App.ticketEndTime]: dateToString(ticketEndTime)
-            },
-            "where": {
-                [databaseAccess_js_1.ColumnNames_App.ticketID]: {
-                    [databaseAccess_js_1.ConditionVariable.operator]: databaseAccess_js_1.Operator.EqualTo,
-                    [databaseAccess_js_1.ConditionVariable.values]: ticketID
-                }
-            }
-        });
-        if (res === null) {
-            return ErrorMsg_MySQL();
-        }
-        if (res.affectedRows === 0) {
-            return ErrorMsg_NoEntry();
-        }
-        return true;
-    });
-}
-function DeleteOpenTicket(ticketID) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const res = yield (0, databaseAccess_js_1.Delete)(databaseAccess_js_1.TableNames_App.OpenTickets, {
-            [databaseAccess_js_1.ColumnNames_App.ticketID]: {
-                [databaseAccess_js_1.ConditionVariable.operator]: databaseAccess_js_1.Operator.EqualTo,
-                [databaseAccess_js_1.ConditionVariable.values]: ticketID
-            }
-        });
-        if (res === null) {
-            return ErrorMsg_MySQL();
-        }
-        return true;
-    });
-}
-function CreateClosedTicket(ticketID, parkingLotID, licensePlate, ticketStartTime, ticketEndTime, actualEndTime) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const res = yield (0, databaseAccess_js_1.Create)(databaseAccess_js_1.TableNames_App.ClosedTickets, {
-            [databaseAccess_js_1.ColumnNames_App.ticketID]: ticketID,
-            [databaseAccess_js_1.ColumnNames_App.parkingLotID]: parkingLotID,
-            [databaseAccess_js_1.ColumnNames_App.licensePlate]: licensePlate,
-            [databaseAccess_js_1.ColumnNames_App.ticketStartTime]: dateToString(ticketStartTime),
-            [databaseAccess_js_1.ColumnNames_App.ticketEndTime]: dateToString(ticketEndTime),
-            [databaseAccess_js_1.ColumnNames_App.actualEndTime]: dateToString(actualEndTime)
-        });
-        if (res === null) {
-            return ErrorMsg_MySQL();
-        }
-        return true;
-    });
-}
-function GetClosedTicket(ticketID) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const res = yield (0, databaseAccess_js_1.Read)(databaseAccess_js_1.TableNames_App.ClosedTickets, {
-            [databaseAccess_js_1.ColumnNames_App.ticketID]: {
-                [databaseAccess_js_1.ConditionVariable.operator]: databaseAccess_js_1.Operator.EqualTo,
-                [databaseAccess_js_1.ConditionVariable.values]: ticketID
-            }
-        });
-        if (res === null) {
-            return ErrorMsg_MySQL();
-        }
-        if (res[0] === undefined) {
-            return ErrorMsg_NoEntry();
-        }
-        return res[0];
-    });
-}
-function CreateUserClosedTicket(ticketID, userID) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const res = yield (0, databaseAccess_js_1.Create)(databaseAccess_js_1.TableNames_App.UserClosedTickets, {
-            [databaseAccess_js_1.ColumnNames_App.userID]: userID,
-            [databaseAccess_js_1.ColumnNames_App.ticketID]: ticketID
-        });
-        if (res === null) {
-            return ErrorMsg_MySQL();
-        }
-        return true;
-    });
-}
-function GetUserClosedTicket(userID) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const res = yield (0, databaseAccess_js_1.Read)(databaseAccess_js_1.TableNames_App.UserClosedTickets, {
-            [databaseAccess_js_1.ColumnNames_App.userID]: {
-                [databaseAccess_js_1.ConditionVariable.operator]: databaseAccess_js_1.Operator.EqualTo,
-                [databaseAccess_js_1.ConditionVariable.values]: userID
-            }
-        });
-        if (res === null) {
-            return ErrorMsg_MySQL();
-        }
-        if (res[0] === undefined) {
-            return ErrorMsg_NoEntry();
-        }
-        return res;
-    });
-}
-function dateToString(date) {
+export function dateToString(date) {
     date.setSeconds(0);
     const TimeZoneOffset = date.getTimezoneOffset() * 60000;
     return new Date(date.getTime() - TimeZoneOffset).toISOString().replace('T', " ").slice(0, 19);
 }
-function GetCarparkAddress(carparkID) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const res = yield (0, databaseAccess_js_1.Read)(databaseAccess_js_1.TableNames_HDBInfo.HDBCarpark, {
-            [databaseAccess_js_1.ColumnNames_HDBInfo.carparkNo]: {
-                [databaseAccess_js_1.ConditionVariable.operator]: databaseAccess_js_1.Operator.EqualTo,
-                [databaseAccess_js_1.ConditionVariable.values]: carparkID
+export async function GetCarparkAddress(carparkID) {
+    const res = await Read(TableNames_HDBInfo.HDBCarpark, {
+        [ColumnNames_HDBInfo.carparkNo]: {
+            [ConditionVariable.operator]: Operator.EqualTo,
+            [ConditionVariable.values]: carparkID
+        }
+    });
+    if (res === null) {
+        return ErrorMsg_MySQL();
+    }
+    if (res[0] === undefined) {
+        return ErrorMsg_NoEntry();
+    }
+    return res[0].address;
+}
+export async function GetRate(carparkID, vehType) {
+    if (vehType == "MCycle")
+        return feeTypes.motorcycle;
+    else if (vehType == "HVehicle")
+        return feeTypes.heavy_vehicle;
+    else {
+        const res = await Read(TableNames_HDBInfo.WithinCtrlArea, {
+            [ColumnNames_HDBInfo.carparkNo]: {
+                [ConditionVariable.operator]: Operator.EqualTo,
+                [ConditionVariable.values]: carparkID
             }
         });
         if (res === null) {
             return ErrorMsg_MySQL();
         }
         if (res[0] === undefined) {
-            return ErrorMsg_NoEntry();
+            return feeTypes.car_NCP;
         }
-        return res[0].address;
-    });
-}
-function GetRate(carparkID, vehType) {
-    return __awaiter(this, void 0, void 0, function* () {
-        if (vehType == "MCycle")
-            return feeTypes.motorcycle;
-        else if (vehType == "HVehicle")
-            return feeTypes.heavy_vehicle;
-        else {
-            const res = yield (0, databaseAccess_js_1.Read)(databaseAccess_js_1.TableNames_HDBInfo.WithinCtrlArea, {
-                [databaseAccess_js_1.ColumnNames_HDBInfo.carparkNo]: {
-                    [databaseAccess_js_1.ConditionVariable.operator]: databaseAccess_js_1.Operator.EqualTo,
-                    [databaseAccess_js_1.ConditionVariable.values]: carparkID
-                }
-            });
-            if (res === null) {
-                return ErrorMsg_MySQL();
-            }
-            if (res[0] === undefined) {
-                return feeTypes.car_NCP;
-            }
-            else
-                return feeTypes.car_CP;
-        }
-    });
+        else
+            return feeTypes.car_CP;
+    }
 }

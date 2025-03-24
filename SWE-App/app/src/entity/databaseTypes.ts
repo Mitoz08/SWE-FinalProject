@@ -6,3 +6,11 @@ export type OpenTickets = {
     "ticketEndTime":Date,
     "userID":number
 }
+
+export type UserInformation = {
+    "userID":number,
+    "userEmail":string,
+    "firstName":string,
+    "lastName":string,
+    "userPhoneNo":string
+}
