@@ -1,28 +1,27 @@
 import React, { useState } from "react";
-import { View, Text, Button, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { TextInput } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 // To simplify the code, for button
-const GoToAvailability = (navigation) => {
+const GoToAvailability = (navigation, selectedVeh) => {
     // AvC2- Get the array of carpark
 
     // Example
     const data = [
         { carkparkID: "A1", carparkAddress: "Carpark1" },
         { carkparkID: "A2", carparkAddress: "Carpark2" },
-    ]
-    navigation.navigate("I_Availability", {carparkList: data})
-}
-
+    ];
+    navigation.navigate("I_Availability", { carparkList: data, vehicleType: selectedVeh });
+};
 
 const VehType = [
     { label: "Car", value: "Car" },
     { label: "Motorcycle", value: "Motorcycle" }
-]
+];
 
-const VehDropDown = () => {
+const VehDropDown = ({ onSelect }) => {
     const [selectedVeh, setSelectedVeh] = useState(null);
 
     return (
@@ -30,60 +29,60 @@ const VehDropDown = () => {
             <Text style={styles.label}>Select Vehicle Type:</Text>
             
             <Dropdown
-            style={styles.dropdown}
-            data={VehType}
-            labelField="label"
-            valueField="value"
-            placeholder="Select vehicle"
-            value={selectedVeh}
-            onChange={(item) => setSelectedVeh(item.value)}
+                style={styles.dropdown}
+                data={VehType}
+                labelField="label"
+                valueField="value"
+                placeholder="Select vehicle"
+                value={selectedVeh}
+                onChange={(item) => {
+                    setSelectedVeh(item.value);
+                    onSelect(item.value);
+                }}
             />
     
             {selectedVeh && (
-            <Text style={styles.selectedText}>Selected: {selectedVeh}</Text>
+                <Text style={styles.selectedText}>Selected: {selectedVeh}</Text>
             )}
         </View>
-    )
-}
+    );
+};
 
 const VehLicensePlate = () => {
     const [licensePlate, setLicensePlate] = useState("");
 
-    return(
+    return (
         <TextInput
             style={styles.input}
             onChangeText={setLicensePlate}
             value={licensePlate}
             placeholder="License Plate"
         />
-    )
+    );
+};
 
-}
-
-const NextButton = ({navigation}) => {
-    return(
+const NextButton = ({ navigation, selectedVeh }) => {
+    return (
         <TouchableOpacity
-            style= {styles.button}
-            onPress={() => {GoToAvailability(navigation)}}>
+            style={styles.button}
+            onPress={() => { GoToAvailability(navigation, selectedVeh) }}>
             <Text>Continue</Text>
         </TouchableOpacity>
-    )
+    );
+};
 
-}
+export default function I_InputVehDetail({ navigation }) {
+    const [selectedVeh, setSelectedVeh] = useState(null);
 
-export default function I_InputVehDetail({navigation}) {
-
-
-
-    return(
+    return (
         <SafeAreaProvider>
             <SafeAreaView>
-                <VehDropDown/>
-                <VehLicensePlate/>
-                <NextButton navigation={navigation}/>
+                <VehDropDown onSelect={setSelectedVeh} />
+                <VehLicensePlate />
+                <NextButton navigation={navigation} selectedVeh={selectedVeh} />
             </SafeAreaView>
         </SafeAreaProvider>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
@@ -122,4 +121,4 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         color: "blue",
     },
-  });
+});
