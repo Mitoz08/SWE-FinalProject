@@ -11,7 +11,7 @@ export default function I_MainPage({navigation}) {
             <SafeAreaView>
                 <TouchableOpacity 
                     style={styles.button}   
-                    onPress={() => {navigation.navigate("I_InputVehDetail")}}>
+                    onPress={() => {navigation.navigate("I_Availability")}}>
                     <Text>Availability</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
