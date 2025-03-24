@@ -29,9 +29,9 @@ yarn-error.*
 *.pem
 
 # local env files
-.env*.local
+SWE-App/app/dist/.env
 
 # typescript
 *.tsbuildinfo
 
-./env
+
