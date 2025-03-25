@@ -1,22 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, FlatList, TextInput, TouchableOpacity, Picker, Alert } from 'react-native';
-import { Linking } from 'react-native'; // Import Linking for URL navigation
-import carparkData from './HDBCarparkInformation.json'; // Import JSON file directly
+import { StyleSheet, View, Text, FlatList, TextInput, TouchableOpacity, Alert, Platform } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import { Linking } from 'react-native';
+import carparkData from './HDBCarparkInformation.json';
 
 const API_URL = "https://api.data.gov.sg/v1/transport/carpark-availability";
-//hello
-export default function ContactScreen() {
+
+export default function ContactScreen({navigation}) {
   const [carparks, setCarparks] = useState([]);
   const [carparkAddresses, setCarparkAddresses] = useState({});
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [licensePlate, setLicensePlate] = useState(''); // State for license plate
-  const [selectedCarparkType, setSelectedCarparkType] = useState(''); // State for carpark type
+  const [licensePlate, setLicensePlate] = useState('');
+  const [selectedCarparkType, setSelectedCarparkType] = useState('');
 
   useEffect(() => {
     fetch(API_URL)
       .then(response => response.json())
       .then(data => {
+        console.log("API Data:", data); // Log the API data
         if (data.items && data.items.length > 0) {
           setCarparks(data.items[0].carpark_data);
         }
@@ -48,7 +50,6 @@ export default function ContactScreen() {
     );
   });
 
-  // Validate license plate (simple non-empty check)
   const isLicensePlateValid = licensePlate.trim().length > 0;
 
   return (
@@ -91,7 +92,7 @@ export default function ContactScreen() {
             const carparkAddress = carparkAddresses[item.carpark_number.trim()] || 'N/A';
             return (
               <View style={styles.card}>
-                <TouchableOpacity onPress={() => handleCarparkPress(item.carpark_number)}>
+                <TouchableOpacity onPress={() => {navigation.navigate("I_PaymentUI")}}>
                   <Text style={styles.cardTitle}>
                     Carpark: {item.carpark_number}
                   </Text>
@@ -119,14 +120,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#f0f4f8' // Light background color for a modern look
+    backgroundColor: '#f0f4f8'
   },
   title: {
     fontSize: 26,
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
-    color: '#333' // Darker text color for contrast
+    color: '#333'
   },
   searchInput: {
     height: 40,
@@ -140,7 +141,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 2 // Shadow for Android
+    elevation: 2
   },
   input: {
     height: 40,
@@ -157,7 +158,7 @@ const styles = StyleSheet.create({
     elevation: 2
   },
   picker: {
-    height: 50,
+    height: Platform.OS === 'ios' ? 150 : 50, // Adjust height for iOS
     width: '100%',
     marginBottom: 16,
     backgroundColor: '#fff',
@@ -168,7 +169,7 @@ const styles = StyleSheet.create({
   loadingText: {
     fontSize: 18,
     textAlign: 'center',
-    color: '#666' // Subtle text color for loading
+    color: '#666'
   },
   card: {
     backgroundColor: '#fff',
@@ -184,7 +185,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#007bff', // Blue color for emphasis
+    color: '#007bff',
     textDecorationLine: 'underline'
   },
   infoContainer: {
