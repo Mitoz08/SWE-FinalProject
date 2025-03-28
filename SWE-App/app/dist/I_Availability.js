@@ -92,7 +92,7 @@ export default function ContactScreen({navigation}) {
             const carparkAddress = carparkAddresses[item.carpark_number.trim()] || 'N/A';
             return (
               <View style={styles.card}>
-                <TouchableOpacity onPress={() => {navigation.navigate("I_PaymentUI")}}>
+                <TouchableOpacity onPress={() => {navigation.navigate("I_PaymentUI"),{item}}}>
                   <Text style={styles.cardTitle}>
                     Carpark: {item.carpark_number}
                   </Text>
