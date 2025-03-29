@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, FlatList, TextInput, TouchableOpacity, Alert, Platform } from 'react-native';
+import { StyleSheet, View, Text, FlatList, TextInput, TouchableOpacity, Alert, Platform} from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Linking } from 'react-native';
 import carparkData from './HDBCarparkInformation.json';
+import { ScrollView } from 'react-native-gesture-handler';
+// import { GetRate } from './controller/databaseControl';
 
 const API_URL = "https://api.data.gov.sg/v1/transport/carpark-availability";
 
@@ -13,6 +15,7 @@ export default function ContactScreen({navigation}) {
   const [searchQuery, setSearchQuery] = useState('');
   const [licensePlate, setLicensePlate] = useState('');
   const [selectedCarparkType, setSelectedCarparkType] = useState('');
+  const [rates, setRates] = useState({});
 
   useEffect(() => {
     fetch(API_URL)
@@ -50,6 +53,29 @@ export default function ContactScreen({navigation}) {
     );
   });
 
+  useEffect(() => {
+    const fetchRates = async () => {
+      for (let item of filteredCarparks) {
+        if (rates[item.carpark_number]) continue; 
+        try {
+          const response = await fetch(`http://localhost:3000/Rate?carparkID=${item.carpark_number}&vehType=${selectedCarparkType}`, {
+            method: "GET",
+          });
+          const data = await response.json();
+          const rate = data.rate;
+          setRates(prevRates => ({
+            ...prevRates,
+            [item.carpark_number]: rate,
+          }));
+        } catch (error) {
+          console.error(`Error fetching rate for carpark ${item.carpark_number}:`, error);
+        }
+      }
+    };
+  
+    fetchRates();
+  }, [searchQuery, selectedCarparkType]);
+
   const isLicensePlateValid = licensePlate.trim().length > 0;
 
   return (
@@ -85,14 +111,16 @@ export default function ContactScreen({navigation}) {
       {loading ? (
         <Text style={styles.loadingText}>Loading data...</Text>
       ) : (
+        <ScrollView style = {styles.scrollContainer}>
         <FlatList
           data={filteredCarparks}
           keyExtractor={(item) => item.carpark_number}
           renderItem={({ item }) => {
             const carparkAddress = carparkAddresses[item.carpark_number.trim()] || 'N/A';
-            return (
+            const Rate = rates[item.carpark_number]
+            return ( Rate && (
               <View style={styles.card}>
-                <TouchableOpacity onPress={() => {navigation.navigate("I_PaymentUI"),{item}}}>
+                <TouchableOpacity onPress={() => {navigation.navigate("I_PaymentUI",{licensePlate: licensePlate, carparkType:selectedCarparkType, carparkID: item.carpark_number, rate:rates[item.carpark_number]},)}}>
                   <Text style={styles.cardTitle}>
                     Carpark: {item.carpark_number}
                   </Text>
@@ -104,13 +132,15 @@ export default function ContactScreen({navigation}) {
                     <Text>Total Lots: {info.total_lots}</Text>
                     <Text>Lot Type: {info.lot_type}</Text>
                     <Text>Available Lots: {info.lots_available}</Text>
+                    <Text>Rate: {Rate}</Text>
                   </View>
                   )
                 ))}
-              </View>
+              </View>)
             );
           }}
         />
+        </ScrollView>
       )}
     </View>
   );
@@ -196,5 +226,9 @@ const styles = StyleSheet.create({
     color: '#888',
     marginBottom: 16,
     textAlign: 'center'
+  },
+  scrollContainer: {
+    flex: 1,  
+    height: "100%"
   }
 });

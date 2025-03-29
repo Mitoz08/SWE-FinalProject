@@ -24,4 +24,3 @@ export async function emailSender(To, Subject, Content) {
     }
     return true;
 }
-await emailSender("TIMO0038@e.ntu.edu.sg", "SWE Project", "Test email");
