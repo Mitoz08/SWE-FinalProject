@@ -7,7 +7,7 @@ export async function ProcessPayment(createTicketDetails) {
         licensePlate: createTicketDetails.licensePlate,
         ticketStartTime: ticketStartTime,
         ticketEndTime: ticketEndTime,
-        userID: 1
+        userID: 4
     };
     try {
         var response = await fetch(`http://localhost:3000/OpenTicket`, {
