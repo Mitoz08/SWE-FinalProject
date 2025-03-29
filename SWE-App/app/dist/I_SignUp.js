@@ -75,10 +75,15 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     button: {
-        margin: 5,
-        padding: 10,
-        backgroundColor: "lightblue",
-        width: 100,
-        borderWidth: 1,
+        margin: 10,
+        paddingVertical: 20, // Increased padding for larger buttons
+        paddingHorizontal: 15, // Increased padding for larger buttons
+        backgroundColor: "#4682b4",
+        borderRadius: 10,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 3,
+        elevation: 5,
     },
   });
