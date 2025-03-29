@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@expo/vector-icons": "^14.0.4",
     "@types/node": "^22.13.12",
     "dotenv": "^16.4.7",
     "firebase": "^11.5.0",

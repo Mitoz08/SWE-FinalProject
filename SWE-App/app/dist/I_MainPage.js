@@ -16,7 +16,7 @@ export default function I_MainPage({navigation}) {
                 </TouchableOpacity>
                 <TouchableOpacity 
                     style={styles.button}   
-                    onPress={() => {}}>
+                    onPress={() => {navigation.navigate("I_ViewTickets")}}>
                     <Text>ViewTickets</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 

@@ -21,7 +21,6 @@ exports.endDBConnection = endDBConnection;
 const mysql2_1 = __importDefault(require("mysql2"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
-console.log(process.env.MYSQL_HOST);
 var TableNames_App;
 (function (TableNames_App) {
     TableNames_App["UserID"] = "UserID";

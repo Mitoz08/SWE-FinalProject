@@ -2,7 +2,6 @@ import mysql, {QueryResult, ResultSetHeader, RowDataPacket} from "mysql2";
 import dotenv from "dotenv";
 
 dotenv.config();
-console.log(process.env.MYSQL_HOST)
 
 type TableNames = TableNames_App|TableNames_HDBInfo;
 

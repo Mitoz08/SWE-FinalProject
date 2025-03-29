@@ -16,7 +16,6 @@ exports.emailSender = emailSender;
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
-console.log(process.env.EMAIL_USER);
 const emailer = nodemailer_1.default.createTransport({
     service: "gmail",
     auth: {
