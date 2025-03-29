@@ -16,6 +16,7 @@ export default function I_PaymentUI({navigation, route}) {
     const [interval, setInterval] = useState(1)
     const [max, setMax] = useState(false)
     const [min, setMin] = useState(false)
+    const [paymentErrorMsg, setPaymentErrorMsg] = useState("")
     
     const increase = () => {
         if (interval >= 48) {
@@ -79,9 +80,10 @@ export default function I_PaymentUI({navigation, route}) {
                             licensePlate: licensePlate,
                             duration_hour: Math.floor((interval*intervalTime)/60),
                             duration_min: (interval*intervalTime)%60
-                        }).then(reponse => reponse? navigation.navigate("I_SuccessfulUI"):console.log("Not navigated"))}}>
+                        }).then(reponse => reponse? navigation.navigate("I_SuccessfulUI"):setPaymentErrorMsg("Open Ticket already exist"))}}>
                         <Text style={styles.payButtonText}>Pay</Text>
                     </TouchableOpacity>
+                    {paymentErrorMsg !== "" && <Text style={styles.errorMsg}>{paymentErrorMsg}</Text>}
                 </View>
             </SafeAreaView>
         </SafeAreaProvider>
