@@ -2,6 +2,7 @@ import mysql, {QueryResult, ResultSetHeader, RowDataPacket} from "mysql2";
 import dotenv from "dotenv";
 
 dotenv.config();
+console.log(process.env.MYSQL_HOST)
 
 type TableNames = TableNames_App|TableNames_HDBInfo;
 
@@ -128,6 +129,7 @@ async function Read( table:TableNames, data?:object, by:"AND" | "OR" = "AND"): P
         );
         return result;
     } catch (error) {
+        // console.log(error)
         return null;
     }
 } 
@@ -166,7 +168,7 @@ async function Update( table:TableNames, data:UpdateQueryData, by:"AND" | "OR" =
         );
         return result;
     } catch (error) {
-        console.log(error)
+        // console.log(error)
         return null;
     }
 }
@@ -193,7 +195,7 @@ async function Delete(table:TableNames, data:object, by:"AND" | "OR" = "AND") : 
         );
         return result;
     } catch (error) {
-        console.log(error)
+        // console.log(error)
         return null;
     }
 }

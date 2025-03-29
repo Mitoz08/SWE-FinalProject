@@ -50,7 +50,7 @@ const AuthStack = () => {
 
 const MainStack = () => {
 	return(
-	<Stack.Navigator initialRouteName="I_MainPage">
+	<Stack.Navigator screenOptions={{cardStyle:{flex:1}}}initialRouteName="I_MainPage">
 		<Stack.Screen name="I_MainPage" component={I_MainPage} />
 		<Stack.Screen name="I_InputVehDetail" component={I_InputVehDetail}/>
 		<Stack.Screen name="I_Availability" component={I_Availability}/>

@@ -1,9 +1,10 @@
 import { 
     TableNames_App, ColumnNames_App, TableNames_HDBInfo, ColumnNames_HDBInfo, Operator, 
-    ConditionVariable, UpdateQueryData, Create, Read, Update, Delete, 
+    ConditionVariable, Create, Read, Update, Delete, 
     endDBConnection
-} from "../boundary/databaseAccess.js";
-import { OpenTickets, UserInformation } from "../entity/databaseTypes.js";
+} from "../boundary/databaseAccess";
+import { OpenTickets, UserInformation } from "../entity/databaseTypes";
+
 
 enum feeTypes {
     motorcycle = 0.65,
@@ -46,6 +47,7 @@ export async function AddNewUser( userFirebaseID:String ) : Promise<number|null>
     return res.insertId;
 }
 
+
 /**
  * Function to request for the user ID of the given FirebaseID
  * @param userFirebaseID FirebaseID of the user to be searched
@@ -71,6 +73,8 @@ export async function GetUserID( userFirebaseID:String ) : Promise<number|null> 
 
     return res[0][ColumnNames_App.userID];
 }
+
+
 
 // /**
 //  * Function to request for the user email of the given ID
@@ -157,21 +161,14 @@ export async function DeleteUser(userID:number) : Promise<boolean|null> {
 /**
  * Function to add user information by given user ID
  * @param userID user ID to be added
- * @param userPhoneNo phone number to be added (String of length 8)
- * @returns true if successful
- */
-
-/**
- * Function to add user information by given user ID
- * @param userID user ID to be added
  * @param userEmail email following (name@domain.com.sg etc.)
  * @param firstName first name of user
  * @param lastName last name of user
  * @param userPhoneNo phone number to be added (String of length 8)
  * @returns true if successful
  */
-export async function AddUserInfo( userID:number, userEmail:string, firstName:string, lastName:string, userPhoneNo:string) : Promise<boolean|null> {
-    
+export async function AddUserInfo( object:any ) : Promise<boolean|null> {
+    const {userID, userEmail, firstName, lastName, userPhoneNo} = object;
     if (userPhoneNo.length != 8) { // Phone number is 8 char long
         console.error("Phone number not 8 characters long")
         return null;
@@ -258,8 +255,8 @@ export async function GetUserEmail( userID:number ) : Promise<string|null> {
  * @param userPhoneNo new phone number to be written (String of length 8)
  * @returns 
  */
-export async function UpdateUserInfo(userID:number, userEmail:string, firstName:string, lastName:string, userPhoneNo:string) : Promise<boolean|null> {
-
+export async function UpdateUserInfo(object:any) : Promise<boolean|null> {
+    const {userID, userEmail, firstName, lastName, userPhoneNo} = object;
     if (userPhoneNo.length != 8) { // Phone number is 8 char long
         console.error("Phone number not 8 characters long")
         return null;
@@ -433,15 +430,16 @@ export async function UpdateUserPayment(userID:number, customerID:String) : Prom
  * @param userID user ID of the owner of the ticket
  * @returns the inserted ID which is the ticket ID
  */
-export async function CreateOpenTicket(parkingLotID:String, licensePlate:String, ticketStartTime:Date, ticketEndTime:Date, userID:number) : Promise<number|null> {
-    
+export async function CreateOpenTicket( object:any ) : Promise<number|null> {
+    const {parkingLotID, licensePlate, ticketStartTime, ticketEndTime, userID} = object
+
     const res = await Create(TableNames_App.OpenTickets, 
         {
             [ColumnNames_App.parkingLotID] : parkingLotID,
             [ColumnNames_App.licensePlate] : licensePlate,
-            [ColumnNames_App.ticketStartTime] : dateToString(ticketStartTime),
-            [ColumnNames_App.ticketEndTime] : dateToString(ticketEndTime),
-            [ColumnNames_App.userID] : userID
+            [ColumnNames_App.ticketStartTime] : dateToString(new Date(ticketStartTime)),
+            [ColumnNames_App.ticketEndTime] : dateToString(new Date(ticketEndTime)),
+            [ColumnNames_App.userID] : Number(userID)
         }
     )
     if (res === null) {
@@ -508,8 +506,8 @@ export async function GetOpenTicketByTicketID( ticketID:number ) : Promise<OpenT
  * @param ticketEndTime new ticket end time (Calculated by ticket start time + new duration)
  * @returns true if successful
  */
-export async function UpdateOpenTicketEndTime( ticketID:number, ticketEndTime:Date) : Promise<boolean|null> {
-
+export async function UpdateOpenTicketEndTime( object:any ) : Promise<boolean|null> {
+    const {ticketID,ticketEndTime} = object
     const res = await Update(TableNames_App.OpenTickets,
         {
             "set": {
@@ -569,8 +567,8 @@ export async function DeleteOpenTicket(ticketID:number) : Promise<boolean|null> 
  * @param actualEndTime Actual time where ticket was closed
  * @returns 
  */
-export async function CreateClosedTicket(ticketID:number, parkingLotID:String, licensePlate:String, ticketStartTime:Date, ticketEndTime:Date, actualEndTime:Date ) : Promise<boolean|null> {
-    
+export async function CreateClosedTicket( object:any ) : Promise<boolean|null> {
+    const {ticketID, parkingLotID, licensePlate, ticketStartTime, ticketEndTime, actualEndTime} = object
     const res = await Create(TableNames_App.ClosedTickets, 
         {
             [ColumnNames_App.ticketID] : ticketID,
@@ -637,7 +635,8 @@ export async function GetClosedTicket( ticketID:number ) : Promise<object|null> 
  * @param userID user ID to be added 
  * @returns true if successful
  */
-export async function CreateUserClosedTicket(ticketID:number, userID:number): Promise<boolean|null> {
+export async function CreateUserClosedTicket(object:any): Promise<boolean|null> {
+    const {ticketID, userID} = object
     const res = await Create(TableNames_App.UserClosedTickets,
         {
             [ColumnNames_App.userID] : userID,
@@ -697,12 +696,17 @@ export function dateToString( date:Date ) : String {
     return new Date(date.getTime() - TimeZoneOffset).toISOString().replace('T', " ").slice(0,19);
 }
 
+export function dateOffset( date:Date ) : Date {
+    const TimeZoneOffset = 8 * 60 * 60000;
+    return new Date(date.getTime() + TimeZoneOffset)
+}
+
 /**
  * Function to obtain the carpark address with the given carparkID
  * @param carparkID carparkID to be searched
  * @returns address of the carparkID
  */
-export async function GetCarparkAddress(carparkID: String): Promise<String|null> {
+export async function GetCarparkAddress(carparkID: string): Promise<String|null> {
     const res = await Read(TableNames_HDBInfo.HDBCarpark, {
         [ColumnNames_HDBInfo.carparkNo] : {
             [ConditionVariable.operator] : Operator.EqualTo,
@@ -724,12 +728,13 @@ export async function GetCarparkAddress(carparkID: String): Promise<String|null>
  * @param vehType type of vehicle that is parking
  * @returns rate per half-hour (Car/Heavy Vehicles) / lot (MCycle)
  */
-export async function GetRate(carparkID: String, vehType : "Car"|"MCycle"|"HVehicle") : Promise<number|null> {
-    if (vehType == "MCycle")
+export async function GetRate(object:any) : Promise<number|null> {
+    const { carparkID, vehType } = object
+    if (vehType == "M")
         return feeTypes.motorcycle;
-    else if (vehType == "HVehicle")
+    else if (vehType == "HV")
         return feeTypes.heavy_vehicle;
-    else {
+    else if (vehType == "C") {
         const res = await Read(TableNames_HDBInfo.WithinCtrlArea, {
             [ColumnNames_HDBInfo.carparkNo] : {
                 [ConditionVariable.operator] : Operator.EqualTo,
@@ -744,7 +749,7 @@ export async function GetRate(carparkID: String, vehType : "Car"|"MCycle"|"HVehi
         } else return feeTypes.car_CP;
 
     }
-    
+    return null
 }
 
 // Testing
