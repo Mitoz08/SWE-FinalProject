@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, FlatList, TextInput, TouchableOpacity, Alert, Platform} from 'react-native';
+import { StyleSheet, View, Text, FlatList, TextInput, TouchableOpacity, Alert, Platform } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Linking } from 'react-native';
 import carparkData from './HDBCarparkInformation.json';
 import { ScrollView } from 'react-native-gesture-handler';
-// import { GetRate } from './controller/databaseControl';
 
 const API_URL = "https://api.data.gov.sg/v1/transport/carpark-availability";
 
-export default function ContactScreen({navigation}) {
+export default function ContactScreen({ navigation }) {
   const [carparks, setCarparks] = useState([]);
   const [carparkAddresses, setCarparkAddresses] = useState({});
   const [loading, setLoading] = useState(true);
@@ -21,7 +20,7 @@ export default function ContactScreen({navigation}) {
     fetch(API_URL)
       .then(response => response.json())
       .then(data => {
-        console.log("API Data:", data); // Log the API data
+        console.log("API Data:", data);
         if (data.items && data.items.length > 0) {
           setCarparks(data.items[0].carpark_data);
         }
@@ -40,6 +39,10 @@ export default function ContactScreen({navigation}) {
   }, []);
 
   const handleCarparkPress = (carparkNumber) => {
+    if (!carparkNumber || !carparkAddresses[carparkNumber.trim()]) {
+      Alert.alert("Invalid Carpark ID", "Please input a valid Parking Lot ID");
+      return;
+    }
     const paymentUrl = `https://ntulearn.ntu.edu.sg/ultra/institution-page=${carparkNumber}`;
     Linking.openURL(paymentUrl).catch(err => console.error("Failed to open URL:", err));
   };
@@ -56,7 +59,7 @@ export default function ContactScreen({navigation}) {
   useEffect(() => {
     const fetchRates = async () => {
       for (let item of filteredCarparks) {
-        if (rates[item.carpark_number]) continue; 
+        if (rates[item.carpark_number]) continue;
         try {
           const response = await fetch(`http://localhost:3000/Rate?carparkID=${item.carpark_number}&vehType=${selectedCarparkType}`, {
             method: "GET",
@@ -72,7 +75,7 @@ export default function ContactScreen({navigation}) {
         }
       }
     };
-  
+
     fetchRates();
   }, [searchQuery, selectedCarparkType]);
 
@@ -111,35 +114,50 @@ export default function ContactScreen({navigation}) {
       {loading ? (
         <Text style={styles.loadingText}>Loading data...</Text>
       ) : (
-        <ScrollView style = {styles.scrollContainer}>
-        <FlatList
-          data={filteredCarparks}
-          keyExtractor={(item) => item.carpark_number}
-          renderItem={({ item }) => {
-            const carparkAddress = carparkAddresses[item.carpark_number.trim()] || 'N/A';
-            const Rate = rates[item.carpark_number]
-            return ( Rate && (
-              <View style={styles.card}>
-                <TouchableOpacity onPress={() => {navigation.navigate("I_PaymentUI",{licensePlate: licensePlate, carparkType:selectedCarparkType, carparkID: item.carpark_number, rate:rates[item.carpark_number]},)}}>
-                  <Text style={styles.cardTitle}>
-                    Carpark: {item.carpark_number}
-                  </Text>
-                </TouchableOpacity>
-                <Text>Address: {carparkAddress}</Text>
-                {item.carpark_info && item.carpark_info.map((info, index) => (
-                  info.lot_type === selectedCarparkType && (
-                  <View key={index} style={styles.infoContainer}>
-                    <Text>Total Lots: {info.total_lots}</Text>
-                    <Text>Lot Type: {info.lot_type}</Text>
-                    <Text>Available Lots: {info.lots_available}</Text>
-                    <Text>Rate: {Rate}</Text>
+        <ScrollView style={styles.scrollContainer}>
+          {searchQuery && filteredCarparks.length === 0 ? (
+            <Text style={styles.noCarparksText}>Please input a valid Parking Lot ID</Text>
+          ) : (
+            <FlatList
+              data={filteredCarparks}
+              keyExtractor={(item) => item.carpark_number}
+              renderItem={({ item }) => {
+                const carparkAddress = carparkAddresses[item.carpark_number.trim()] || 'N/A';
+                const Rate = rates[item.carpark_number];
+                return (Rate && (
+                  <View style={styles.card}>
+                    <TouchableOpacity onPress={() => {
+                      if (!item.carpark_number || !carparkAddresses[item.carpark_number.trim()]) {
+                        Alert.alert("Invalid Carpark ID", "Please input a valid Parking Lot ID");
+                        return;
+                      }
+                      navigation.navigate("I_PaymentUI", {
+                        licensePlate: licensePlate,
+                        carparkType: selectedCarparkType,
+                        carparkID: item.carpark_number,
+                        rate: rates[item.carpark_number],
+                      });
+                    }}>
+                      <Text style={styles.cardTitle}>
+                        Carpark: {item.carpark_number}
+                      </Text>
+                    </TouchableOpacity>
+                    <Text>Address: {carparkAddress}</Text>
+                    {item.carpark_info && item.carpark_info.map((info, index) => (
+                      info.lot_type === selectedCarparkType && (
+                        <View key={index} style={styles.infoContainer}>
+                          <Text>Total Lots: {info.total_lots}</Text>
+                          <Text>Lot Type: {info.lot_type}</Text>
+                          <Text>Available Lots: {info.lots_available}</Text>
+                          <Text>Rate: {Rate}</Text>
+                        </View>
+                      )
+                    ))}
                   </View>
-                  )
-                ))}
-              </View>)
-            );
-          }}
-        />
+                ));
+              }}
+            />
+          )}
         </ScrollView>
       )}
     </View>
@@ -188,7 +206,7 @@ const styles = StyleSheet.create({
     elevation: 2
   },
   picker: {
-    height: Platform.OS === 'ios' ? 150 : 50, // Adjust height for iOS
+    height: Platform.OS === 'ios' ? 150 : 50,
     width: '100%',
     marginBottom: 16,
     backgroundColor: '#fff',
@@ -228,7 +246,13 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
   scrollContainer: {
-    flex: 1,  
+    flex: 1,
     height: "100%"
+  },
+  noCarparksText: {
+    fontSize: 18,
+    textAlign: 'center',
+    color: '#ff0000',
+    marginTop: 20
   }
 });
