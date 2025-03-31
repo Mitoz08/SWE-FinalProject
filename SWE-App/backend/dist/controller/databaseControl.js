@@ -22,14 +22,16 @@ exports.UpdateUserPayment = UpdateUserPayment;
 exports.CreateOpenTicket = CreateOpenTicket;
 exports.GetOpenTicketByUserID = GetOpenTicketByUserID;
 exports.GetOpenTicketByTicketID = GetOpenTicketByTicketID;
+exports.GetOpenTicket = GetOpenTicket;
 exports.UpdateOpenTicketEndTime = UpdateOpenTicketEndTime;
+exports.UpdateOpenTicketNotified = UpdateOpenTicketNotified;
 exports.DeleteOpenTicket = DeleteOpenTicket;
 exports.CreateClosedTicket = CreateClosedTicket;
 exports.GetClosedTicket = GetClosedTicket;
 exports.CreateUserClosedTicket = CreateUserClosedTicket;
 exports.GetUserClosedTicket = GetUserClosedTicket;
 exports.dateToString = dateToString;
-exports.dateOffset = dateOffset;
+exports.dateOffsetPlus = dateOffsetPlus;
 exports.GetCarparkAddress = GetCarparkAddress;
 exports.GetRate = GetRate;
 const databaseAccess_1 = require("../boundary/databaseAccess");
@@ -267,7 +269,10 @@ function GetOpenTicketByUserID(userID) {
         if (res[0] === undefined) {
             return ErrorMsg_NoEntry();
         }
-        return res[0];
+        const ticket = res[0];
+        ticket.ticketEndTime = dateOffsetPlus(ticket.ticketEndTime);
+        ticket.ticketStartTime = dateOffsetPlus(ticket.ticketStartTime);
+        return ticket;
     });
 }
 function GetOpenTicketByTicketID(ticketID) {
@@ -284,7 +289,28 @@ function GetOpenTicketByTicketID(ticketID) {
         if (res[0] === undefined) {
             return ErrorMsg_NoEntry();
         }
-        return res[0];
+        const ticket = res[0];
+        ticket.ticketEndTime = dateOffsetPlus(ticket.ticketEndTime);
+        ticket.ticketStartTime = dateOffsetPlus(ticket.ticketStartTime);
+        return ticket;
+    });
+}
+function GetOpenTicket() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const res = yield (0, databaseAccess_1.Read)(databaseAccess_1.TableNames_App.OpenTickets);
+        if (res === null) {
+            return ErrorMsg_MySQL();
+        }
+        if (res[0] === undefined) {
+            return ErrorMsg_NoEntry();
+        }
+        const tickets = res;
+        for (const ticket of tickets) {
+            const ticket = res[0];
+            ticket.ticketEndTime = dateOffsetPlus(ticket.ticketEndTime);
+            ticket.ticketStartTime = dateOffsetPlus(ticket.ticketStartTime);
+        }
+        return res;
     });
 }
 function UpdateOpenTicketEndTime(object) {
@@ -293,6 +319,29 @@ function UpdateOpenTicketEndTime(object) {
         const res = yield (0, databaseAccess_1.Update)(databaseAccess_1.TableNames_App.OpenTickets, {
             "set": {
                 [databaseAccess_1.ColumnNames_App.ticketEndTime]: dateToString(ticketEndTime)
+            },
+            "where": {
+                [databaseAccess_1.ColumnNames_App.ticketID]: {
+                    [databaseAccess_1.ConditionVariable.operator]: databaseAccess_1.Operator.EqualTo,
+                    [databaseAccess_1.ConditionVariable.values]: ticketID
+                }
+            }
+        });
+        if (res === null) {
+            return ErrorMsg_MySQL();
+        }
+        if (res.affectedRows === 0) {
+            return ErrorMsg_NoEntry();
+        }
+        return true;
+    });
+}
+function UpdateOpenTicketNotified(object) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const { ticketID, value } = object;
+        const res = yield (0, databaseAccess_1.Update)(databaseAccess_1.TableNames_App.OpenTickets, {
+            "set": {
+                [databaseAccess_1.ColumnNames_App.notified]: value
             },
             "where": {
                 [databaseAccess_1.ColumnNames_App.ticketID]: {
@@ -397,7 +446,7 @@ function dateToString(date) {
     const TimeZoneOffset = date.getTimezoneOffset() * 60000;
     return new Date(date.getTime() - TimeZoneOffset).toISOString().replace('T', " ").slice(0, 19);
 }
-function dateOffset(date) {
+function dateOffsetPlus(date) {
     const TimeZoneOffset = 8 * 60 * 60000;
     return new Date(date.getTime() + TimeZoneOffset);
 }

@@ -4,7 +4,6 @@ class MainEntity {
     constructor() {
         this.userInfomation = {};
         this.openTicket = {};
-        console.log("MainEntity Constructor");
     }
     setTicket(openTicket) {
         this.openTicket = openTicket;

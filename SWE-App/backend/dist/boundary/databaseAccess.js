@@ -45,6 +45,7 @@ var ColumnNames_App;
     ColumnNames_App["ticketStartTime"] = "ticketStartTime";
     ColumnNames_App["ticketEndTime"] = "ticketEndTime";
     ColumnNames_App["actualEndTime"] = "actualEndTime";
+    ColumnNames_App["notified"] = "notified";
 })(ColumnNames_App || (exports.ColumnNames_App = ColumnNames_App = {}));
 var TableNames_HDBInfo;
 (function (TableNames_HDBInfo) {

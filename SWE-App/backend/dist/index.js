@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const userRoutes_1 = require("./routes/userRoutes");
 const cors_1 = __importDefault(require("cors"));
+const serverControl_1 = __importDefault(require("./controller/serverControl"));
 const app = (0, express_1.default)();
 const port = 3000;
 app.use((0, cors_1.default)());
@@ -17,3 +18,4 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
 });
+(0, serverControl_1.default)();

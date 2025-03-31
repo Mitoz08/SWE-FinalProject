@@ -3,7 +3,7 @@ import {
     ConditionVariable, Create, Read, Update, Delete, 
     endDBConnection
 } from "../boundary/databaseAccess";
-import { OpenTickets, UserInformation } from "../entity/databaseTypes";
+import { ClosedTicket, OpenTicket, UserInformation } from "../entity/databaseTypes";
 
 
 enum feeTypes {
@@ -453,7 +453,7 @@ export async function CreateOpenTicket( object:any ) : Promise<number|null> {
  * @param userID user ID to be filtered
  * @returns an object containing information of the open ticket
  */
-export async function GetOpenTicketByUserID( userID:number ) : Promise<OpenTickets|null> {
+export async function GetOpenTicketByUserID( userID:number ) : Promise<OpenTicket|null> {
     
     const res = await Read(TableNames_App.OpenTickets, 
         {
@@ -471,7 +471,10 @@ export async function GetOpenTicketByUserID( userID:number ) : Promise<OpenTicke
         return ErrorMsg_NoEntry();
     }
 
-    return res[0] as OpenTickets;
+    const ticket = res[0] as OpenTicket
+    ticket.ticketEndTime = dateOffsetPlus(ticket.ticketEndTime)
+    ticket.ticketStartTime= dateOffsetPlus(ticket.ticketStartTime)
+    return ticket;
 }
 
 /**
@@ -479,7 +482,7 @@ export async function GetOpenTicketByUserID( userID:number ) : Promise<OpenTicke
  * @param ticketID ticketID to be filtered
  * @returns an object containing information of the open ticket
  */
-export async function GetOpenTicketByTicketID( ticketID:number ) : Promise<OpenTickets|null> {
+export async function GetOpenTicketByTicketID( ticketID:number ) : Promise<OpenTicket|null> {
     
     const res = await Read(TableNames_App.OpenTickets, 
         {
@@ -496,8 +499,29 @@ export async function GetOpenTicketByTicketID( ticketID:number ) : Promise<OpenT
     if (res[0] === undefined) {
         return ErrorMsg_NoEntry();
     }
+    const ticket = res[0] as OpenTicket
+    ticket.ticketEndTime = dateOffsetPlus(ticket.ticketEndTime)
+    ticket.ticketStartTime= dateOffsetPlus(ticket.ticketStartTime)
+    return ticket;
+}
 
-    return res[0] as OpenTickets;
+export async function GetOpenTicket() : Promise<OpenTicket[]|null> {
+    
+    const res = await Read(TableNames_App.OpenTickets)
+    if (res === null) {
+        return ErrorMsg_MySQL();
+    }
+    if (res[0] === undefined) {
+        return ErrorMsg_NoEntry();
+    }
+    const tickets = res as OpenTicket[]
+    for (const ticket of tickets) {
+        const ticket = res[0] as OpenTicket
+        ticket.ticketEndTime = dateOffsetPlus(ticket.ticketEndTime)
+        ticket.ticketStartTime= dateOffsetPlus(ticket.ticketStartTime)
+    }
+
+    return res as OpenTicket[];
 }
 
 /**
@@ -532,6 +556,34 @@ export async function UpdateOpenTicketEndTime( object:any ) : Promise<boolean|nu
     
     return true;
 }
+
+export async function UpdateOpenTicketNotified( object: {ticketID:number, value:boolean} ) : Promise<boolean|null> {
+    const {ticketID,value} = object
+    const res = await Update(TableNames_App.OpenTickets,
+        {
+            "set": {
+                [ColumnNames_App.notified] : value
+            },
+            "where": {
+                [ColumnNames_App.ticketID]: 
+                {
+                    [ConditionVariable.operator] : Operator.EqualTo,
+                    [ConditionVariable.values] : ticketID
+                }
+            }
+        }
+    )
+
+    if (res === null) {
+        return ErrorMsg_MySQL();
+    }
+    if (res.affectedRows === 0) {
+        return ErrorMsg_NoEntry();
+    }
+    
+    return true;
+}
+
 
 /**
  * Function to delete the open ticket (When ticket is closed)
@@ -590,7 +642,7 @@ export async function CreateClosedTicket( object:any ) : Promise<boolean|null> {
  * @param ticketID ticket ID to be returned
  * @returns an object with the information of the closed tickets
  */
-export async function GetClosedTicket( ticketID:number ) : Promise<object|null> {
+export async function GetClosedTicket( ticketID:number ) : Promise<ClosedTicket|null> {
     
     const res = await Read(TableNames_App.ClosedTickets, 
         {
@@ -608,7 +660,11 @@ export async function GetClosedTicket( ticketID:number ) : Promise<object|null> 
         return ErrorMsg_NoEntry();
     }
 
-    return res[0];
+    // const ticket = res[0] as ClosedTicket
+    // ticket.ticketEndTime = dateOffsetPlus(ticket.ticketEndTime)
+    // ticket.ticketStartTime= dateOffsetPlus(ticket.ticketEndTime)
+    // ticket.actualEndTime = dateOffsetPlus(ticket.actualEndTime)
+    return res[0] as ClosedTicket;
 }
 
 // Not needed. Will not be deleting ClosedTicket
@@ -696,10 +752,11 @@ export function dateToString( date:Date ) : String {
     return new Date(date.getTime() - TimeZoneOffset).toISOString().replace('T', " ").slice(0,19);
 }
 
-export function dateOffset( date:Date ) : Date {
+export function dateOffsetPlus( date:Date ) : Date {
     const TimeZoneOffset = 8 * 60 * 60000;
     return new Date(date.getTime() + TimeZoneOffset)
 }
+
 
 /**
  * Function to obtain the carpark address with the given carparkID

@@ -1,10 +1,11 @@
-import { InitaliseUser } from "./mainControl.js";
+import { InitaliseUser } from "./mainControl";
 
 // AuC1
 export function VerifyLogin(Email:string, Password: string) {
     // FC1- Firebase login user 
     // DC2- Get user id using email if needed
     // MC1- Initialise the user
+    InitaliseUser(1)
     // If login sucessful return true
     return true;
 }
@@ -14,6 +15,7 @@ export function VerifySignUp(Email:string, Password: string) {
     // FC2- FireBase create user
     // DC1- Add new user email and id tuple in to the database
     // MC1- Initialise the user
+    InitaliseUser(1)
     // If sign up sucessful return true
     return true;
 }

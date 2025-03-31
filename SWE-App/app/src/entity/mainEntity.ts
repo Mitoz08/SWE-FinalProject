@@ -4,7 +4,8 @@ export type OpenTicket = {
     "licensePlate":string,
     "ticketStartTime":Date,
     "ticketEndTime":Date,
-    "userID":number
+    "userID":number,
+    "notified":boolean
 }
 
 class MainEntity {

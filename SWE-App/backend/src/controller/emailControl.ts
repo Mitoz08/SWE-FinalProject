@@ -1,31 +1,50 @@
 import { emailSender } from "../boundary/emailAccess";
-import { dateToString, GetOpenTicketByTicketID, GetUserEmail } from "./databaseControl.js";
+import { dateToString, GetCarparkAddress, GetOpenTicketByTicketID, GetUserEmail } from "./databaseControl.js";
+import { getOpenTicketByTicketID } from "./serverControl";
 
-
-function sleep(ms : number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 export async function NewTicketNotification(ticketID:number) {
-    const subject = `New ticket ${ticketID}`
-    const res = await GetOpenTicketByTicketID(ticketID)
-    console.log(typeof res?.ticketEndTime)
-    if (res === null) {
+    const subject = `New ticket created with ID: ${ticketID}`
+    const res = getOpenTicketByTicketID(ticketID)
+    // console.log(typeof res?.ticketEndTime)
+    if (res == null) {
         console.error(`No existing ticket with ID: ${ticketID}`);
-        return;
+        return false;
     } 
-    const text =    `You have create a new ticket with ID: ${ticketID}.\n
-                    The Carpark is 
-                    The ticket ends on ${new Date(res.ticketEndTime)}.`
+    const text =    
+`Dear Customer,
+
+    You have create a new ticket with ID: ${ticketID}.\n
+    The Carpark is ${await GetCarparkAddress(res.parkingLotID)}
+    The ticket ends on ${new Date(res.ticketEndTime)}.`
     const email = await GetUserEmail(res.userID)
-    if (email === null) {
+    if (email == null) {
         console.error(`No existing email found for user ID: ${res.userID}`);
-        return;
+        return false;
     } 
     console.log(email,subject,text)
-    emailSender(email as string,subject,text);            
+    return emailSender(email as string,subject,text);           
 }
     
-function ExpiryNotification() {}
+export async function ExpiryNotification(ticketID:number) {
+    const subject = `Expiration alert for ticket ID: ${ticketID}`
+    const res = getOpenTicketByTicketID(ticketID)
+    if (res == null) {
+        console.error(`No existing ticket with ID: ${ticketID}`);
+        return false;
+    } 
+    const text =    
+`Dear Customer,
 
-function ExpiryChecker() {}
+    You have ticket that is expiring soon. Ticket ID: ${ticketID}.
+    The Carpark is ${await GetCarparkAddress(res.parkingLotID)}
+    The ticket ends on ${new Date(res.ticketEndTime)}.`
+    const email = await GetUserEmail(res.userID)
+    if (email == null) {
+        console.error(`No existing email found for user ID: ${res.userID}`);
+        return false;
+    } 
+    console.log(email,subject,text)
+    return emailSender(email as string,subject,text); 
+}
+
