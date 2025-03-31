@@ -1,20 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Text, Button, StyleSheet, LinearGradient, View, TouchableOpacity } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { mainEntity } from "./entity/mainEntity";
+import { mainEntity } from "../src/entity/mainEntity";
 import { add, format } from "date-fns";
 
 export default function I_ViewTickets({navigation}) {
     const ticket = mainEntity.getTicket()
     const [address, setAddress] = useState("")
-
     useEffect(() => {
         fetch(`http://localhost:3000/CarparkAddress?carparkID=${ticket.parkingLotID}`)
           .then(response => response.json())
           .then(data => setAddress(data.carparkAddress))
           .catch(error => setAddress("Error fetching address"));
       }, [ticket.parkingLotID]);
-
     return(
         <SafeAreaProvider>
             <SafeAreaView>
@@ -23,8 +21,8 @@ export default function I_ViewTickets({navigation}) {
                     <Text style={styles.detail}>Parking Lot: <Text style={styles.bold}>{ticket.parkingLotID}</Text></Text>
                     <Text style={styles.detail}>Address: <Text style={styles.bold}>{address}</Text></Text>
                     <Text style={styles.detail}>License Plate: <Text style={styles.bold}>{ticket.licensePlate}</Text></Text>
-                    <Text style={styles.detail}>Start Time: <Text style={styles.bold}>{format(ticket.ticketStartTime, "PPpp")}</Text></Text>
-                    <Text style={styles.detail}>End Time: <Text style={styles.bold}>{format(ticket.ticketEndTime, "PPpp")}</Text></Text>
+                    <Text style={styles.detail}>Start Time: <Text style={styles.bold}>{ticket.ticketStartTime.toLocaleString()}</Text></Text>
+                    <Text style={styles.detail}>End Time: <Text style={styles.bold}>{ticket.ticketEndTime.toLocaleString()}</Text></Text>
                     <View style={styles.ticketAction}>
                       <TouchableOpacity style={styles.button} onPress={() => {console.log("Add Time")}}>
                         <Text style={styles.buttonText}>Add Time</Text>

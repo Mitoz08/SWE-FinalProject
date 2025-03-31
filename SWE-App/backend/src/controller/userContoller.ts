@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { AddNewUser, DeleteUser, GetUserID, AddUserInfo, GetUserInfo, GetUserEmail, UpdateUserInfo, GetOpenTicketByTicketID, CreateOpenTicket, GetOpenTicketByUserID, CreateClosedTicket, GetClosedTicket, CreateUserClosedTicket, GetUserClosedTicket, GetCarparkAddress, GetRate } from "./databaseControl";
 import { NewTicketNotification } from "./emailControl";
+import { addOpenTicketToServer, getOpenTicketByTicketID, getOpenTicketByUserID } from "./serverControl";
 
 export async function E_AddNewUser(req: Request, res:Response) : Promise<void> {
     const {userFirebaseID} = req.body;
@@ -148,7 +149,7 @@ export async function E_CreateOpenTicket(req: Request, res:Response) : Promise<v
                     ticketID: request
         }) 
 
-        await NewTicketNotification(request)
+        await NewTicketNotification(request).then(() => addOpenTicketToServer(request))
     }
 }
 
@@ -158,15 +159,18 @@ export async function E_GetOpenTicketByUserID(req: Request, res:Response) : Prom
     if (!userID) {
         res.status(400).json({ message: "userID is required." });
     }
-
-    const request = await GetOpenTicketByUserID(Number(userID as String))
-
-    if (request == null) res.status(500).json({message: "Failed to get open ticket."})
-    else {
-        res.status(200).json({
-                    message: "Open ticket sucessfully returned",
-                    openTicket: request
-        }) 
+    if (typeof userID === "string") {
+        const request = getOpenTicketByUserID(Number(userID))
+        console.log(request)
+        if (request == null) res.status(500).json({message: "Failed to get open ticket."})
+        else {
+            res.status(200).json({
+                        message: "Open ticket sucessfully returned",
+                        openTicket: request
+            }) 
+        }
+    } else {
+        res.status(500).json({message: "Failed to get open ticket."})
     }
 }
 
@@ -176,17 +180,19 @@ export async function E_GetOpenTicketByTicketID(req: Request, res:Response) : Pr
     if (!ticketID) {
         res.status(400).json({ message: "ticketID is required." });
     }
+    if (typeof ticketID === "string") {
+        
+        const request = getOpenTicketByTicketID(Number(ticketID))
 
-    console.log(Number(ticketID as String))
-
-    const request = await GetOpenTicketByTicketID(Number(ticketID as String))
-
-    if (request == null) res.status(500).json({message: "Failed to get open ticket."})
-    else {
-        res.status(200).json({
-                    message: "Open ticket sucessfully returned",
-                    openTicket: request
-        }) 
+        if (request == null) res.status(500).json({message: "Failed to get open ticket."})
+        else {
+            res.status(200).json({
+                        message: "Open ticket sucessfully returned",
+                        openTicket: request
+            }) 
+        }
+    } else {
+        res.status(500).json({message: "Failed to get open ticket."})
     }
 }
 

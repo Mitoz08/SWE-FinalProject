@@ -27,7 +27,8 @@ enum ColumnNames_App {
     licensePlate = "licensePlate",
     ticketStartTime = "ticketStartTime",
     ticketEndTime = "ticketEndTime",
-    actualEndTime = "actualEndTime"
+    actualEndTime = "actualEndTime",
+    notified = "notified"
 }
 
 enum TableNames_HDBInfo {

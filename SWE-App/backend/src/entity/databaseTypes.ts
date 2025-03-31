@@ -1,10 +1,20 @@
-export type OpenTickets = {
+export type OpenTicket = {
     "ticketID":number,
     "parkingLotID":string,
     "licensePlate":string,
     "ticketStartTime":Date,
     "ticketEndTime":Date,
-    "userID":number
+    "userID":number,
+    "notified":boolean
+}
+
+export type ClosedTicket = {
+    "ticketID":number,
+    "parkingLotID":string,
+    "licensePlate":string,
+    "ticketStartTime":Date,
+    "ticketEndTime":Date,
+    "actualEndTime":Date,
 }
 
 export type UserInformation = {

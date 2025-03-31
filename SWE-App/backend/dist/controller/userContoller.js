@@ -29,6 +29,7 @@ exports.E_GetCarparkAddress = E_GetCarparkAddress;
 exports.E_GetRate = E_GetRate;
 const databaseControl_1 = require("./databaseControl");
 const emailControl_1 = require("./emailControl");
+const serverControl_1 = require("./serverControl");
 function E_AddNewUser(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { userFirebaseID } = req.body;
@@ -162,7 +163,7 @@ function E_CreateOpenTicket(req, res) {
                 message: "Open ticket sucessfully created",
                 ticketID: request
             });
-            yield (0, emailControl_1.NewTicketNotification)(request);
+            yield (0, emailControl_1.NewTicketNotification)(request).then(() => (0, serverControl_1.addOpenTicketToServer)(request));
         }
     });
 }
@@ -172,14 +173,20 @@ function E_GetOpenTicketByUserID(req, res) {
         if (!userID) {
             res.status(400).json({ message: "userID is required." });
         }
-        const request = yield (0, databaseControl_1.GetOpenTicketByUserID)(Number(userID));
-        if (request == null)
-            res.status(500).json({ message: "Failed to get open ticket." });
+        if (typeof userID === "string") {
+            const request = (0, serverControl_1.getOpenTicketByUserID)(Number(userID));
+            console.log(request);
+            if (request == null)
+                res.status(500).json({ message: "Failed to get open ticket." });
+            else {
+                res.status(200).json({
+                    message: "Open ticket sucessfully returned",
+                    openTicket: request
+                });
+            }
+        }
         else {
-            res.status(200).json({
-                message: "Open ticket sucessfully returned",
-                openTicket: request
-            });
+            res.status(500).json({ message: "Failed to get open ticket." });
         }
     });
 }
@@ -189,15 +196,19 @@ function E_GetOpenTicketByTicketID(req, res) {
         if (!ticketID) {
             res.status(400).json({ message: "ticketID is required." });
         }
-        console.log(Number(ticketID));
-        const request = yield (0, databaseControl_1.GetOpenTicketByTicketID)(Number(ticketID));
-        if (request == null)
-            res.status(500).json({ message: "Failed to get open ticket." });
+        if (typeof ticketID === "string") {
+            const request = (0, serverControl_1.getOpenTicketByTicketID)(Number(ticketID));
+            if (request == null)
+                res.status(500).json({ message: "Failed to get open ticket." });
+            else {
+                res.status(200).json({
+                    message: "Open ticket sucessfully returned",
+                    openTicket: request
+                });
+            }
+        }
         else {
-            res.status(200).json({
-                message: "Open ticket sucessfully returned",
-                openTicket: request
-            });
+            res.status(500).json({ message: "Failed to get open ticket." });
         }
     });
 }
