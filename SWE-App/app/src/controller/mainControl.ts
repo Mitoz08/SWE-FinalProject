@@ -10,6 +10,7 @@ export function InitaliseUser(UserID:number) {
             method: "GET"
         }).then(res => res.json()).then((object) => {
             if (object.openTicket != null) mainEntity.setTicket(object.openTicket)
+                console.log(object.openTicketss)
         })
     } catch (error) {
         console.error("Fail to load user open ticket")

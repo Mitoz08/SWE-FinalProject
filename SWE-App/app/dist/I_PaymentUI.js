@@ -1,93 +1,93 @@
+
 import React, { useState } from "react";
-import { View, Text, Button, StyleSheet, TouchableOpacity } from "react-native";
-import { TextInput } from "react-native-gesture-handler";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import AntDesign from "@expo/vector-icons/Ionicons"
+import AntDesign from "@expo/vector-icons/Ionicons";
 import { ProcessPayment } from "./controller/paymentControl";
 
-
-
-
-export default function I_PaymentUI({navigation, route}) {
-
+export default function I_PaymentUI({ navigation, route }) {
     const { licensePlate, carparkType, carparkID, rate } = route.params;
 
-    const intervalTime = 30 
-    const [interval, setInterval] = useState(1)
-    const [max, setMax] = useState(false)
-    const [min, setMin] = useState(false)
-    const [paymentErrorMsg, setPaymentErrorMsg] = useState("")
-    
+    const intervalTime = 30;
+    const [interval, setInterval] = useState(1);
+    const [max, setMax] = useState(false);
+    const [min, setMin] = useState(false);
+    const [paymentErrorMsg, setPaymentErrorMsg] = useState("");
+
     const increase = () => {
         if (interval >= 48) {
-            setMax(true)
-            return false
+            setMax(true);
+            return false;
+        } else {
+            setMin(false);
+            setInterval(interval + 1);
+            return true;
         }
-        else {
-            setMin(false)
-            setInterval(interval + 1)
-            return true
-        }
-    }
+    };
 
     const decrease = () => {
-        if (interval == 1) {
-            setMin(true)
-            return false
+        if (interval === 1) {
+            setMin(true);
+            return false;
+        } else {
+            setMax(false);
+            setInterval(interval - 1);
+            return true;
         }
-        else {
-            setMax(false)
-            setInterval(interval - 1)
-            return true
-        }
-    }
+    };
 
     const showTime = () => {
-        hour = Math.floor((interval*intervalTime)/60)
-        mins = (interval*intervalTime)%60
-        return `${hour} Hr${hour > 1? "s":""} ${mins == 0? "00":mins} Mins`
-    }
-    
-    const showFee = () => {
-        if (carparkType == "M") return rate.toFixed(2);
-        else {
-            hour = Math.floor((interval*intervalTime)/60)
-            mins = (interval*intervalTime)%60
-            totalFee = (hour*2 + (mins/30))*rate
-            return Number(totalFee.toFixed(2)).toFixed(2)
-        }
-    }
+        const hour = Math.floor((interval * intervalTime) / 60);
+        const mins = (interval * intervalTime) % 60;
+        return `${hour} Hr${hour > 1 ? "s" : ""} ${mins === 0 ? "00" : mins} Mins`;
+    };
 
-    return(
+    const showFee = () => {
+        if (carparkType === "M") return rate.toFixed(2);
+        else {
+            const hour = Math.floor((interval * intervalTime) / 60);
+            const mins = (interval * intervalTime) % 60;
+            const totalFee = (hour * 2 + mins / 30) * rate;
+            return Number(totalFee.toFixed(2)).toFixed(2);
+        }
+    };
+
+    return (
         <SafeAreaProvider>
-            <SafeAreaView style= {styles.container}>
+            <SafeAreaView style={styles.container}>
                 <View style={styles.card}>
+                    <Image
+                        source={require('../../assets/payment_logo.png')}
+                        style={styles.logo}
+                    />
                     <Text style={styles.heading}>Parking Payment</Text>
                     <View style={styles.timeControl}>
-                        <AntDesign name="remove-circle" size={50} color={"007bff"} onPress={decrease} />
+                        <AntDesign name="remove-circle" size={50} color={"#007bff"} onPress={decrease} />
                         <Text style={styles.timeText}>{showTime()}</Text>
-                        <AntDesign name="add-circle" size={50} color={"007bff"} onPress={increase} />
+                        <AntDesign name="add-circle" size={50} color={"#007bff"} onPress={increase} />
                     </View>
-                    <Text style= {styles.error_msg}>
-                        {min? "Minimun duration is 30 mins": max? "Maximun duration is 24 hours": ""}
+                    <Text style={styles.errorMsg}>
+                        {min ? "Minimum duration is 30 mins" : max ? "Maximum duration is 24 hours" : ""}
                     </Text>
                     <Text style={styles.feeText}> Fee: ${showFee()}</Text>
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={styles.payButton}
-                        onPress={() => {ProcessPayment({
-                            carparkNo: carparkID,
-                            rate: rate,
-                            licensePlate: licensePlate,
-                            duration_hour: Math.floor((interval*intervalTime)/60),
-                            duration_min: (interval*intervalTime)%60
-                        }).then(reponse => reponse? navigation.navigate("I_SuccessfulUI"):setPaymentErrorMsg("Open Ticket already exist"))}}>
+                        onPress={() => {
+                            ProcessPayment({
+                                carparkNo: carparkID,
+                                rate: rate,
+                                licensePlate: licensePlate,
+                                duration_hour: Math.floor((interval * intervalTime) / 60),
+                                duration_min: (interval * intervalTime) % 60
+                            }).then(response => response ? navigation.navigate("I_SuccessfulUI") : setPaymentErrorMsg("Open Ticket already exists"));
+                        }}>
                         <Text style={styles.payButtonText}>Pay</Text>
                     </TouchableOpacity>
                     {paymentErrorMsg !== "" && <Text style={styles.errorMsg}>{paymentErrorMsg}</Text>}
                 </View>
             </SafeAreaView>
         </SafeAreaProvider>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
@@ -110,6 +110,12 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: "#ddd",
         alignItems: "center",
+    },
+    logo: {
+        width: 100,
+        height: 100,
+        resizeMode: 'contain',
+        marginBottom: 20,
     },
     heading: {
         fontSize: 22,

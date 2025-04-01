@@ -1,24 +1,37 @@
+
 import React, { useContext, useState } from "react";
-import { Text, StyleSheet, TouchableOpacity } from "react-native";
+import { Text, StyleSheet, TouchableOpacity, View, Image } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { AuthContext } from "./AuthContext";
 
 //AuB1
 function PasswordValidation(Password) {
-    
+    // Example validation: Password must be at least 8 characters long
+    return Password.length >= 8;
 }
 
 //AuB2
-function PasswordChecker(Password) {
-
+function PasswordChecker(Password, ConfirmPassword) {
+    // Check if password and confirm password match
+    return Password === ConfirmPassword;
 }
 
 // You can put all the method calls in this function or just put it in the onPress arrow function
-function OnSignUp(Email,Password,ConfirmPassword) {
+function OnSignUp(Email, Password, ConfirmPassword) {
     //AuB1,
     //AuB2,
     //AuC2
+
+    // Validate password and confirm password
+    if (!PasswordValidation(Password)) {
+        alert("Password must be at least 8 characters long.");
+        return false;
+    }
+    if (!PasswordChecker(Password, ConfirmPassword)) {
+        alert("Passwords do not match.");
+        return false;
+    }
 
     // Returns true if sign up is successful to toggle main page
     return true;
@@ -34,6 +47,10 @@ export default function I_SignUp({navigation}) {
     return(
         <SafeAreaProvider>
             <SafeAreaView>
+                <Image
+                    source={require('../../assets/carpark_logo.png')}
+                    style={styles.image}
+                />
                 <TextInput
                     style={styles.input}
                     onChangeText={setEmail}
@@ -45,22 +62,24 @@ export default function I_SignUp({navigation}) {
                     onChangeText={setPassword}
                     value={Password}
                     placeholder="Password"
+                    secureTextEntry={true}
                 />
                 <TextInput
                     style={styles.input}
                     onChangeText={setConfirmPassword}
                     value={ConfirmPassword}
                     placeholder="Confirm Password"
+                    secureTextEntry={true}
                 />
                 <TouchableOpacity 
                     style={styles.button}   
                     onPress={() => {OnSignUp(Email,Password,ConfirmPassword)? setIsLoggedIn(true) : setIsLoggedIn(false)}}>
-                    <Text>Sign Up</Text>
+                    <Text style={styles.buttonText}> Sign Up</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.button}
                     onPress={() => {navigation.navigate("I_Login")}}>
-                    <Text>Login here</Text>
+                    <Text style={styles.buttonText}>Login here</Text>
                 </TouchableOpacity>
             </SafeAreaView>
         </SafeAreaProvider>
@@ -68,11 +87,19 @@ export default function I_SignUp({navigation}) {
 }
 
 const styles = StyleSheet.create({
+    image: {
+        width: '100%',
+        height: 200,
+        resizeMode: 'contain',
+        marginBottom: 20,
+    },
     input: {
-        height: 40,
-        margin: 12,
+        height: 80, // Match the button's height
+        margin: 10, // Match the button's margin
         borderWidth: 1,
-        padding: 10,
+        paddingVertical: 20, // Match the button's vertical padding
+        paddingHorizontal: 15, // Match the button's horizontal padding
+        borderRadius: 10,
     },
     button: {
         margin: 10,
@@ -86,4 +113,10 @@ const styles = StyleSheet.create({
         shadowRadius: 3,
         elevation: 5,
     },
-  });
+    buttonText: {
+        color: "#fff",
+        fontSize: 18, // Increased font size for better readability
+        fontWeight: "bold",
+        textAlign: "center",
+    },
+});
