@@ -1,6 +1,8 @@
+
 import { initializeApp } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { InitialiseUser } from "./mainControl";
+
 const firebaseConfig = {
     apiKey: "AIzaSyCZ8d70lgoVj-RgxMqskNHeAiMalBXNO78",
     authDomain: "my-expo-app-aa62e.firebaseapp.com",
@@ -83,5 +85,6 @@ export function VerifySignUp(FirstName, LastName, Phone, Email, Password) {
             alert('Unable to create User.');
         }
     });
+
     return valid;
 }
