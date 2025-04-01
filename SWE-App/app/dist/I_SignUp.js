@@ -46,10 +46,10 @@ export default function I_SignUp({navigation}) {
     
     return(
         <SafeAreaProvider>
-            <SafeAreaView>
+            <SafeAreaView style={styles.container}>
                 <Image
                     source={require('../../assets/carpark_logo.png')}
-                    style={styles.image}
+                    style={styles.logo}
                 />
                 <TextInput
                     style={styles.input}
@@ -87,19 +87,25 @@ export default function I_SignUp({navigation}) {
 }
 
 const styles = StyleSheet.create({
-    image: {
-        width: '100%',
-        height: 200,
-        resizeMode: 'contain',
+    logo: {
+        width: 300, // Adjust width as needed
+        height: 300, // Adjust height as needed
         marginBottom: 20,
+    },
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
     },
     input: {
         height: 80, // Match the button's height
         margin: 10, // Match the button's margin
         borderWidth: 1,
         paddingVertical: 20, // Match the button's vertical padding
-        paddingHorizontal: 15, // Match the button's horizontal padding
+        paddingHorizontal: 10, // Match the button's horizontal padding
         borderRadius: 10,
+        textAlign: "left",
     },
     button: {
         margin: 10,
