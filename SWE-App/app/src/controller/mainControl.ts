@@ -2,7 +2,7 @@ import { mainEntity } from "../entity/mainEntity";
 
 
 // MC1
-export function InitaliseUser(UserID:number) {
+export function InitialiseUser(UserID:number) {
     // ME1 - Add user ID/ information into the entity
     
     try {

@@ -47,7 +47,7 @@ export default function I_PaymentUI({navigation, route}) {
         mins = (interval*intervalTime)%60
         return `${hour} Hr${hour > 1? "s":""} ${mins == 0? "00":mins} Mins`
     }
-    
+
     const showFee = () => {
         if (carparkType == "M") return rate.toFixed(2);
         else {
@@ -72,7 +72,7 @@ export default function I_PaymentUI({navigation, route}) {
                         {min? "Minimun duration is 30 mins": max? "Maximun duration is 24 hours": ""}
                     </Text>
                     <Text style={styles.feeText}> Fee: ${showFee()}</Text>
-                    <TouchableOpacity 
+                <TouchableOpacity
                         style={styles.payButton}
                         onPress={() => {ProcessPayment({
                             carparkNo: carparkID,
@@ -82,7 +82,7 @@ export default function I_PaymentUI({navigation, route}) {
                             duration_min: (interval*intervalTime)%60
                         }).then(reponse => reponse? navigation.navigate("I_SuccessfulUI"):setPaymentErrorMsg("Open Ticket already exist"))}}>
                         <Text style={styles.payButtonText}>Pay</Text>
-                    </TouchableOpacity>
+                </TouchableOpacity>
                     {paymentErrorMsg !== "" && <Text style={styles.errorMsg}>{paymentErrorMsg}</Text>}
                 </View>
             </SafeAreaView>
@@ -151,4 +151,4 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: "bold",
     },
-});
+  });
