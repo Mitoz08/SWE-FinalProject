@@ -3,7 +3,7 @@ import { Text, StyleSheet, TouchableOpacity } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { AuthContext } from "./AuthContext";
-import { VerifySignUp } from "./authenticationControl";
+import { VerifySignUp } from "./controller/authenticationControl";
 
 //AuB1
 function PasswordValidation(Password1, Password2) {
@@ -42,7 +42,7 @@ function PasswordChecker(Password) {
     if(score < 4){
         return false;
     }
-
+    return true;
 }
 
 // You can put all the method calls in this function or just put it in the onPress arrow function
@@ -50,9 +50,15 @@ function OnSignUp(FirstName, LastName, Phone, Email, Password, ConfirmPassword) 
     
     //AuB1,
     if(PasswordValidation(Password, ConfirmPassword)){
+        //AuB2
         if(PasswordChecker(Password)){
+            //AuC2
+            console.log("In Password Checker")
             if(VerifySignUp(FirstName, LastName, Phone, Email, Password)){
+                console.log("Sign Up Successful")
                 return true
+            } else {
+                console.log("Sign Up Unsuccessful")
             }
         }
     }

@@ -1,5 +1,5 @@
 import { mainEntity } from "../entity/mainEntity";
-export function InitaliseUser(UserID) {
+export function InitialiseUser(UserID) {
     try {
         fetch(`http://localhost:3000/OpenTicket/UserID?userID=${UserID}`, {
             method: "GET"

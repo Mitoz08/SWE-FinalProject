@@ -175,9 +175,12 @@ function E_GetOpenTicketByUserID(req, res) {
         }
         if (typeof userID === "string") {
             const request = (0, serverControl_1.getOpenTicketByUserID)(Number(userID));
-            console.log(request);
-            if (request == null)
-                res.status(500).json({ message: "Failed to get open ticket." });
+            if (request == null) {
+                res.status(200).json({
+                    message: "Open ticket does not exsist",
+                    openTicket: {}
+                });
+            }
             else {
                 res.status(200).json({
                     message: "Open ticket sucessfully returned",

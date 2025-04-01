@@ -19,16 +19,16 @@ const app = initializeApp(firebaseConfig)
 const auth = getAuth()
 const db = getFirestore()
 
-export const SignUpMethod = ( Email:string, Password:string ): Promise<string> => {
+export const SignUpMethod = async ( Email:string, Password:string ): Promise<string> => {
     const firebaseID = createUserWithEmailAndPassword(auth,Email,Password).then((userCredential) => {
         return userCredential.user.uid;
     })
-    return firebaseID;
+    return await firebaseID;
 }
 
-export const SignInMethod = ( Email:string, Password:string ): Promise<string> => {
+export const SignInMethod = async ( Email:string, Password:string ): Promise<string> => {
     const firebaseID = signInWithEmailAndPassword(auth,Email,Password).then((userCredential) => {
         return userCredential.user.uid;
     })
-    return firebaseID;
+    return await firebaseID;
 }
