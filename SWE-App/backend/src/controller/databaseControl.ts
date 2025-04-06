@@ -289,7 +289,7 @@ export async function UpdateUserInfo(object:any) : Promise<boolean|null> {
     if (res === null) {
         return ErrorMsg_MySQL();
     }
-    if (res.affectedRows) {
+    if (res.affectedRows === 0) {
         return ErrorMsg_NoEntry();
     }
     
