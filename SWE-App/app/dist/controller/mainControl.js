@@ -1,6 +1,12 @@
 import { mainEntity } from "../entity/mainEntity";
 export function InitialiseUser(UserID) {
     try {
+        fetch(`http://localhost:3000/UserInfo`, {
+            method: "GET"
+        }).then(res => res.json()).then((object) => {
+            if (object.userInfo != null)
+                mainEntity.setUserInformation(object.userInfo);
+        });
         fetch(`http://localhost:3000/OpenTicket/UserID?userID=${UserID}`, {
             method: "GET"
         }).then(res => res.json()).then((object) => {

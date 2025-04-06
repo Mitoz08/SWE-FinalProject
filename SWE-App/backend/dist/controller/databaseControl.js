@@ -107,6 +107,7 @@ function AddUserInfo(object) {
             console.error("Email does not follow the right regex");
             return null;
         }
+        console.log(object);
         const res = yield (0, databaseAccess_1.Create)(databaseAccess_1.TableNames_App.UserInformation, {
             [databaseAccess_1.ColumnNames_App.userID]: userID,
             [databaseAccess_1.ColumnNames_App.userEmail]: userEmail,

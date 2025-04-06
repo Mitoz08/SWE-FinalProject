@@ -46,7 +46,7 @@ function PasswordChecker(Password) {
 }
 
 // You can put all the method calls in this function or just put it in the onPress arrow function
-function OnSignUp(FirstName, LastName, Phone, Email, Password, ConfirmPassword) {
+async function OnSignUp(FirstName, LastName, Phone, Email, Password, ConfirmPassword) {
     
     //AuB1,
     if(PasswordValidation(Password, ConfirmPassword)){
@@ -54,7 +54,7 @@ function OnSignUp(FirstName, LastName, Phone, Email, Password, ConfirmPassword) 
         if(PasswordChecker(Password)){
             //AuC2
             console.log("In Password Checker")
-            if(VerifySignUp(FirstName, LastName, Phone, Email, Password)){
+            if(await VerifySignUp(FirstName, LastName, Phone, Email, Password)){
                 console.log("Sign Up Successful")
                 return true
             } else {
@@ -117,7 +117,7 @@ export default function I_SignUp({navigation}) {
                 />
                 <TouchableOpacity 
                     style={styles.button}   
-                    onPress={() => {OnSignUp(FirstName, LastName, Phone, Email,Password,ConfirmPassword)? setIsLoggedIn(true) : setIsLoggedIn(false)}}>
+                    onPress={() => {OnSignUp(FirstName, LastName, Phone, Email,Password,ConfirmPassword).then((res) => {res? setIsLoggedIn(true) : setIsLoggedIn(false)})}}>
                     <Text>Sign Up</Text>
                 </TouchableOpacity>
                 <TouchableOpacity

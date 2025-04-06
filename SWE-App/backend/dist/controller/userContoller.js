@@ -35,6 +35,7 @@ function E_AddNewUser(req, res) {
         const { userFirebaseID } = req.body;
         if (!userFirebaseID) {
             res.status(400).json({ message: "userFirebaseID is required." });
+            return;
         }
         const request = yield (0, databaseControl_1.AddNewUser)(userFirebaseID);
         if (request == null)
@@ -52,6 +53,7 @@ function E_GetUserID(req, res) {
         const { userFirebaseID } = req.query;
         if (!userFirebaseID) {
             res.status(400).json({ message: "userFirebaseID is required." });
+            return;
         }
         const request = yield (0, databaseControl_1.GetUserID)(userFirebaseID);
         if (request == null)
@@ -69,6 +71,7 @@ function E_DeleteUser(req, res) {
         const { userID } = req.body;
         if (!userID) {
             res.status(400).json({ message: "userID is required." });
+            return;
         }
         const request = yield (0, databaseControl_1.DeleteUser)(userID);
         if (request == null)
@@ -86,6 +89,7 @@ function E_AddUserInfo(req, res) {
         const object = req.body;
         if (!object) {
             res.status(400).json({ message: "object is required." });
+            return;
         }
         const request = yield (0, databaseControl_1.AddUserInfo)(object);
         if (request == null)
@@ -103,6 +107,7 @@ function E_GetUserInfo(req, res) {
         const { userID } = req.query;
         if (!userID) {
             res.status(400).json({ message: "userID is required." });
+            return;
         }
         const request = yield (0, databaseControl_1.GetUserInfo)(Number(userID));
         if (request == null)
@@ -120,6 +125,7 @@ function E_GetUserEmail(req, res) {
         const { userID } = req.query;
         if (!userID) {
             res.status(400).json({ message: "userID is required." });
+            return;
         }
         const request = yield (0, databaseControl_1.GetUserEmail)(Number(userID));
         if (request == null)
@@ -137,6 +143,7 @@ function E_UpdateUserInfo(req, res) {
         const object = req.body;
         if (!object) {
             res.status(400).json({ message: "object is required." });
+            return;
         }
         const request = yield (0, databaseControl_1.UpdateUserInfo)(object);
         if (request == null)
@@ -154,6 +161,7 @@ function E_CreateOpenTicket(req, res) {
         const object = req.body;
         if (!object) {
             res.status(400).json({ message: "object is required." });
+            return;
         }
         const request = yield (0, databaseControl_1.CreateOpenTicket)(object);
         if (request == null)
@@ -172,6 +180,7 @@ function E_GetOpenTicketByUserID(req, res) {
         const { userID } = req.query;
         if (!userID) {
             res.status(400).json({ message: "userID is required." });
+            return;
         }
         if (typeof userID === "string") {
             const request = (0, serverControl_1.getOpenTicketByUserID)(Number(userID));
@@ -198,6 +207,7 @@ function E_GetOpenTicketByTicketID(req, res) {
         const { ticketID } = req.query;
         if (!ticketID) {
             res.status(400).json({ message: "ticketID is required." });
+            return;
         }
         if (typeof ticketID === "string") {
             const request = (0, serverControl_1.getOpenTicketByTicketID)(Number(ticketID));
@@ -220,6 +230,7 @@ function E_UpdateOpenTicketEndTime(req, res) {
         const object = req.body;
         if (!object) {
             res.status(400).json({ message: "object is required." });
+            return;
         }
         const request = yield (0, databaseControl_1.GetOpenTicketByTicketID)(object);
         if (request == null)
@@ -237,6 +248,7 @@ function E_DeleteOpenTicket(req, res) {
         const { ticketID } = req.body;
         if (!ticketID) {
             res.status(400).json({ message: "ticketID is required." });
+            return;
         }
         const request = yield (0, databaseControl_1.GetOpenTicketByTicketID)(ticketID);
         if (request == null)
@@ -254,6 +266,7 @@ function E_CreateClosedTicket(req, res) {
         const object = req.body;
         if (!object) {
             res.status(400).json({ message: "object is required." });
+            return;
         }
         const request = yield (0, databaseControl_1.CreateClosedTicket)(object);
         if (request == null)
@@ -271,6 +284,7 @@ function E_GetClosedTicket(req, res) {
         const { ticketID } = req.query;
         if (!ticketID) {
             res.status(400).json({ message: "ticketID is required." });
+            return;
         }
         const request = yield (0, databaseControl_1.GetClosedTicket)(Number(ticketID));
         if (request == null)
@@ -288,6 +302,7 @@ function E_CreateUserClosedTicket(req, res) {
         const object = req.body;
         if (!object) {
             res.status(400).json({ message: "object is required." });
+            return;
         }
         const request = yield (0, databaseControl_1.CreateUserClosedTicket)(object);
         if (request == null)
