@@ -10,6 +10,8 @@ import I_Availability from "./app/dist/I_Availability";
 import I_PaymentUI from "./app/dist/I_PaymentUI";
 import I_SuccessfulUI from "./app/dist/I_SuccessfulUI";
 import I_ViewTickets from "./app/dist/I_ViewTickets";
+import I_ViewProfile from "./app/dist/I_ViewProfile";
+import I_EditProfile from "./app/dist/I_EditProfile";
 
 
 const Stack = createStackNavigator();
@@ -58,6 +60,8 @@ const MainStack = () => {
 		<Stack.Screen name="I_PaymentUI" component={I_PaymentUI}/>
 		<Stack.Screen name="I_SuccessfulUI" component={I_SuccessfulUI}/>
 		<Stack.Screen name="I_ViewTickets" component={I_ViewTickets}/>
+		<Stack.Screen name="I_ViewProfile" component={I_ViewProfile}/>
+		<Stack.Screen name="I_EditProfile" component={I_EditProfile}/>
 	</Stack.Navigator>
 	)
 }

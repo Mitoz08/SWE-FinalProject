@@ -118,12 +118,12 @@ export default function I_SignUp({navigation}) {
                 <TouchableOpacity 
                     style={styles.button}   
                     onPress={() => {OnSignUp(FirstName, LastName, Phone, Email,Password,ConfirmPassword).then((res) => {res? setIsLoggedIn(true) : setIsLoggedIn(false)})}}>
-                    <Text>Sign Up</Text>
+                    <Text style={styles.buttonText}>Sign Up</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.button}
                     onPress={() => {navigation.navigate("I_Login")}}>
-                    <Text>Login here</Text>
+                    <Text style={styles.buttonText}>Login here</Text>
                 </TouchableOpacity>
             </SafeAreaView>
         </SafeAreaProvider>
@@ -148,5 +148,11 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.3,
         shadowRadius: 3,
         elevation: 5,
+    },
+    buttonText: {
+        color: "#fff",
+        fontSize: 18,
+        fontWeight: "bold",
+        textAlign: "center",
     },
   });
