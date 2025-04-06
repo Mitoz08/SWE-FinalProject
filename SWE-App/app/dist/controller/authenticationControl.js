@@ -1,4 +1,4 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp, FirebaseError } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { InitialiseUser } from "./mainControl";
 const firebaseConfig = {
@@ -11,77 +11,101 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const auth = getAuth();
-export function VerifyLogin(Email, Password) {
-    let valid = false;
-    signInWithEmailAndPassword(auth, Email, Password)
-        .then(async (userCredential) => {
-        const user = userCredential.user;
-        const firebaseId = user.uid;
-        fetch(`http://localhost:3000/UserID?userFirebaseID=${firebaseId}`, { method: "GET" }).then(res => res.json()).then((data) => {
-            const { userID } = data;
-            InitialiseUser(userID);
-            valid = true;
-        }).catch((error) => {
-            console.error(error);
-        });
-    })
-        .catch((error) => {
-        const errorCode = error.code;
-        if (errorCode === 'auth/invalid-credential') {
-            alert('Incorrect Email or Password');
+export async function VerifyLogin(Email, Password) {
+    let user;
+    let firebaseId;
+    try {
+        const userCredential = await signInWithEmailAndPassword(auth, Email, Password);
+        user = userCredential.user;
+        firebaseId = user.uid;
+    }
+    catch (error) {
+        if (error instanceof FirebaseError) {
+            const errorCode = error.code;
+            if (errorCode === 'auth/invalid-credential') {
+                alert('Incorrect Email or Password');
+                return false;
+            }
+            else {
+                alert('Account Does Not Exist');
+                return false;
+            }
         }
         else {
-            alert('Account Does Not Exist');
+            alert('An unknown error occurred.');
+            return false;
         }
-    });
-    return valid;
+    }
+    try {
+        const res = await fetch(`http://localhost:3000/UserID?userFirebaseID=${firebaseId}`, { method: "GET" });
+        const { userID } = await res.json();
+        InitialiseUser(userID);
+        return true;
+    }
+    catch (error) {
+        console.log(error);
+    }
 }
-export function VerifySignUp(FirstName, LastName, Phone, Email, Password) {
-    let valid = false;
-    createUserWithEmailAndPassword(auth, Email, Password)
-        .then((userCredential) => {
-        const user = userCredential.user;
-        const firebaseId = user.uid;
-        fetch(`http://localhost:3000/UserID`, {
+export async function VerifySignUp(FirstName, LastName, Phone, Email, Password) {
+    let user;
+    let firebaseId;
+    try {
+        const userCredential = await createUserWithEmailAndPassword(auth, Email, Password);
+        user = userCredential.user;
+        firebaseId = user.uid;
+    }
+    catch (error) {
+        if (error instanceof FirebaseError) {
+            const errorCode = error.code;
+            if (errorCode === 'auth/email-already-in-use') {
+                alert('Email Address Already In Use!');
+                return false;
+            }
+            else {
+                alert('Unable to create User.');
+                return false;
+            }
+        }
+        else {
+            alert('An unknown error occurred.');
+            return false;
+        }
+    }
+    let object;
+    try {
+        const res = await fetch(`http://localhost:3000/UserID`, {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({userFirebaseID:firebaseId})
-        }).then(res => res.json()).then((data) => {
-            const { userID } = data;
-            const object = {
-                userID: userID,
-                userEmail: Email,
-                firstName: FirstName,
-                lastName: LastName,
-                userPhoneNo: Phone
-            };
-            fetch(`http://localhost:3000/UserInfo`, {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(object)
-            }).then(res => res.json()).then((data) => {
-                if (!data.userInfo) {
-                    throw new Error("Fail to add user information");
-                }
-                else {
-                    InitialiseUser(userID);
-                    valid = true;
-                }
-            });
-        }).catch((error) => console.log(error));
-    })
-        .catch((error) => {
-        const errorCode = error.code;
-        if (errorCode == 'auth/email-already-in-use') {
-            alert('Email Address Already In Use!');
+            body: JSON.stringify({ userFirebaseID: firebaseId })
+        });
+        const { userID } = await res.json();
+        object = {
+            userID: userID,
+            userEmail: Email,
+            firstName: FirstName,
+            lastName: LastName,
+            userPhoneNo: Phone
+        };
+        const res1 = await fetch(`http://localhost:3000/UserInfo`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(object)
+        });
+        const data = await res1.json();
+        if (!data.userInfo) {
+            throw new Error("Fail to add user information");
         }
         else {
-            alert('Unable to create User.');
+            console.log("Initialising user");
+            InitialiseUser(object.userID);
+            return true;
         }
-    });
-    return valid;
+    }
+    catch (error) {
+        console.log(error);
+    }
 }

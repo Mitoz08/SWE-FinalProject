@@ -14,15 +14,15 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth();
 const db = getFirestore();
-export const SignUpMethod = (Email, Password) => {
+export const SignUpMethod = async (Email, Password) => {
     const firebaseID = createUserWithEmailAndPassword(auth, Email, Password).then((userCredential) => {
         return userCredential.user.uid;
     });
-    return firebaseID;
+    return await firebaseID;
 };
-export const SignInMethod = (Email, Password) => {
+export const SignInMethod = async (Email, Password) => {
     const firebaseID = signInWithEmailAndPassword(auth, Email, Password).then((userCredential) => {
         return userCredential.user.uid;
     });
-    return firebaseID;
+    return await firebaseID;
 };

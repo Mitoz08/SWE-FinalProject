@@ -8,6 +8,7 @@ export async function E_AddNewUser(req: Request, res:Response) : Promise<void> {
 
     if (!userFirebaseID) {
         res.status(400).json({ message: "userFirebaseID is required." });
+        return;
     }
 
     const request = await AddNewUser(userFirebaseID)
@@ -27,6 +28,7 @@ export async function E_GetUserID(req: Request, res:Response) : Promise<void> {
 
     if (!userFirebaseID) {
         res.status(400).json({ message: "userFirebaseID is required." });
+        return;
     }
 
     const request = await GetUserID(userFirebaseID as string)
@@ -45,6 +47,7 @@ export async function E_DeleteUser(req: Request, res:Response) : Promise<void> {
 
     if (!userID) {
         res.status(400).json({ message: "userID is required." });
+        return;
     }
 
     const request = await DeleteUser(userID)
@@ -63,6 +66,7 @@ export async function E_AddUserInfo(req: Request, res:Response) : Promise<void> 
 
     if (!object) {
         res.status(400).json({ message: "object is required." });
+        return;
     }
 
     const request = await AddUserInfo(object)
@@ -82,6 +86,7 @@ export async function E_GetUserInfo(req: Request, res:Response) : Promise<void> 
 
     if (!userID) {
         res.status(400).json({ message: "userID is required." });
+        return;
     }
 
     const request = await GetUserInfo(Number(userID as String))
@@ -101,6 +106,7 @@ export async function E_GetUserEmail(req: Request, res:Response) : Promise<void>
 
     if (!userID) {
         res.status(400).json({ message: "userID is required." });
+        return;
     }
 
     const request = await GetUserEmail(Number(userID as String))
@@ -120,6 +126,7 @@ export async function E_UpdateUserInfo(req: Request, res:Response) : Promise<voi
 
     if (!object) {
         res.status(400).json({ message: "object is required." });
+        return;
     }
 
     const request = await UpdateUserInfo(object)
@@ -138,6 +145,7 @@ export async function E_CreateOpenTicket(req: Request, res:Response) : Promise<v
 
     if (!object) {
         res.status(400).json({ message: "object is required." });
+        return;
     }
 
     const request = await CreateOpenTicket(object)
@@ -158,6 +166,7 @@ export async function E_GetOpenTicketByUserID(req: Request, res:Response) : Prom
 
     if (!userID) {
         res.status(400).json({ message: "userID is required." });
+        return;
     }
     if (typeof userID === "string") {
         const request = getOpenTicketByUserID(Number(userID))
@@ -182,6 +191,7 @@ export async function E_GetOpenTicketByTicketID(req: Request, res:Response) : Pr
 
     if (!ticketID) {
         res.status(400).json({ message: "ticketID is required." });
+        return;
     }
     if (typeof ticketID === "string") {
         
@@ -204,6 +214,7 @@ export async function E_UpdateOpenTicketEndTime(req: Request, res:Response) : Pr
 
     if (!object) {
         res.status(400).json({ message: "object is required." });
+        return;
     }
 
     const request = await GetOpenTicketByTicketID(object)
@@ -222,6 +233,7 @@ export async function E_DeleteOpenTicket(req: Request, res:Response) : Promise<v
 
     if (!ticketID) {
         res.status(400).json({ message: "ticketID is required." });
+        return;
     }
 
     const request = await GetOpenTicketByTicketID(ticketID)
@@ -240,6 +252,7 @@ export async function E_CreateClosedTicket(req: Request, res:Response) : Promise
 
     if (!object) {
         res.status(400).json({ message: "object is required." });
+        return;
     }
 
     const request = await CreateClosedTicket(object)
@@ -260,6 +273,7 @@ export async function E_GetClosedTicket(req: Request, res:Response) : Promise<vo
 
     if (!ticketID) {
         res.status(400).json({ message: "ticketID is required." });
+        return;
     }
 
     const request = await GetClosedTicket(Number(ticketID as String))
@@ -278,6 +292,7 @@ export async function E_CreateUserClosedTicket(req: Request, res:Response) : Pro
 
     if (!object) {
         res.status(400).json({ message: "object is required." });
+        return;
     }
 
     const request = await CreateUserClosedTicket(object)

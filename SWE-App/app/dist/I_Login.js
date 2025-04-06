@@ -28,7 +28,7 @@ export default function I_Login({navigation}){
                 />
                 <TouchableOpacity 
                     style= {styles.button}
-                    onPress={() => {VerifyLogin(Email,Password)? setIsLoggedIn(true):setIsLoggedIn(false) }}>
+                    onPress={() => {VerifyLogin(Email,Password).then((res) => {res ? setIsLoggedIn(true):setIsLoggedIn(false)})}}>
                     <Text>Login</Text>
                 </TouchableOpacity>
                 <TouchableOpacity

@@ -178,7 +178,7 @@ export async function AddUserInfo( object:any ) : Promise<boolean|null> {
         console.error("Email does not follow the right regex")
         return null;
     }
-    
+    console.log(object)
     const res = await Create(TableNames_App.UserInformation, 
         {
             [ColumnNames_App.userID] : userID,
