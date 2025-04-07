@@ -78,7 +78,10 @@ export default function I_SignUp({navigation}) {
     
     return(
         <SafeAreaProvider>
-            <SafeAreaView>
+            <SafeAreaView style={styles.container}>
+                <Image
+                    source={require('../../assets/carpark_logo.png')}
+                    style={styles.logo}
                 <TextInput
                     style={styles.input}
                     onChangeText={setFirstName}
@@ -131,11 +134,26 @@ export default function I_SignUp({navigation}) {
 }
 
 const styles = StyleSheet.create({
+
+    logo: {
+        width: 300, // Adjust width as needed
+        height: 300, // Adjust height as needed
+        marginBottom: 20,
+    },
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 20,
+    },
     input: {
         height: 40,
         margin: 12,
         borderWidth: 1,
-        padding: 10,
+        paddingVertical: 20, // Match the button's vertical padding
+        paddingHorizontal: 10, // Match the button's horizontal padding
+        borderRadius: 10,
+        textAlign: "left",
     },
     button: {
         margin: 10,
