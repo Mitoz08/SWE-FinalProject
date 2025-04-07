@@ -40,10 +40,12 @@ const AuthStack = () => {
 	return(
 	<Stack.Navigator initialRouteName="I_SignUp">
 		<Stack.Screen 
+		options={{headerShown: false}}
 		name="I_Login" 
 		component={I_Login}
 		/> 
 		<Stack.Screen 
+		options={{headerShown: false}}
 		name="I_SignUp" 
 		component={I_SignUp}
 		/>
