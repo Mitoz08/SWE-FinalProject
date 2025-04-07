@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Text, StyleSheet, TouchableOpacity } from "react-native";
+import { Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { AuthContext } from "./AuthContext";
@@ -81,7 +81,7 @@ export default function I_SignUp({navigation}) {
             <SafeAreaView style={styles.container}>
                 <Image
                     source={require('../../assets/carpark_logo.png')}
-                    style={styles.logo}
+                    style={styles.logo}/>
                 <TextInput
                     style={styles.input}
                     onChangeText={setFirstName}
