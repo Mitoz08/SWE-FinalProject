@@ -21,7 +21,7 @@ export default function I_MainPage({navigation}) {
                 </TouchableOpacity>
                 <TouchableOpacity 
                     style={styles.button}   
-                    onPress={() => {}}>
+                    onPress={() => {navigation.navigate("I_ViewProfile")}}>
                     <Text style={styles.buttonText}>View Profile</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 

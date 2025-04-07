@@ -5,8 +5,8 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { VerifyLogin } from "../src/controller/authenticationControl";
 import { AuthContext } from "./AuthContext";
 export default function I_Login({navigation}){
-    const [Email, setEmail] = useState("");
-    const [Password, setPassword] = useState("");
+    const [Email, setEmail] = useState("wildontan2002@gmail.com");
+    const [Password, setPassword] = useState("Qwer1234!");
     
     const {setIsLoggedIn} = useContext(AuthContext)
 
@@ -32,7 +32,7 @@ export default function I_Login({navigation}){
                 <TouchableOpacity 
                     style= {styles.button}
                     onPress={() => {VerifyLogin(Email,Password).then((res) => {res ? setIsLoggedIn(true):setIsLoggedIn(false)})}}>
-                    <Text>Login</Text>
+                    <Text style={styles.buttonText}>Login</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style= {styles.button}
