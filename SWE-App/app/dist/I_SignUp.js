@@ -1,43 +1,75 @@
-
 import React, { useContext, useState } from "react";
-import { Text, StyleSheet, TouchableOpacity, View, Image } from "react-native";
+import { Text, StyleSheet, TouchableOpacity } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { AuthContext } from "./AuthContext";
+import { VerifySignUp } from "./controller/authenticationControl";
 
 //AuB1
-function PasswordValidation(Password) {
-    // Example validation: Password must be at least 8 characters long
-    return Password.length >= 8;
+function PasswordValidation(Password1, Password2) {
+    const result = (Password1 === Password2) ? 1 : 0;
+    return result
 }
 
 //AuB2
-function PasswordChecker(Password, ConfirmPassword) {
-    // Check if password and confirm password match
-    return Password === ConfirmPassword;
-}
+function PasswordChecker(Password) {
+    //Driver Code Starts{
+    const levels = {
+        1: "Very Weak",
+        2: "Weak",
+        3: "Medium",
+        4: "Strong",
+    };
 
-// You can put all the method calls in this function or just put it in the onPress arrow function
-function OnSignUp(Email, Password, ConfirmPassword) {
-    //AuB1,
-    //AuB2,
-    //AuC2
-
-    // Validate password and confirm password
-    if (!PasswordValidation(Password)) {
-        alert("Password must be at least 8 characters long.");
-        return false;
-    }
-    if (!PasswordChecker(Password, ConfirmPassword)) {
-        alert("Passwords do not match.");
-        return false;
+    if (Password.length > 15) {
+        alert(Password + " - Too lengthy");
+        return(false);
+    } else if (Password.length < 8) {
+        alert(Password + " - Too short");
+        return(false);
     }
 
-    // Returns true if sign up is successful to toggle main page
+    const checks = [
+        /[a-z]/,     // Lowercase
+        /[A-Z]/,     // Uppercase
+        /\d/,        // Digit
+        /[@.#$!%^&*.?]/ // Special character
+    ];
+    let score = checks.reduce((acc, rgx) => acc + rgx.test(Password), 0);
+
+    console.log(Password + " - " + levels[score]);
+
+    if(score < 4){
+        return false;
+    }
     return true;
 }
 
+// You can put all the method calls in this function or just put it in the onPress arrow function
+async function OnSignUp(FirstName, LastName, Phone, Email, Password, ConfirmPassword) {
+    
+    //AuB1,
+    if(PasswordValidation(Password, ConfirmPassword)){
+        //AuB2
+        if(PasswordChecker(Password)){
+            //AuC2
+            console.log("In Password Checker")
+            if(await VerifySignUp(FirstName, LastName, Phone, Email, Password)){
+                console.log("Sign Up Successful")
+                return true
+            } else {
+                console.log("Sign Up Unsuccessful")
+            }
+        }
+    }
+    
+    return false;
+}
+
 export default function I_SignUp({navigation}) {
+    const [FirstName, setFirstName] = useState("");
+    const [LastName, setLastName] = useState("");
+    const [Phone, setPhone] = useState("");
     const [Email, setEmail] = useState("");
     const [Password, setPassword] = useState("");
     const [ConfirmPassword, setConfirmPassword] = useState("");
@@ -50,6 +82,23 @@ export default function I_SignUp({navigation}) {
                 <Image
                     source={require('../../assets/carpark_logo.png')}
                     style={styles.logo}
+                <TextInput
+                    style={styles.input}
+                    onChangeText={setFirstName}
+                    value={FirstName}
+                    placeholder="First Name"
+                />
+                <TextInput
+                    style={styles.input}
+                    onChangeText={setLastName}
+                    value={LastName}
+                    placeholder="Last Name"
+                />
+                <TextInput
+                    style={styles.input}
+                    onChangeText={setPhone}
+                    value={Phone}
+                    placeholder="Phone No."
                 />
                 <TextInput
                     style={styles.input}
@@ -62,19 +111,17 @@ export default function I_SignUp({navigation}) {
                     onChangeText={setPassword}
                     value={Password}
                     placeholder="Password"
-                    secureTextEntry={true}
                 />
                 <TextInput
                     style={styles.input}
                     onChangeText={setConfirmPassword}
                     value={ConfirmPassword}
                     placeholder="Confirm Password"
-                    secureTextEntry={true}
                 />
                 <TouchableOpacity 
                     style={styles.button}   
-                    onPress={() => {OnSignUp(Email,Password,ConfirmPassword)? setIsLoggedIn(true) : setIsLoggedIn(false)}}>
-                    <Text style={styles.buttonText}> Sign Up</Text>
+                    onPress={() => {OnSignUp(FirstName, LastName, Phone, Email,Password,ConfirmPassword).then((res) => {res? setIsLoggedIn(true) : setIsLoggedIn(false)})}}>
+                    <Text style={styles.buttonText}>Sign Up</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.button}
@@ -87,6 +134,7 @@ export default function I_SignUp({navigation}) {
 }
 
 const styles = StyleSheet.create({
+
     logo: {
         width: 300, // Adjust width as needed
         height: 300, // Adjust height as needed
@@ -99,8 +147,8 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     input: {
-        height: 80, // Match the button's height
-        margin: 10, // Match the button's margin
+        height: 40,
+        margin: 12,
         borderWidth: 1,
         paddingVertical: 20, // Match the button's vertical padding
         paddingHorizontal: 10, // Match the button's horizontal padding
@@ -121,8 +169,8 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         color: "#fff",
-        fontSize: 18, // Increased font size for better readability
+        fontSize: 18,
         fontWeight: "bold",
         textAlign: "center",
     },
-});
+  });

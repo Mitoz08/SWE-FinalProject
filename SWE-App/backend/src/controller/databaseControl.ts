@@ -178,7 +178,7 @@ export async function AddUserInfo( object:any ) : Promise<boolean|null> {
         console.error("Email does not follow the right regex")
         return null;
     }
-    
+    console.log(object)
     const res = await Create(TableNames_App.UserInformation, 
         {
             [ColumnNames_App.userID] : userID,
@@ -289,7 +289,7 @@ export async function UpdateUserInfo(object:any) : Promise<boolean|null> {
     if (res === null) {
         return ErrorMsg_MySQL();
     }
-    if (res.affectedRows) {
+    if (res.affectedRows === 0) {
         return ErrorMsg_NoEntry();
     }
     

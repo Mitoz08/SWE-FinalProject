@@ -4,9 +4,6 @@ import { mainEntity } from "../entity/mainEntity";
 export async function ProcessPayment(createTicketDetails: CreateTicketDetails) {
     const ticketStartTime =  new Date()
     const ticketEndTime = new Date(new Date().setMinutes(ticketStartTime.getMinutes()+createTicketDetails.duration_hour*60 + createTicketDetails.duration_min))
-    console.log(ticketStartTime)
-    console.log(ticketEndTime)
-
     // Get UserID
     const parameter = {
         parkingLotID: createTicketDetails.carparkNo,

@@ -1,5 +1,5 @@
 import { serverEntity } from "../entity/serverEntity";
-import { GetOpenTicket, GetOpenTicketByTicketID } from "./databaseControl";
+import { AddNewUser, GetOpenTicket, GetOpenTicketByTicketID } from "./databaseControl";
 import expiryInitialiser from "./expiryControl";
 
 
@@ -11,7 +11,6 @@ export default async function serverInitialiser() {
     console.log(serverEntity.getTicket())
     // Call the expiry function
     expiryInitialiser()
-
 }
 
 export function getOpenTicketByTicketID(ticketID:number) {

@@ -2,14 +2,12 @@ import { mainEntity } from "../entity/mainEntity";
 export async function ProcessPayment(createTicketDetails) {
     const ticketStartTime = new Date();
     const ticketEndTime = new Date(new Date().setMinutes(ticketStartTime.getMinutes() + createTicketDetails.duration_hour * 60 + createTicketDetails.duration_min));
-    console.log(ticketStartTime);
-    console.log(ticketEndTime);
     const parameter = {
         parkingLotID: createTicketDetails.carparkNo,
         licensePlate: createTicketDetails.licensePlate,
         ticketStartTime: ticketStartTime,
         ticketEndTime: ticketEndTime,
-        userID: 4
+        userID: 1
     };
     try {
         var response = await fetch(`http://localhost:3000/OpenTicket`, {

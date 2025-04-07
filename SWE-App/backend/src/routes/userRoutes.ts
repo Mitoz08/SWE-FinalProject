@@ -1,5 +1,5 @@
 import Express, { Request, Response } from 'express';
-import { E_AddNewUser, E_AddUserInfo, E_CreateClosedTicket, E_CreateOpenTicket, E_CreateUserClosedTicket, E_DeleteOpenTicket, E_DeleteUser, E_GetCarparkAddress, E_GetClosedTicket, E_GetOpenTicketByTicketID, E_GetOpenTicketByUserID, E_GetRate, E_GetUserClosedTicket, E_GetUserID, E_UpdateOpenTicketEndTime, E_UpdateUserInfo } from '../controller/userContoller';
+import { E_AddNewUser, E_AddUserInfo, E_CreateClosedTicket, E_CreateOpenTicket, E_CreateUserClosedTicket, E_DeleteOpenTicket, E_DeleteUser, E_GetCarparkAddress, E_GetClosedTicket, E_GetOpenTicketByTicketID, E_GetOpenTicketByUserID, E_GetRate, E_GetUserClosedTicket, E_GetUserEmail, E_GetUserID, E_GetUserInfo, E_UpdateOpenTicketEndTime, E_UpdateUserInfo } from '../controller/userContoller';
 
 const router = Express.Router();
 
@@ -11,9 +11,9 @@ router.delete("/UserID", E_DeleteUser)
 
 router.post("/UserInfo", E_AddUserInfo)
 
-router.get("/UserInfo", E_GetUserID)
+router.get("/UserInfo", E_GetUserInfo)
 
-router.get("/UserInfo/Email", E_GetUserID)
+router.get("/UserInfo/Email", E_GetUserEmail)
 
 router.put("/UserInfo", E_UpdateUserInfo)
 
