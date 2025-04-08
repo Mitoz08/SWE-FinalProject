@@ -1,7 +1,7 @@
 import { mainEntity } from "../entity/mainEntity";
 export function InitialiseUser(UserID) {
     try {
-        fetch(`http://localhost:3000/UserInfo`, {
+        fetch(`http://localhost:3000/UserInfo?userID=${UserID}`, {
             method: "GET"
         }).then(res => res.json()).then((object) => {
             if (object.userInfo != null)

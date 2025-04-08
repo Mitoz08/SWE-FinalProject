@@ -11,7 +11,8 @@ const firebaseConfig = {
     appId: "1:118705503114:web:e429be09cb899d9ddaa673"
 };
 const app = initializeApp(firebaseConfig);
-const auth = getAuth();
+const auth = getAuth(app);
+
 export async function VerifyLogin(Email, Password) {
     let user;
     let firebaseId;
