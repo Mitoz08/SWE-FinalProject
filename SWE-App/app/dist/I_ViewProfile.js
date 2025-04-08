@@ -7,7 +7,7 @@ import { AuthContext } from "./AuthContext";
 export default function I_ViewProfile({ navigation }) {
     const { isLoggedIn } = useContext(AuthContext);
     const [userProfile, setUserProfile] = useState({
-        id: 0,
+        id: mainEntity.getUserID(),
         name: "",
         email: "",
         phoneNumber: "",
@@ -25,7 +25,7 @@ export default function I_ViewProfile({ navigation }) {
             try {
                 // Fetch user profile data
                 // Replace with your actual API endpoint to fetch user profile
-                const response = await fetch("http://localhost:3000/UserInfo?userID="+2, { 
+                const response = await fetch("http://localhost:3000/UserInfo?userID=" + mainEntity.getUserID(), {
                     method: "GET",
                     // Add authentication headers if needed
                 });
