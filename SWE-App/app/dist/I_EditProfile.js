@@ -1,11 +1,12 @@
 
-import React, { useContext, useState, useEffect, useLocation } from "react";
+import React, { useContext, useState } from "react";
 import { Text, StyleSheet, TouchableOpacity, View, ScrollView } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { TextInput } from "react-native-gesture-handler";
 import { AuthContext } from "./AuthContext";
+import { mainEntity } from './entity/mainEntity';
 
-export default function I_EditProfile({ route, navigation }) {
+export default function I_EditProfile({ navigation }) {
     const { isLoggedIn } = useContext(AuthContext);
 
     // Check if user is logged in
@@ -14,40 +15,37 @@ export default function I_EditProfile({ route, navigation }) {
         return;
     }
 
-    const { userProfile } = route.params;
-    const splittedName = userProfile.name.split(" ");
-    const [firstName, setFirstName] = useState(splittedName[0] || "");
-    const [lastName, setLastName] = useState(splittedName[1] || "");
-    const [email, setEmail] = useState(userProfile.email);
-    const [phoneNo, setPhoneNo] = useState(userProfile.phoneNumber);
-
-    console.log("[userProfile]", userProfile);
+    const [firstName, setFirstName] = useState(mainEntity.getUserFirstName());
+    const [lastName, setLastName] = useState(mainEntity.getUserLastName());
+    const [email, setEmail] = useState(mainEntity.getUserEmail());
+    const [phoneNo, setPhoneNo] = useState(mainEntity.getUserPhoneNo());
 
     const handleUpdateProfile = async () => {
-        // Update user profile to server
-        const name = `${firstName} ${lastName}`;
-        console.log(`TODO: handle update profile (${name}, ${email}, ${phoneNo})`);
-        //const {userID, userEmail, firstName, lastName, userPhoneNo} = object;
-        const object = {
-            userID: userProfile.id,
-            userEmail: userProfile.email,
+        const userInfo = {
+            userID: mainEntity.getUserID(),
+            userEmail: email,
             firstName: firstName,
             lastName: lastName,
             userPhoneNo: phoneNo
         };
-        console.log('[DEBUG]', object)
-
         try {
-            const res1 = await fetch(`http://localhost:3000/UserInfo`, {
+            // Update user info to server
+            const updateUserInfoRes = await fetch(`http://localhost:3000/UserInfo`, {
                 method: "PUT",
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(object)
+                body: JSON.stringify(userInfo)
             });
+            if (updateUserInfoRes.status !== 200) {
+                console.log("error: something went wrong updating user info");
+            }
+            // Update `mainEntity`
+            mainEntity.setUserInformation(userInfo);
         } catch (error) {
-            console.log("error updating user info", error)
+            console.log("error updating user info", error);
         }
+        navigation.navigate("I_ViewProfile")
     };
 
     return (
