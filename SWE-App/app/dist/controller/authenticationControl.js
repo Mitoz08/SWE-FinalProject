@@ -72,6 +72,7 @@ export async function VerifySignUp(FirstName, LastName, Phone, Email, Password) 
             return false;
         }
     }
+
     let object;
     try {
         const res = await fetch(`http://localhost:3000/UserID`, {
