@@ -1,6 +1,5 @@
-import React, {useContext} from "react";
-import { View, Text, Button, StyleSheet, TouchableOpacity } from "react-native";
-import { TextInput } from "react-native-gesture-handler";
+import React, { useContext } from "react";
+import { Text, StyleSheet, TouchableOpacity } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { AuthContext } from "./AuthContext";
 
