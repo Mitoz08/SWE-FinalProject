@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Text, Button, StyleSheet, LinearGradient, View, TouchableOpacity } from "react-native";
+import { Text, StyleSheet, View, TouchableOpacity } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { mainEntity } from "../src/entity/mainEntity";
-import { add, format } from "date-fns";
 
 export default function I_ViewTickets({navigation}) {
     const ticket = mainEntity.getTicket()
