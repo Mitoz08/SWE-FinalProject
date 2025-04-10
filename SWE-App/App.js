@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { AuthContext, AuthProvider } from "./app/dist/AuthContext";
@@ -12,6 +12,7 @@ import I_SuccessfulUI from "./app/dist/I_SuccessfulUI";
 import I_ViewTickets from "./app/dist/I_ViewTickets";
 import I_ViewProfile from "./app/dist/I_ViewProfile";
 import I_EditProfile from "./app/dist/I_EditProfile";
+import { Platform } from 'react-native';
 
 
 const Stack = createStackNavigator();
@@ -36,6 +37,11 @@ const LoginSwitch = () => {
 }
 
 const AuthStack = () => {
+	useEffect(() => {
+		if (Platform.OS === 'web') {
+			document.body.style.overflow = 'auto';
+		}
+	}, []);
 
 	return(
 	<Stack.Navigator initialRouteName="I_SignUp">

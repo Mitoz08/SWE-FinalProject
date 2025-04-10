@@ -1,13 +1,40 @@
 
 import React, { useContext, useState } from "react";
-import { Text, StyleSheet, TouchableOpacity, View, ScrollView } from "react-native";
+import { Text, StyleSheet, TouchableOpacity, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { TextInput } from "react-native-gesture-handler";
 import { AuthContext } from "./AuthContext";
 import { mainEntity } from './entity/mainEntity';
 
+function ConfirmationModal({ isOpen, title, message, onConfirm, onCancel }) {
+    if (!isOpen) {
+        return null;
+    }
+
+    return (
+        <View style={styles.modalBackdrop}>
+            <View style={styles.modalBox}>
+                <Text style={styles.modalTitle}>{title}</Text>
+                <Text style={styles.modalDescription}>{message}</Text>
+                <View style={styles.modalButtons}>
+                    <TouchableOpacity
+                        onPress={onConfirm}
+                        style={styles.confirmButton}>
+                        <Text style={styles.buttonText}>Confirm</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={onCancel}
+                        style={styles.modalButton}>
+                        <Text style={styles.buttonText}>Cancel</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </View>
+    );
+}
+
 export default function I_EditProfile({ navigation }) {
-    const { isLoggedIn } = useContext(AuthContext);
+    const { isLoggedIn, setIsLoggedIn } = useContext(AuthContext);
 
     // Check if user is logged in
     if (!isLoggedIn) {
@@ -20,7 +47,16 @@ export default function I_EditProfile({ navigation }) {
     const [email, setEmail] = useState(mainEntity.getUserEmail());
     const [phoneNo, setPhoneNo] = useState(mainEntity.getUserPhoneNo());
 
-    const handleUpdateProfile = async () => {
+    const [showConfirmation, setShowConfirmation] = useState(false);
+
+    const handleUpdateProfile = async (prompt, logout = false) => {
+        // If prompt is true, and if we're updating email
+        if (prompt && email !== mainEntity.getUserEmail()) {
+            // Display confirmation prompt
+            setShowConfirmation(true);
+            return
+        }
+
         const userInfo = {
             userID: mainEntity.getUserID(),
             userEmail: email,
@@ -45,65 +81,74 @@ export default function I_EditProfile({ navigation }) {
         } catch (error) {
             console.log("error updating user info", error);
         }
-        navigation.navigate("I_ViewProfile")
+        if (logout) {
+            setIsLoggedIn(false);
+        } else {
+            navigation.goBack()
+        }
     };
 
     return (
         <SafeAreaProvider>
             <SafeAreaView style={styles.container}>
-                <ScrollView contentContainerStyle={styles.scrollContainer}>
-                    <View style={styles.profileHeader}>
-                        <Text style={styles.headerTitle}>First Name</Text>
-                        <TextInput
-                            style={styles.input}
-                            onChangeText={setFirstName}
-                            value={firstName}
-                            placeholder="FirstName"
-                        />
+                <ConfirmationModal
+                    isOpen={showConfirmation}
+                    title="Confirm Delete"
+                    message="You will be logged out when changing your email. Are you sure?"
+                    onConfirm={() => handleUpdateProfile(false, true)}
+                    onCancel={() => setShowConfirmation(false)}
+                />
+                <View style={styles.profileHeader}>
+                    <Text style={styles.headerTitle}>First Name</Text>
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={setFirstName}
+                        value={firstName}
+                        placeholder="FirstName"
+                    />
 
-                        <Text style={styles.headerTitle}>Last Name</Text>
+                    <Text style={styles.headerTitle}>Last Name</Text>
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={setLastName}
+                        value={lastName}
+                        placeholder="LastName"
+                    />
+                </View>
+
+                <View style={styles.profileDetails}>
+                    <View style={styles.profileItem}>
+                        <Text style={styles.itemLabel}>Email:</Text>
                         <TextInput
                             style={styles.input}
-                            onChangeText={setLastName}
-                            value={lastName}
-                            placeholder="LastName"
+                            onChangeText={setEmail}
+                            value={email}
+                            placeholder="Email"
                         />
                     </View>
 
-                    <View style={styles.profileDetails}>
-                        <View style={styles.profileItem}>
-                            <Text style={styles.itemLabel}>Email:</Text>
-                            <TextInput
-                                style={styles.input}
-                                onChangeText={setEmail}
-                                value={email}
-                                placeholder="Email"
-                            />
-                        </View>
-                        
-                        <View style={styles.profileItem}>
-                            <Text style={styles.itemLabel}>Phone Number:</Text>
-                            <TextInput
-                                style={styles.input}
-                                onChangeText={setPhoneNo}
-                                value={phoneNo}
-                                placeholder="PhoneNo"
-                            />
-                        </View>
+                    <View style={styles.profileItem}>
+                        <Text style={styles.itemLabel}>Phone Number:</Text>
+                        <TextInput
+                            style={styles.input}
+                            onChangeText={setPhoneNo}
+                            value={phoneNo}
+                            placeholder="PhoneNo"
+                        />
                     </View>
+                </View>
 
-                    <TouchableOpacity 
-                        style={styles.button}
-                        onPress={handleUpdateProfile}>
-                        <Text style={styles.buttonText}>Save Profile</Text>
-                    </TouchableOpacity>
-                    
-                    <TouchableOpacity 
-                        style={styles.button}
-                        onPress={() => navigation.goBack()}>
-                        <Text style={styles.buttonText}>Back</Text>
-                    </TouchableOpacity>
-                </ScrollView>
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => handleUpdateProfile(true)}>
+                    <Text style={styles.buttonText}>Save Profile</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => navigation.goBack()}>
+                    <Text style={styles.buttonText}>Back</Text>
+                </TouchableOpacity>
             </SafeAreaView>
         </SafeAreaProvider>
     );
@@ -112,11 +157,6 @@ export default function I_EditProfile({ navigation }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    },
-    scrollContainer: {
-        flexGrow: 1,
-        alignItems: 'center',
-        padding: 20,
     },
     profileHeader: {
         alignItems: 'center',
@@ -132,10 +172,6 @@ const styles = StyleSheet.create({
     profileName: {
         fontSize: 24,
         fontWeight: 'bold',
-    },
-    loadingText: {
-        fontSize: 18,
-        marginVertical: 20,
     },
     profileDetails: {
         width: '100%',
@@ -182,5 +218,53 @@ const styles = StyleSheet.create({
         paddingVertical: 20,
         paddingHorizontal: 15,
         borderRadius: 10,
+    },
+    modalBackdrop: {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'rgba(0, 0, 0, 0.4)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 999,
+    },
+    modalBox: {
+        backgroundColor: '#ffffff',
+        padding: '20px',
+        borderRadius: '12px',
+        minWidth: '300px',
+        textAlign: 'center',
+    },
+    modalTitle: {
+        textAlign: 'center',
+        fontSize: '2em',
+    },
+    modalDescription: {
+        textAlign: 'center',
+        fontSize: '1em',
+        color: '#666666',
+        marginTop: '10px',
+    },
+    modalButtons: {
+        marginTop: '15px',
+        display: 'flex',
+        justifyContent: 'space-around',
+    },
+    modalButton: {
+        backgroundColor: "#4682b4",
+        color: '#ffffff',
+        borderRadius: 5,
+        paddingVertical: 15,
+        margin: 10,
+    },
+    confirmButton: {
+        backgroundColor: '#ff0000',
+        color: '#ffffff',
+        borderRadius: 5,
+        paddingVertical: 15,
+        margin: 10,
     },
 });
