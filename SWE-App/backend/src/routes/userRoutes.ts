@@ -1,5 +1,5 @@
 import Express, { Request, Response } from 'express';
-import { E_AddNewUser, E_AddUserInfo, E_CreateClosedTicket, E_CreateOpenTicket, E_CreateUserClosedTicket, E_DeleteOpenTicket, E_DeleteUser, E_GetCarparkAddress, E_GetClosedTicket, E_GetOpenTicketByTicketID, E_GetOpenTicketByUserID, E_GetRate, E_GetUserClosedTicket, E_GetUserEmail, E_GetUserID, E_GetUserInfo, E_UpdateOpenTicketEndTime, E_UpdateUserInfo } from '../controller/userContoller';
+import { E_AddNewUser, E_AddUserInfo, E_ClosedTicket, E_CreateOpenTicket, E_CreateUserClosedTicket, E_DeleteUser, E_GetCarparkAddress, E_GetClosedTicket, E_GetOpenTicketByTicketID, E_GetOpenTicketByUserID, E_GetRate, E_GetUserClosedTicket, E_GetUserEmail, E_GetUserID, E_GetUserInfo, E_UpdateOpenTicketEndTime, E_UpdateUserInfo } from '../controller/userContoller';
 
 const router = Express.Router();
 
@@ -25,9 +25,9 @@ router.get("/OpenTicket/TicketID", E_GetOpenTicketByTicketID)
 
 router.put("/OpenTicket", E_UpdateOpenTicketEndTime)
 
-router.delete("/OpenTicket", E_DeleteOpenTicket)
+// router.delete("/OpenTicket", E_DeleteOpenTicket)
 
-router.post("/ClosedTicket", E_CreateClosedTicket)
+router.post("/ClosedTicket", E_ClosedTicket)
 
 router.get("/ClosedTicket", E_GetClosedTicket)
 

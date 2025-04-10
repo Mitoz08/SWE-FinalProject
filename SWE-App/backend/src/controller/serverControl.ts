@@ -1,14 +1,14 @@
 import { serverEntity } from "../entity/serverEntity";
-import { CreateOpenTicket, GetOpenTicket, GetOpenTicketByTicketID, UpdateOpenTicketEndTime } from "./databaseControl";
+import dataBaseControl from "./databaseControl";
 import expiryInitialiser from "./expiryControl";
 
 export default class serverControl {
     static async serverInitialiser() {
-        const res = await GetOpenTicket()
+        const res = await dataBaseControl.GetOpenTicket()
     
-        if(res != null) serverEntity.setTickets(await res)
+        if(res != null) serverEntity.setTickets(res)
         
-        console.log(serverEntity.getTicket())
+        // console.log(serverEntity.getTicket())
         // Call the expiry function
         expiryInitialiser()
     }
@@ -16,34 +16,34 @@ export default class serverControl {
     static getOpenTicketByTicketID(ticketID:number) {
         for (const ticket of serverEntity.getTicket()){
             if (ticket.ticketID == ticketID) return ticket;
-            return null;
         }
+        return null
     }
 
     static getOpenTicketByUserID(userID:number) {
         for (const ticket of serverEntity.getTicket()){
             if (ticket.userID == userID) return ticket;
-            return null;
         }
+        return null
     }
 
 
     static async createOpenTicket(object:any ) {
-        const res = CreateOpenTicket(object).then((res) => {
-            if (res == null) console.error("Server fail to create open ticket")
-            return res;
-        })
-        return await res;
+        // console.log("creating open ticket")
+        const res = await dataBaseControl.CreateOpenTicket(object)
+        if (res == null) console.error("Server fail to create open ticket")
+        return res;
     }
 
-    static addOpenTicketToServer(ticketID:number) {
-        GetOpenTicketByTicketID(ticketID).then((res) => {
-            if (res == null) console.error("Server fail to retrieve open ticket")
-            else {
-                serverEntity.addTicket(res)
-                console.log("New Ticket Added to server")
-            }
-        })
+    static async addOpenTicketToServer(ticketID:number) {
+        // console.log("Adding open ticket")
+        const res = await dataBaseControl.GetOpenTicketByTicketID(ticketID)
+
+        if (res == null) console.error("Server fail to retrieve open ticket")
+        else {
+            serverEntity.addTicket(res)
+            console.log("New Ticket Added to server")
+        }
     }
 
     static async updateOpenTicketEndTime(object: any) {
@@ -54,16 +54,16 @@ export default class serverControl {
             console.error("Incorrect data passed into update open ticket")
             return false;
         }
-        const res = UpdateOpenTicketEndTime(object).then((res) => {
+        const res = dataBaseControl.UpdateOpenTicketEndTime(object).then((res) => {
             if (!res) console.error("Server failed to update database open ticket")
             else {
                 const ticket = serverControl.getOpenTicketByTicketID(ticketID)
-                console.log(serverControl.getOpenTicketByTicketID(ticketID))
+                // console.log(serverControl.getOpenTicketByTicketID(ticketID))
                 if (!ticket) console.error("Open ticket does not exist in server")
                 else{
-                    console.log(newEndTime)
+                    // console.log(newEndTime)
                     ticket.ticketEndTime = newEndTime
-                    console.log(serverControl.getOpenTicketByTicketID(ticketID))
+                    // console.log(serverControl.getOpenTicketByTicketID(ticketID))
                     return true;
                 }
             }
@@ -72,6 +72,50 @@ export default class serverControl {
 
         return await res;
     }
+
+    static async closeTicket(object:any) {
+
+        const {ticketID, closeTime} = object
+
+        if (!ticketID || !closeTime) {
+            console.error("Incorrect data passed into update open ticket")
+            return false;
+        }
+
+        const ticket = serverControl.getOpenTicketByTicketID(ticketID);
+
+        if (!ticket) {
+            console.error("No existing open ticket")
+            return false;
+        }
+
+        (ticket as any).actualEndTime = closeTime
+
+        let res = await dataBaseControl.CreateClosedTicket(ticket)
+        
+        if (!res) {
+            console.error("Fail to create closed ticket")
+            return false;
+        }
+
+        res = await dataBaseControl.CreateUserClosedTicket(ticket)
+
+        if (!res) {
+            console.error("Fail to create user closed ticket")
+            return false;
+        }
+
+        res = await dataBaseControl.DeleteOpenTicket(ticket.ticketID)
+
+        if (!res) {
+            console.error("Fail to delete open ticket")
+            return false;
+        }
+
+        return true;
+
+    }
+
 
 }
 

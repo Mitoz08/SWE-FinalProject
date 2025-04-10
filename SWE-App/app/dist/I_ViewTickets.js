@@ -9,7 +9,7 @@ export default function I_ViewTickets({navigation}) {
   const [address, setAddress] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showAddTimeModal, setAddTimeModal] = useState(false);
-
+  const [showCloseTicketModal, setCloseTicketModal] = useState(false);
 
   useEffect(() => {
     async function fetchTicket() {
@@ -24,10 +24,10 @@ export default function I_ViewTickets({navigation}) {
         setLoading(false);
       }
     }
-    if (!showAddTimeModal){
+    if (!showAddTimeModal || !showCloseTicketModal){
       fetchTicket();
     }
-  }, [showAddTimeModal]);
+  }, [showAddTimeModal, showCloseTicketModal]);
 
   if (loading) {
     return (
@@ -66,7 +66,7 @@ export default function I_ViewTickets({navigation}) {
                   <TouchableOpacity style={styles.button} onPress={() => {setAddTimeModal(true)}}>
                     <Text style={styles.buttonText}>Add Time</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.button} onPress={() => {console.log("Close Ticket")}}>
+                  <TouchableOpacity style={styles.button} onPress={() => {setCloseTicketModal(true)}}>
                     <Text style={styles.buttonText}>Close Ticket</Text>
                   </TouchableOpacity>
                 </View>
@@ -75,11 +75,15 @@ export default function I_ViewTickets({navigation}) {
                 <Text style={styles.buttonText}>Back to Main Page</Text>
             </TouchableOpacity>
             <AddTimeModal 
-              ticketID= {ticket.ticketID}
+              ticketID = {ticket.ticketID}
               endTime = {ticket.ticketEndTime} 
               showModal = {showAddTimeModal} 
               setShowModal = {setAddTimeModal}/>
-
+            <CloseTicketModal
+              ticket = {ticket}
+              showModal = {showCloseTicketModal}
+              setShowModal = {setCloseTicketModal}
+              />
           </SafeAreaView>
       </SafeAreaProvider>
 
@@ -131,7 +135,7 @@ const AddTimeModal = ({ticketID, endTime, showModal, setShowModal}) => {
     if (processing) return
     setProcessing(true)
     viewTicketControl.addTime(ticketID, newEndTime)
-      .then(res => {
+      .then((res) => {
         if (res) {
           setTimeout(() => {
             setShowModal(false)
@@ -181,6 +185,70 @@ const AddTimeModal = ({ticketID, endTime, showModal, setShowModal}) => {
     </Modal>
   )
 }
+
+const CloseTicketModal = ({ticket, showModal, setShowModal}) => {
+
+  const [processing, setProcessing] = useState(false)
+
+  const ticketID = ticket.ticketID
+  const ticketStartTime = new Date(ticket.ticketStartTime)
+  const ticketEndTime = new Date(ticket.ticketEndTime)
+  const currentTime = new Date()
+  currentTime.setHours(currentTime.getHours() + 8)
+  const duration = (currentTime - ticketStartTime)/(60*60*1000)
+  const totalHalfHours = Math.ceil(duration * 2); 
+  const hours = Math.floor(totalHalfHours / 2);
+  const mins = totalHalfHours % 2 === 0 ? 0 : 30;
+
+  const handleConfirm = () => {
+    if (processing) return
+    setProcessing(true)
+    viewTicketControl.closeTicket(ticketID, currentTime)
+      .then((res) => {
+        console.log(res)
+        if (res) {
+          setTimeout(() => {
+            setShowModal(false)
+          }, 1000);
+        } else {
+          console.log("Error closing ticket in I_ViewTickets")
+        }
+      })
+      .finally(() => {
+        setProcessing(false)
+      })
+  }
+
+  return (
+    <Modal
+    visible={showModal}
+    transparent={true}
+    animationType="slide"
+    onRequestClose={() => setShowModal(false)}>
+      <View style={styles.modalBackground}>
+        <View style={styles.modalContainer}>
+          <Text style={styles.modalText}>Start Time: {ticketStartTime.toISOString().replace("T", " ").substr(0,19)}</Text>
+          <Text style={styles.modalText}>End Time: {ticketEndTime.toISOString().replace("T", " ").substr(0,19)}</Text>
+          <Text style={styles.modalText}>Current Time: {currentTime.toISOString().replace("T", " ").substr(0,19)}</Text>
+          <Text style={styles.modalText}>Time Charged: {hours} Hr{hours > 1? "s":""} {mins == 0? "00":mins} Mins</Text>
+          <Text style={styles.modalText}>Do you want to proceed?</Text>
+          <TouchableOpacity
+            style={[styles.button, processing && styles.disabledButton]} 
+            onPress={handleConfirm}
+            disabled={processing} 
+          >
+            <Text style={styles.buttonText}>Comfirm</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.button} onPress={() => setShowModal(false)}>
+            <Text style={styles.buttonText}>Cancel</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  )
+}
+
 
 const styles = StyleSheet.create({
   container: {

@@ -1,5 +1,5 @@
 import { emailSender } from "../boundary/emailAccess";
-import { dateToString, GetCarparkAddress, GetOpenTicketByTicketID, GetUserEmail } from "./databaseControl.js";
+import dataBaseControl from "./databaseControl";
 import serverControl from "./serverControl";
 
 
@@ -15,9 +15,9 @@ export async function NewTicketNotification(ticketID:number) {
 `Dear Customer,
 
     You have create a new ticket with ID: ${ticketID}.\n
-    The Carpark is ${await GetCarparkAddress(res.parkingLotID)}
+    The Carpark is ${await dataBaseControl.GetCarparkAddress(res.parkingLotID)}
     The ticket ends on ${new Date(res.ticketEndTime)}.`
-    const email = await GetUserEmail(res.userID)
+    const email = await dataBaseControl.GetUserEmail(res.userID)
     if (email == null) {
         console.error(`No existing email found for user ID: ${res.userID}`);
         return false;
@@ -37,9 +37,9 @@ export async function ExpiryNotification(ticketID:number) {
 `Dear Customer,
 
     You have ticket that is expiring soon. Ticket ID: ${ticketID}.
-    The Carpark is ${await GetCarparkAddress(res.parkingLotID)}
+    The Carpark is ${await dataBaseControl.GetCarparkAddress(res.parkingLotID)}
     The ticket ends on ${new Date(res.ticketEndTime)}.`
-    const email = await GetUserEmail(res.userID)
+    const email = await dataBaseControl.GetUserEmail(res.userID)
     if (email == null) {
         console.error(`No existing email found for user ID: ${res.userID}`);
         return false;

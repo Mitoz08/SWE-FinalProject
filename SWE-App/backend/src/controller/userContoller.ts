@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { AddNewUser, DeleteUser, GetUserID, AddUserInfo, GetUserInfo, GetUserEmail, UpdateUserInfo, GetOpenTicketByTicketID, CreateOpenTicket, GetOpenTicketByUserID, CreateClosedTicket, GetClosedTicket, CreateUserClosedTicket, GetUserClosedTicket, GetCarparkAddress, GetRate, UpdateOpenTicketEndTime } from "./databaseControl";
+import dataBaseControl from "./databaseControl";
 import { NewTicketNotification } from "./emailControl";
 import serverControl from "./serverControl";
 
@@ -11,7 +11,7 @@ export async function E_AddNewUser(req: Request, res:Response) : Promise<void> {
         return;
     }
 
-    const request = await AddNewUser(userFirebaseID)
+    const request = await dataBaseControl.AddNewUser(userFirebaseID)
 
     if (request == null) res.status(500).json({message: "Failed to add new user."})
     else {
@@ -31,7 +31,7 @@ export async function E_GetUserID(req: Request, res:Response) : Promise<void> {
         return;
     }
 
-    const request = await GetUserID(userFirebaseID as string)
+    const request = await dataBaseControl.GetUserID(userFirebaseID as string)
     if (request == null) res.status(500).json({message: "Failed to get user ID."})
     else {
         res.status(200).json({
@@ -50,7 +50,7 @@ export async function E_DeleteUser(req: Request, res:Response) : Promise<void> {
         return;
     }
 
-    const request = await DeleteUser(userID)
+    const request = await dataBaseControl.DeleteUser(userID)
     if (request == null) res.status(500).json({message: "Failed to delete user ID."})
     else {
         res.status(200).json({
@@ -69,7 +69,7 @@ export async function E_AddUserInfo(req: Request, res:Response) : Promise<void> 
         return;
     }
 
-    const request = await AddUserInfo(object)
+    const request = await dataBaseControl.AddUserInfo(object)
 
     if (request == null) res.status(500).json({message: "Failed to add new user information."})
     else {
@@ -89,7 +89,7 @@ export async function E_GetUserInfo(req: Request, res:Response) : Promise<void> 
         return;
     }
 
-    const request = await GetUserInfo(Number(userID as String))
+    const request = await dataBaseControl.GetUserInfo(Number(userID as String))
 
     if (request == null) res.status(500).json({message: "Failed to get user information."})
     else {
@@ -109,7 +109,7 @@ export async function E_GetUserEmail(req: Request, res:Response) : Promise<void>
         return;
     }
 
-    const request = await GetUserEmail(Number(userID as String))
+    const request = await dataBaseControl.GetUserEmail(Number(userID as String))
 
     if (request == null) res.status(500).json({message: "Failed to get user email."})
     else {
@@ -129,7 +129,7 @@ export async function E_UpdateUserInfo(req: Request, res:Response) : Promise<voi
         return;
     }
 
-    const request = await UpdateUserInfo(object)
+    const request = await dataBaseControl.UpdateUserInfo(object)
 
     if (request == null) res.status(500).json({message: "Failed to get user email."})
     else {
@@ -148,16 +148,18 @@ export async function E_CreateOpenTicket(req: Request, res:Response) : Promise<v
         return;
     }
 
+
     const request = await serverControl.createOpenTicket(object)
 
     if (request == null) res.status(500).json({message: "Failed to create open ticket."})
     else {
-        res.status(201).json({
-                    message: "Open ticket sucessfully created",
-                    ticketID: request
-        }) 
+        await serverControl.addOpenTicketToServer(request)
+        NewTicketNotification(request)
 
-        await NewTicketNotification(request).then(() => serverControl.addOpenTicketToServer(request))
+        res.status(201).json({
+            message: "Open ticket sucessfully created",
+            ticketID: request
+        }) 
     }
 }
 
@@ -211,7 +213,6 @@ export async function E_GetOpenTicketByTicketID(req: Request, res:Response) : Pr
 
 export async function E_UpdateOpenTicketEndTime(req: Request, res:Response) : Promise<void> {
     const object = req.body;
-    object.newEndTime = new Date(object.newEndTime)
 
     if (!object) {
         res.status(400).json({ message: "object is required." });
@@ -219,6 +220,7 @@ export async function E_UpdateOpenTicketEndTime(req: Request, res:Response) : Pr
     }
 
     const request = await serverControl.updateOpenTicketEndTime(object)
+    // console.log("Request for Update endtime: ", request)
 
     if (request == null) res.status(500).json({message: "Failed to update open ticket."})
     else {
@@ -229,26 +231,26 @@ export async function E_UpdateOpenTicketEndTime(req: Request, res:Response) : Pr
     }
 }
 
-export async function E_DeleteOpenTicket(req: Request, res:Response) : Promise<void> {
-    const {ticketID} = req.body;
+// export async function E_DeleteOpenTicket(req: Request, res:Response) : Promise<void> {
+//     const {ticketID} = req.body;
 
-    if (!ticketID) {
-        res.status(400).json({ message: "ticketID is required." });
-        return;
-    }
+//     if (!ticketID) {
+//         res.status(400).json({ message: "ticketID is required." });
+//         return;
+//     }
 
-    const request = await GetOpenTicketByTicketID(ticketID)
+//     const request = await GetOpenTicketByTicketID(ticketID)
 
-    if (request == null) res.status(500).json({message: "Failed to delete open ticket."})
-    else {
-        res.status(200).json({
-                    message: "Open ticket sucessfully deleted",
-                    boolean: request
-        }) 
-    }
-}
+//     if (request == null) res.status(500).json({message: "Failed to delete open ticket."})
+//     else {
+//         res.status(200).json({
+//                     message: "Open ticket sucessfully deleted",
+//                     boolean: request
+//         }) 
+//     }
+// }
 
-export async function E_CreateClosedTicket(req: Request, res:Response) : Promise<void> {
+export async function E_ClosedTicket(req: Request, res:Response) : Promise<void> {
     const object = req.body;
 
     if (!object) {
@@ -256,7 +258,7 @@ export async function E_CreateClosedTicket(req: Request, res:Response) : Promise
         return;
     }
 
-    const request = await CreateClosedTicket(object)
+    const request = await serverControl.closeTicket(object)
 
     if (request == null) res.status(500).json({message: "Failed to create closed ticket."})
     else {
@@ -277,7 +279,7 @@ export async function E_GetClosedTicket(req: Request, res:Response) : Promise<vo
         return;
     }
 
-    const request = await GetClosedTicket(Number(ticketID as String))
+    const request = await dataBaseControl.GetClosedTicket(Number(ticketID as String))
 
     if (request == null) res.status(500).json({message: "Failed to get closed ticket."})
     else {
@@ -296,7 +298,7 @@ export async function E_CreateUserClosedTicket(req: Request, res:Response) : Pro
         return;
     }
 
-    const request = await CreateUserClosedTicket(object)
+    const request = await dataBaseControl.CreateUserClosedTicket(object)
 
     if (request == null) res.status(500).json({message: "Failed to create user closed ticket."})
     else {
@@ -310,7 +312,7 @@ export async function E_CreateUserClosedTicket(req: Request, res:Response) : Pro
 export async function E_GetUserClosedTicket(req: Request, res:Response) : Promise<void> {
     const {userID} = req.query;
 
-    const request = await GetUserClosedTicket(Number(userID as String))
+    const request = await dataBaseControl.GetUserClosedTicket(Number(userID as String))
 
     if (request == null) res.status(500).json({message: "Failed to get user closed ticket."})
     else {
@@ -324,7 +326,7 @@ export async function E_GetUserClosedTicket(req: Request, res:Response) : Promis
 export async function E_GetCarparkAddress(req: Request, res:Response) : Promise<void> {
     const {carparkID} = req.query;
 
-    const request = await GetCarparkAddress(carparkID as string)
+    const request = await dataBaseControl.GetCarparkAddress(carparkID as string)
 
     if (request == null) res.status(500).json({message: "Failed to get carpark address."})
     else {
@@ -338,7 +340,7 @@ export async function E_GetCarparkAddress(req: Request, res:Response) : Promise<
 export async function E_GetRate(req: Request, res:Response) : Promise<void> {
     const object = req.query;
 
-    const request = await GetRate(object)
+    const request = await dataBaseControl.GetRate(object)
 
     if (request == null) res.status(500).json({message: "Failed to get carpark rate."})
     else {

@@ -19,17 +19,21 @@ export default class mainControl {
             console.error("Fail to load user data");
         }
     }
-    static UpdateTicket(ticketID) {
+    static async UpdateTicket(ticketID) {
         try {
             fetch(`http://localhost:3000/OpenTicket/TicketID?ticketID=${ticketID}`, {
                 method: "GET"
             }).then(res => res.json()).then((object) => {
-                if (object.openTicket != null)
+                if (object.openTicket != null) {
                     mainEntity.setTicket(object.openTicket);
+                }
             });
         }
         catch (error) {
             console.error("Fail to load user open ticket");
         }
+    }
+    static RemoveTicket() {
+        mainEntity.setTicket(null);
     }
 }

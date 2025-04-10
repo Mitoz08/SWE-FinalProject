@@ -29,7 +29,29 @@ export default class viewTicketControl {
             body: JSON.stringify(parameter)
         });
         const { boolean } = await res.json();
-        if (boolean)
+        if (boolean) {
             mainControl.UpdateTicket(ticketID);
+            return true;
+        }
+        return false;
+    }
+    static async closeTicket(ticketID, closeTime) {
+        const parameter = {
+            ticketID: ticketID,
+            closeTime: closeTime
+        };
+        const res = await fetch(`http://localhost:3000/ClosedTicket`, {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(parameter)
+        });
+        const { boolean } = await res.json();
+        if (boolean) {
+            mainControl.RemoveTicket();
+            return true;
+        }
+        return false;
     }
 }

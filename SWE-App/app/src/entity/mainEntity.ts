@@ -39,6 +39,11 @@ class MainEntity {
         return this.userInformation?.userEmail ?? null;
     }
 
+    public getUserName() {
+        const name = [this.userInformation?.firstName ?? '', this.userInformation?.lastName ?? ''].join(' ');
+        return name.length === 0 ? null : name;
+    }
+
     public getUserFirstName() {
         return this.userInformation?.firstName ?? null;
     }
@@ -51,8 +56,9 @@ class MainEntity {
         return this.userInformation?.userPhoneNo ?? null;
     }
 
-    public setTicket(openTicket: OpenTicket) {
+    public setTicket(openTicket: OpenTicket|null) {
         this.openTicket = openTicket
+        return true;
     }
 
     public getTicket() {
