@@ -81,6 +81,7 @@ var Operator;
     Operator["MTorEq"] = ">=";
     Operator["LTorEq"] = "<=";
     Operator["NotEql"] = "<>";
+    Operator["In"] = "IN";
 })(Operator || (exports.Operator = Operator = {}));
 var ConditionVariable;
 (function (ConditionVariable) {
@@ -123,6 +124,20 @@ function Read(table_1, data_1) {
             var whereStatement = "";
             if (typeof data === "object") {
                 for (const [column, conditions] of Object.entries(data)) {
+                    if (conditions.operator == Operator.In) {
+                        if (!Array.isArray(conditions.values)) {
+                            console.error("No array was given for \"Where variable IN [array]\". Condition skipped ");
+                            continue;
+                        }
+                        else {
+                            const placeHolders = conditions.values.map(() => '?').join(", ");
+                            conditionStatment.push(`${column} ${[conditions.operator]} (${placeHolders})`);
+                            for (const value of conditions.values) {
+                                values.push(value);
+                            }
+                            continue;
+                        }
+                    }
                     conditionStatment.push(`${column} ${[conditions.operator]} ?`);
                     values.push(conditions.values);
                 }

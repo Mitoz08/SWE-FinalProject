@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Text, StyleSheet, View, TouchableOpacity, Modal } from "react-native";
 import { SafeAreaProvider, SafeAreaView, useSafeAreaFrame } from "react-native-safe-area-context";
 import viewTicketControl from "./controller/viewTicketsControl";
+import { FlatList } from "react-native-gesture-handler";
 
 export default function I_ViewTickets({navigation}) {
 
@@ -10,12 +11,19 @@ export default function I_ViewTickets({navigation}) {
   const [loading, setLoading] = useState(true);
   const [showAddTimeModal, setAddTimeModal] = useState(false);
   const [showCloseTicketModal, setCloseTicketModal] = useState(false);
+  const [showPastTicketModal, setPastTicketModal] = useState(false);
+  const [PastTicket, setPastTicket] = useState(null);
+  const [pastTickets, setPastTickets] = useState([])
+
+
 
   useEffect(() => {
     async function fetchTicket() {
       try{
         const {address, ticket} = await viewTicketControl.getTicket();
+        const ticketArray = await viewTicketControl.getAllClosedTickets()
         console.log("Fetching ticket", ticket)
+        setPastTickets(ticketArray)
         setTicket(ticket);
         setAddress(address);
       } catch (error) {
@@ -42,51 +50,161 @@ export default function I_ViewTickets({navigation}) {
   }
   if (!ticket?.ticketID) return (
     <SafeAreaProvider>
-      <SafeAreaView>
-        <View>
-          <Text>
-            No Open Tickets
-          </Text>
+      <SafeAreaView style={{ flex: 1 }}>
+        <View style={{ padding: 16 }}>
+          <Text>No Open Tickets</Text>
         </View>
+
+        {/* Display Past Tickets and Back to Main Page Button */}
+        <FlatList
+          style={{ flex: 1 }}
+          data={pastTickets.sort((a, b) => b.ticketID - a.ticketID)}
+          keyExtractor={(item) => item.ticketID.toString()}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.card}
+              onPress={() => {
+                setPastTicket(item);
+                setPastTicketModal(true);
+              }}
+            >
+              <Text>Ticket ID: {item.ticketID}</Text>
+              <Text>Address: {item.address}</Text>
+            </TouchableOpacity>
+          )}
+        />
+
+        <View style={styles.fixedButtonContainer}>
+          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("I_MainPage")}>
+            <Text style={styles.buttonText}>Back to Main Page</Text>
+          </TouchableOpacity>
+        </View>
+        <PastTicketModal
+        ticket={PastTicket}
+        showModal={showPastTicketModal}
+        setShowModal={setPastTicketModal}
+        />
       </SafeAreaView>
     </SafeAreaProvider>
   )
 
   return(
-      <SafeAreaProvider>
-          <SafeAreaView>
-            <View style={styles.card}>
-                <Text style={styles.ticketID}>Ticket ID: {ticket.ticketID}</Text>
-                <Text style={styles.detail}>Parking Lot: <Text style={styles.bold}>{ticket.parkingLotID}</Text></Text>
-                <Text style={styles.detail}>Address: <Text style={styles.bold}>{address}</Text></Text>
-                <Text style={styles.detail}>License Plate: <Text style={styles.bold}>{ticket.licensePlate}</Text></Text>
-                <Text style={styles.detail}>Start Time: <Text style={styles.bold}>{ticket.ticketStartTime.replace("T", " ").substr(0,19)} </Text></Text>
-                <Text style={styles.detail}>End Time: <Text style={styles.bold}>{ticket.ticketEndTime.replace("T", " ").substr(0,19)}</Text></Text>
-                <View style={styles.ticketAction}>
-                  <TouchableOpacity style={styles.button} onPress={() => {setAddTimeModal(true)}}>
-                    <Text style={styles.buttonText}>Add Time</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.button} onPress={() => {setCloseTicketModal(true)}}>
-                    <Text style={styles.buttonText}>Close Ticket</Text>
-                  </TouchableOpacity>
-                </View>
-            </View>
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("I_MainPage")}> 
-                <Text style={styles.buttonText}>Back to Main Page</Text>
-            </TouchableOpacity>
-            <AddTimeModal 
-              ticketID = {ticket.ticketID}
-              endTime = {ticket.ticketEndTime} 
-              showModal = {showAddTimeModal} 
-              setShowModal = {setAddTimeModal}/>
-            <CloseTicketModal
-              ticket = {ticket}
-              showModal = {showCloseTicketModal}
-              setShowModal = {setCloseTicketModal}
-              />
-          </SafeAreaView>
-      </SafeAreaProvider>
+    <SafeAreaProvider>
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={{ flex: 1 }}>
 
+        <View style={{ padding: 16 }}>
+          <View style={styles.card}>
+            <Text style={styles.ticketID}>Ticket ID: {ticket.ticketID}</Text>
+            <Text style={styles.detail}>Parking Lot: <Text style={styles.bold}>{ticket.parkingLotID}</Text></Text>
+            <Text style={styles.detail}>Address: <Text style={styles.bold}>{address}</Text></Text>
+            <Text style={styles.detail}>License Plate: <Text style={styles.bold}>{ticket.licensePlate}</Text></Text>
+            <Text style={styles.detail}>Start Time: <Text style={styles.bold}>{ticket.ticketStartTime.replace("T", " ").substr(0, 19)} </Text></Text>
+            <Text style={styles.detail}>End Time: <Text style={styles.bold}>{ticket.ticketEndTime.replace("T", " ").substr(0, 19)}</Text></Text>
+          </View>
+          
+
+          <View style={styles.fixedButtonContainer}>
+            <TouchableOpacity style={styles.button} onPress={() => { setAddTimeModal(true) }}>
+              <Text style={styles.buttonText}>Add Time</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => { setCloseTicketModal(true) }}>
+              <Text style={styles.buttonText}>Close Ticket</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("I_MainPage")}>
+              <Text style={styles.buttonText}>Back to Main Page</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        
+        <FlatList
+          style={{ flex: 1 }}
+          data={pastTickets.sort((a, b) => b.ticketID - a.ticketID)}
+          keyExtractor={(item) => item.ticketID.toString()}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.card}
+              onPress={() => {
+                setPastTicket(item);
+                setPastTicketModal(true);
+              }}
+            >
+              <Text>Ticket ID: {item.ticketID}</Text>
+              <Text>Address: {item.address}</Text>
+            </TouchableOpacity>
+          )}
+        />
+      </View>
+      
+      <PastTicketModal
+        ticket={PastTicket}
+        showModal={showPastTicketModal}
+        setShowModal={setPastTicketModal}
+      />
+      <AddTimeModal
+        ticketID={ticket.ticketID}
+        endTime={ticket.ticketEndTime}
+        showModal={showAddTimeModal}
+        setShowModal={setAddTimeModal}
+      />
+      <CloseTicketModal
+        ticket={ticket}
+        showModal={showCloseTicketModal}
+        setShowModal={setCloseTicketModal}
+      />
+    </SafeAreaView>
+  </SafeAreaProvider>
+
+  )
+}
+
+// const PastTicketFlatList = ({ticketArray, setShowModal, setTicketID}) => {
+
+//   const sortedTickets = ticketArray.sort((a,b) => b.ticketID - a.ticketID)
+
+//   return (
+//     <SafeAreaView style={{flex:1}} >
+//       <View>
+//         <FlatList
+//           data={sortedTickets}
+//           keyExtractor={(item) => item.ticketID.toString()}
+//           renderItem={({ item }) => (
+//             <TouchableOpacity 
+//               style={styles.card}
+//               onPress={() => {
+//                 setTicketID(item)
+//                 setShowModal(true)
+//               }}
+//             >
+//               <Text>Ticket ID: ${item.ticketID}</Text>
+//               <Text>Address: ${item.address}</Text>
+//             </TouchableOpacity>
+//           )}
+//         />
+//       </View>
+//     </SafeAreaView>
+//   )
+// }
+
+
+const PastTicketModal = ({ticket, showModal, setShowModal}) => {
+  if (!ticket) return
+  return (
+    <Modal
+    visible={showModal}
+    transparent={true}
+    animationType="slide"
+    onRequestClose={() => setShowModal(false)}>
+      <View style={styles.modalBackground}>
+        <View style={styles.modalContainer}>
+          <Text style={styles.ticketID}>Ticket ID: {ticket.ticketID}</Text>
+          <Text style={styles.detail}>Carpark Address: {ticket.address}</Text>
+          <TouchableOpacity style={styles.button} onPress={() => setShowModal(false)}>
+            <Text style={styles.buttonText}>Go Back</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
   )
 }
 
@@ -256,22 +374,6 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: "#f3f4f6",
   },
-  header: {
-    fontSize: 24,
-    fontWeight: "bold",
-    textAlign: "center",
-    color: "#333",
-    marginBottom: 16,
-  },
-  gradientContainer: {
-    padding: 8,
-    margin: 8,
-    borderRadius: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-  },
   card: {
     padding: 16,
     backgroundColor: "white",
@@ -315,12 +417,20 @@ const styles = StyleSheet.create({
       fontWeight: "bold",
       textAlign: "center",
   },
-  ticketAction: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+  fixedButtonContainer: {
+    marginTop: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
   },
-
+  fixedButton: {
+    flex: 1,
+    marginHorizontal: 8,
+    backgroundColor: "#007bff",
+    padding: 12,
+    borderRadius: 10,
+    alignItems: "center",
+  },
   modalBackground: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -334,12 +444,92 @@ const styles = StyleSheet.create({
     width: '80%',
     alignItems: 'center',
   },
-  modalText: {
-    fontSize: 16,
-    marginBottom: 10,
-    textAlign: 'center',
-  },
-  disabledButton: {
-    backgroundColor: "#cccccc",
-  },
 });
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     padding: 16,
+//     backgroundColor: "#f3f4f6",
+//   },
+//   header: {
+//     fontSize: 24,
+//     fontWeight: "bold",
+//     textAlign: "center",
+//     color: "#333",
+//     marginBottom: 16,
+//   },
+//   gradientContainer: {
+//     padding: 8,
+//     margin: 8,
+//     borderRadius: 10,
+//     shadowColor: "#000",
+//     shadowOffset: { width: 0, height: 2 },
+//     shadowOpacity: 0.2,
+//     shadowRadius: 4,
+//   },
+//   card: {
+//     padding: 16,
+//     backgroundColor: "white",
+//     borderRadius: 10,
+//     shadowColor: "#000",
+//     shadowOffset: { width: 0, height: 1 },
+//     shadowOpacity: 0.1,
+//     shadowRadius: 3,
+//     borderWidth: 1,
+//     borderColor: "#ddd",
+//   },
+//   ticketID: {
+//     fontSize: 18,
+//     fontWeight: "bold",
+//     color: "#333",
+//   },
+//   detail: {
+//     fontSize: 14,
+//     color: "#555",
+//     marginTop: 4,
+//   },
+//   bold: {
+//     fontWeight: "600",
+//     color: "#222",
+//   },
+//   button: {
+//       backgroundColor: "#007bff",
+//       padding: 12,
+//       margin: 16,
+//       borderRadius: 10,
+//       alignItems: "center",
+//   },
+//     buttonText: {
+//       color: "white",
+//       fontSize: 16,
+//       fontWeight: "bold",
+//   },
+//   ticketAction: {
+//     flexDirection: "row",
+//     alignItems: "center",
+//     justifyContent: "center",
+//   },
+
+//   modalBackground: {
+//     flex: 1,
+//     backgroundColor: 'rgba(0, 0, 0, 0.5)',
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//   },
+//   modalContainer: {
+//     backgroundColor: 'white',
+//     padding: 20,
+//     borderRadius: 10,
+//     width: '80%',
+//     alignItems: 'center',
+//   },
+//   modalText: {
+//     fontSize: 16,
+//     marginBottom: 10,
+//     textAlign: 'center',
+//   },
+//   disabledButton: {
+//     backgroundColor: "#cccccc",
+//   },
+// });

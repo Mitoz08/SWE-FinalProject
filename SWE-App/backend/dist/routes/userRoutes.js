@@ -20,6 +20,7 @@ router.get("/OpenTicket/UserID", userContoller_1.E_GetOpenTicketByUserID);
 router.get("/OpenTicket/TicketID", userContoller_1.E_GetOpenTicketByTicketID);
 router.put("/OpenTicket", userContoller_1.E_UpdateOpenTicketEndTime);
 router.post("/ClosedTicket", userContoller_1.E_ClosedTicket);
+router.get("/ClosedTickets", userContoller_1.E_GetClosedTicketsByUserID);
 router.get("/ClosedTicket", userContoller_1.E_GetClosedTicket);
 router.post("/UserClosedTicket", userContoller_1.E_CreateUserClosedTicket);
 router.get("/UserClosedTicket", userContoller_1.E_GetUserClosedTicket);

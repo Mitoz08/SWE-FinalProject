@@ -63,7 +63,8 @@ enum Operator {
     LessThan = "<",
     MTorEq = ">=",
     LTorEq = "<=",
-    NotEql = "<>"
+    NotEql = "<>",
+    In = "IN"
 }
 
 enum ConditionVariable {
@@ -116,11 +117,25 @@ async function Read( table:TableNames, data?:object, by:"AND" | "OR" = "AND"): P
             if (typeof data === "object") {
                 // Column names and conidtions will be checked before input (Using Enum)
                 for (const [column, conditions] of Object.entries(data)) {
+                    if (conditions.operator == Operator.In) {
+                        if (!Array.isArray(conditions.values)) {
+                            console.error("No array was given for \"Where variable IN [array]\". Condition skipped ")
+                            continue;
+                        } else {
+                            const placeHolders = conditions.values.map(() => '?').join(", ")
+                            conditionStatment.push(`${column} ${[conditions.operator]} (${placeHolders})`)
+                            for(const value of conditions.values) {
+                                values.push(value)
+                            }
+                            continue
+                        }
+                    }
                     conditionStatment.push(`${column} ${[conditions.operator]} ?`);
                     values.push(conditions.values);
                 }
                 whereStatement = conditionStatment.length? `WHERE ${conditionStatment.join(` ${by} `)}` : "";
             }
+
         const [result] = await pool.execute<RowDataPacket[]>(`
             SELECT * 
             FROM ${[table]}
