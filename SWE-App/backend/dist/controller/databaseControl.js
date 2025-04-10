@@ -183,7 +183,7 @@ function UpdateUserInfo(object) {
         if (res === null) {
             return ErrorMsg_MySQL();
         }
-        if (res.affectedRows) {
+        if (res.affectedRows === 0) {
             return ErrorMsg_NoEntry();
         }
         return true;

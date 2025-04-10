@@ -1,43 +1,59 @@
 import React, { useEffect, useState } from "react";
 import { Text, Button, StyleSheet, LinearGradient, View, TouchableOpacity } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { mainEntity } from "../src/entity/mainEntity";
-import { add, format } from "date-fns";
+import viewTicketControl from "./controller/viewTicketsControl";
 
 export default function I_ViewTickets({navigation}) {
-    const ticket = mainEntity.getTicket()
-    const [address, setAddress] = useState("")
-    useEffect(() => {
-        fetch(`http://localhost:3000/CarparkAddress?carparkID=${ticket.parkingLotID}`)
-          .then(response => response.json())
-          .then(data => setAddress(data.carparkAddress))
-          .catch(error => setAddress("Error fetching address"));
-      }, [ticket.parkingLotID]);
-    return(
-        <SafeAreaProvider>
-            <SafeAreaView>
-                <View style={styles.card}>
-                    <Text style={styles.ticketID}>Ticket ID: {ticket.ticketID}</Text>
-                    <Text style={styles.detail}>Parking Lot: <Text style={styles.bold}>{ticket.parkingLotID}</Text></Text>
-                    <Text style={styles.detail}>Address: <Text style={styles.bold}>{address}</Text></Text>
-                    <Text style={styles.detail}>License Plate: <Text style={styles.bold}>{ticket.licensePlate}</Text></Text>
-                    <Text style={styles.detail}>Start Time: <Text style={styles.bold}>{ticket.ticketStartTime.toLocaleString()}</Text></Text>
-                    <Text style={styles.detail}>End Time: <Text style={styles.bold}>{ticket.ticketEndTime.toLocaleString()}</Text></Text>
-                    <View style={styles.ticketAction}>
-                      <TouchableOpacity style={styles.button} onPress={() => {console.log("Add Time")}}>
-                        <Text style={styles.buttonText}>Add Time</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity style={styles.button} onPress={() => {console.log("Close Ticket")}}>
-                        <Text style={styles.buttonText}>Close Ticket</Text>
-                      </TouchableOpacity>
-                    </View>
-                </View>
-                <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("I_MainPage")}> 
-                    <Text style={styles.buttonText}>Back to Main Page</Text>
-                </TouchableOpacity>
-            </SafeAreaView>
-        </SafeAreaProvider>
-    )
+
+  const [ticket, setTicket] = useState(null);
+
+  useEffect(() => {
+    async function fetchTicket() {
+      const ticket = await viewTicketControl.getTicket();
+      setTicket(ticket);
+    }
+    fetchTicket();
+  }, []);
+
+  console.log(ticket)
+  if (!ticket) return (
+    <SafeAreaProvider>
+      <SafeAreaView>
+        <View>
+          <Text>
+            No Open Tickets
+          </Text>
+        </View>
+      </SafeAreaView>
+    </SafeAreaProvider>
+  )
+
+  return(
+      <SafeAreaProvider>
+          <SafeAreaView>
+              (<View style={styles.card}>
+                  <Text style={styles.ticketID}>Ticket ID: {ticket.ticketID}</Text>
+                  <Text style={styles.detail}>Parking Lot: <Text style={styles.bold}>{ticket.parkingLotID}</Text></Text>
+                  <Text style={styles.detail}>Address: <Text style={styles.bold}>{address}</Text></Text>
+                  <Text style={styles.detail}>License Plate: <Text style={styles.bold}>{ticket.licensePlate}</Text></Text>
+                  <Text style={styles.detail}>Start Time: <Text style={styles.bold}>{ticket.ticketStartTime.toLocaleString()}</Text></Text>
+                  <Text style={styles.detail}>End Time: <Text style={styles.bold}>{ticket.ticketEndTime.toLocaleString()}</Text></Text>
+                  <View style={styles.ticketAction}>
+                    <TouchableOpacity style={styles.button} onPress={() => {console.log("Add Time")}}>
+                      <Text style={styles.buttonText}>Add Time</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.button} onPress={() => {console.log("Close Ticket")}}>
+                      <Text style={styles.buttonText}>Close Ticket</Text>
+                    </TouchableOpacity>
+                  </View>
+              </View>
+              <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("I_MainPage")}> 
+                  <Text style={styles.buttonText}>Back to Main Page</Text>
+              </TouchableOpacity>)
+          </SafeAreaView>
+      </SafeAreaProvider>
+
+  )
 }
 
 const styles = StyleSheet.create({

@@ -1,7 +1,6 @@
 import { initializeApp, FirebaseError } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { InitialiseUser } from "./mainControl";
-
 const firebaseConfig = {
     apiKey: "AIzaSyCZ8d70lgoVj-RgxMqskNHeAiMalBXNO78",
     authDomain: "my-expo-app-aa62e.firebaseapp.com",

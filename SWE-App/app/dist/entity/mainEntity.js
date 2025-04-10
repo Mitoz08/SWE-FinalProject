@@ -7,8 +7,10 @@ class MainEntity {
     }
     setUserInformation(object) {
         this.userInformation = object;
+        console.log("UserInformation Set: ", this.userInformation);
     }
     getUserID() {
+        console.log(this.userInformation);
         return this.userInformation?.userID ?? null;
     }
     getUserEmail() {
@@ -25,8 +27,10 @@ class MainEntity {
     }
     setTicket(openTicket) {
         this.openTicket = openTicket;
+        console.log("OpenTicket Set: ", this.openTicket);
     }
     getTicket() {
+        console.log(this.openTicket);
         return this.openTicket;
     }
 }

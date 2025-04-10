@@ -2,13 +2,16 @@ import { mainEntity } from "../entity/mainEntity";
 export async function ProcessPayment(createTicketDetails) {
     const ticketStartTime = new Date();
     const ticketEndTime = new Date(new Date().setMinutes(ticketStartTime.getMinutes() + createTicketDetails.duration_hour * 60 + createTicketDetails.duration_min));
+    const userID = mainEntity.getUserID();
+    console.log(userID);
     const parameter = {
         parkingLotID: createTicketDetails.carparkNo,
         licensePlate: createTicketDetails.licensePlate,
         ticketStartTime: ticketStartTime,
         ticketEndTime: ticketEndTime,
-        userID: 1
+        userID: userID
     };
+    console.log(parameter);
     try {
         var response = await fetch(`http://localhost:3000/OpenTicket`, {
             method: "POST",
@@ -19,7 +22,7 @@ export async function ProcessPayment(createTicketDetails) {
         });
         const { ticketID } = await response.json();
         if (!ticketID)
-            throw new Error("Ticket not create");
+            throw new Error("Ticket not created");
         var response = await fetch(`http://localhost:3000/OpenTicket/TicketID?ticketID=${ticketID}`, { method: "GET" });
         const { openTicket } = await response.json();
         mainEntity.setTicket(openTicket);
