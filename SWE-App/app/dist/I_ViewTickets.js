@@ -400,16 +400,22 @@ const styles = StyleSheet.create({
     color: "#222",
   },
   button: {
-    backgroundColor: "#007bff",
-    padding: 12,
-    margin: 8,
+    margin: 10,
+    paddingVertical: 20, // Increased padding for larger buttons
+    paddingHorizontal: 30, // Increased padding for larger buttons
+    backgroundColor: "#4682b4",
     borderRadius: 10,
-    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3,
+    elevation: 5,
   },
-  buttonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
+    buttonText: {
+      color: "#fff",
+      fontSize: 18, // Increased font size for better readability
+      fontWeight: "bold",
+      textAlign: "center",
   },
   fixedButtonContainer: {
     marginTop: 16,
