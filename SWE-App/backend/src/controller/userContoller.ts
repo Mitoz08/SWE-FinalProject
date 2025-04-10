@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { AddNewUser, DeleteUser, GetUserID, AddUserInfo, GetUserInfo, GetUserEmail, UpdateUserInfo, GetOpenTicketByTicketID, CreateOpenTicket, GetOpenTicketByUserID, CreateClosedTicket, GetClosedTicket, CreateUserClosedTicket, GetUserClosedTicket, GetCarparkAddress, GetRate } from "./databaseControl";
+import { AddNewUser, DeleteUser, GetUserID, AddUserInfo, GetUserInfo, GetUserEmail, UpdateUserInfo, GetOpenTicketByTicketID, CreateOpenTicket, GetOpenTicketByUserID, CreateClosedTicket, GetClosedTicket, CreateUserClosedTicket, GetUserClosedTicket, GetCarparkAddress, GetRate, UpdateOpenTicketEndTime } from "./databaseControl";
 import { NewTicketNotification } from "./emailControl";
-import { addOpenTicketToServer, getOpenTicketByTicketID, getOpenTicketByUserID } from "./serverControl";
+import serverControl from "./serverControl";
 
 export async function E_AddNewUser(req: Request, res:Response) : Promise<void> {
     const {userFirebaseID} = req.body;
@@ -148,7 +148,7 @@ export async function E_CreateOpenTicket(req: Request, res:Response) : Promise<v
         return;
     }
 
-    const request = await CreateOpenTicket(object)
+    const request = await serverControl.createOpenTicket(object)
 
     if (request == null) res.status(500).json({message: "Failed to create open ticket."})
     else {
@@ -157,7 +157,7 @@ export async function E_CreateOpenTicket(req: Request, res:Response) : Promise<v
                     ticketID: request
         }) 
 
-        await NewTicketNotification(request).then(() => addOpenTicketToServer(request))
+        await NewTicketNotification(request).then(() => serverControl.addOpenTicketToServer(request))
     }
 }
 
@@ -169,7 +169,7 @@ export async function E_GetOpenTicketByUserID(req: Request, res:Response) : Prom
         return;
     }
     if (typeof userID === "string") {
-        const request = getOpenTicketByUserID(Number(userID))
+        const request = serverControl.getOpenTicketByUserID(Number(userID))
         if (request == null)  {
             res.status(200).json({
             message: "Open ticket does not exsist",
@@ -195,7 +195,7 @@ export async function E_GetOpenTicketByTicketID(req: Request, res:Response) : Pr
     }
     if (typeof ticketID === "string") {
         
-        const request = getOpenTicketByTicketID(Number(ticketID))
+        const request = serverControl.getOpenTicketByTicketID(Number(ticketID))
 
         if (request == null) res.status(500).json({message: "Failed to get open ticket."})
         else {
@@ -211,13 +211,14 @@ export async function E_GetOpenTicketByTicketID(req: Request, res:Response) : Pr
 
 export async function E_UpdateOpenTicketEndTime(req: Request, res:Response) : Promise<void> {
     const object = req.body;
+    object.newEndTime = new Date(object.newEndTime)
 
     if (!object) {
         res.status(400).json({ message: "object is required." });
         return;
     }
 
-    const request = await GetOpenTicketByTicketID(object)
+    const request = await serverControl.updateOpenTicketEndTime(object)
 
     if (request == null) res.status(500).json({message: "Failed to update open ticket."})
     else {

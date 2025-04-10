@@ -1,6 +1,6 @@
 import { initializeApp, FirebaseError } from "firebase/app";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { InitialiseUser } from "./mainControl";
+import mainControl from "./mainControl";
 const firebaseConfig = {
     apiKey: "AIzaSyCZ8d70lgoVj-RgxMqskNHeAiMalBXNO78",
     authDomain: "my-expo-app-aa62e.firebaseapp.com",
@@ -10,8 +10,7 @@ const firebaseConfig = {
     appId: "1:118705503114:web:e429be09cb899d9ddaa673"
 };
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
+const auth = getAuth();
 export async function VerifyLogin(Email, Password) {
     let user;
     let firebaseId;
@@ -40,7 +39,7 @@ export async function VerifyLogin(Email, Password) {
     try {
         const res = await fetch(`http://localhost:3000/UserID?userFirebaseID=${firebaseId}`, { method: "GET" });
         const { userID } = await res.json();
-        InitialiseUser(userID);
+        mainControl.InitialiseUser(userID);
         return true;
     }
     catch (error) {
@@ -72,7 +71,6 @@ export async function VerifySignUp(FirstName, LastName, Phone, Email, Password) 
             return false;
         }
     }
-
     let object;
     try {
         const res = await fetch(`http://localhost:3000/UserID`, {
@@ -103,7 +101,7 @@ export async function VerifySignUp(FirstName, LastName, Phone, Email, Password) 
         }
         else {
             console.log("Initialising user");
-            InitialiseUser(object.userID);
+            mainControl.InitialiseUser(object.userID);
             return true;
         }
     }

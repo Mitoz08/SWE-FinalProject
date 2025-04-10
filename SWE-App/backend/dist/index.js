@@ -18,4 +18,4 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
 });
-(0, serverControl_1.default)();
+serverControl_1.default.serverInitialiser();

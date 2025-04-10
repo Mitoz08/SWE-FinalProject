@@ -1,11 +1,11 @@
 import { emailSender } from "../boundary/emailAccess";
 import { dateToString, GetCarparkAddress, GetOpenTicketByTicketID, GetUserEmail } from "./databaseControl.js";
-import { getOpenTicketByTicketID } from "./serverControl";
+import serverControl from "./serverControl";
 
 
 export async function NewTicketNotification(ticketID:number) {
     const subject = `New ticket created with ID: ${ticketID}`
-    const res = getOpenTicketByTicketID(ticketID)
+    const res = serverControl.getOpenTicketByTicketID(ticketID)
     // console.log(typeof res?.ticketEndTime)
     if (res == null) {
         console.error(`No existing ticket with ID: ${ticketID}`);
@@ -28,7 +28,7 @@ export async function NewTicketNotification(ticketID:number) {
     
 export async function ExpiryNotification(ticketID:number) {
     const subject = `Expiration alert for ticket ID: ${ticketID}`
-    const res = getOpenTicketByTicketID(ticketID)
+    const res = serverControl.getOpenTicketByTicketID(ticketID)
     if (res == null) {
         console.error(`No existing ticket with ID: ${ticketID}`);
         return false;

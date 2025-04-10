@@ -316,10 +316,10 @@ function GetOpenTicket() {
 }
 function UpdateOpenTicketEndTime(object) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { ticketID, ticketEndTime } = object;
+        const { ticketID, newEndTime } = object;
         const res = yield (0, databaseAccess_1.Update)(databaseAccess_1.TableNames_App.OpenTickets, {
             "set": {
-                [databaseAccess_1.ColumnNames_App.ticketEndTime]: dateToString(ticketEndTime)
+                [databaseAccess_1.ColumnNames_App.ticketEndTime]: dateToString(newEndTime)
             },
             "where": {
                 [databaseAccess_1.ColumnNames_App.ticketID]: {

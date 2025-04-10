@@ -29,11 +29,9 @@ class MainEntity {
 
     public setUserInformation(object:UserInformation) {
         this.userInformation = object
-        console.log("UserInformation Set: ",this.userInformation)
     }
 
     public getUserID() {
-        console.log(this.userInformation)
         return this.userInformation?.userID ?? null;
     }
 
@@ -55,11 +53,9 @@ class MainEntity {
 
     public setTicket(openTicket: OpenTicket) {
         this.openTicket = openTicket
-        console.log("OpenTicket Set: ",this.openTicket)
     }
 
     public getTicket() {
-        console.log(this.openTicket)
         return this.openTicket
     }
 
