@@ -11,6 +11,7 @@ export default class serverControl {
         // console.log(serverEntity.getTicket())
         // Call the expiry function
         expiryInitialiser()
+
     }
 
     static getOpenTicketByTicketID(ticketID:number) {

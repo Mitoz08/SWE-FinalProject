@@ -17,8 +17,9 @@ const serverEntity_1 = require("../entity/serverEntity");
 const databaseControl_1 = __importDefault(require("./databaseControl"));
 const emailControl_1 = require("./emailControl");
 var interval;
+const TIMEZONE_OFFSET = 8 * 60 * 60 * 1000;
 const CHECK_INTERVAL = 0.25 * 60 * 1000;
-const EXPIRY_THRESHOLD = 60 * 60 * 1000;
+const EXPIRY_THRESHOLD = 60 * 60 * 1000 + TIMEZONE_OFFSET;
 function expiryInitialiser() {
     clockStart();
 }

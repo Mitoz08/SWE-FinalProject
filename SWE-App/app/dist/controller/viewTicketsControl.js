@@ -54,4 +54,11 @@ export default class viewTicketControl {
         }
         return false;
     }
+    static async getAllClosedTickets() {
+        const userID = mainEntity.getUserID();
+        const res = await fetch(`http://localhost:3000/ClosedTickets?userID=${userID}`, { method: "GET" });
+        const { closedTickets } = await res.json();
+        console.log(closedTickets);
+        return closedTickets;
+    }
 }

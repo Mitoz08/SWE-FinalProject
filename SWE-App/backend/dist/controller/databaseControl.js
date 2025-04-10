@@ -367,6 +367,40 @@ class dataBaseControl {
             return true;
         });
     }
+    static GetAllClosedTicket(userID) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const res = yield (0, databaseAccess_1.Read)(databaseAccess_1.TableNames_App.UserClosedTickets, {
+                [databaseAccess_1.ColumnNames_App.userID]: {
+                    [databaseAccess_1.ConditionVariable.operator]: databaseAccess_1.Operator.EqualTo,
+                    [databaseAccess_1.ConditionVariable.values]: userID
+                }
+            });
+            if (res === null) {
+                return ErrorMsg_MySQL();
+            }
+            if (res[0] === undefined) {
+                return ErrorMsg_NoEntry();
+            }
+            const ticketIDs = res.map(item => item.ticketID);
+            const allTickets = yield (0, databaseAccess_1.Read)(databaseAccess_1.TableNames_App.ClosedTickets, {
+                [databaseAccess_1.ColumnNames_App.ticketID]: {
+                    [databaseAccess_1.ConditionVariable.operator]: databaseAccess_1.Operator.In,
+                    [databaseAccess_1.ConditionVariable.values]: ticketIDs
+                }
+            });
+            if (allTickets === null) {
+                return ErrorMsg_MySQL();
+            }
+            if (allTickets[0] === undefined) {
+                return ErrorMsg_NoEntry();
+            }
+            for (const ticket of allTickets) {
+                ticket.address = yield dataBaseControl.GetCarparkAddress(ticket.parkingLotID);
+            }
+            console.log(allTickets);
+            return allTickets;
+        });
+    }
     static GetClosedTicket(ticketID) {
         return __awaiter(this, void 0, void 0, function* () {
             const res = yield (0, databaseAccess_1.Read)(databaseAccess_1.TableNames_App.ClosedTickets, {
