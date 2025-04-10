@@ -8,10 +8,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = expiryInitialiser;
 const serverEntity_1 = require("../entity/serverEntity");
-const databaseControl_1 = require("./databaseControl");
+const databaseControl_1 = __importDefault(require("./databaseControl"));
 const emailControl_1 = require("./emailControl");
 var interval;
 const CHECK_INTERVAL = 0.25 * 60 * 1000;
@@ -33,7 +36,7 @@ function expiryNotificationSender() {
                 if (yield (0, emailControl_1.ExpiryNotification)(ticket.ticketID)) {
                     ticket.notified = true;
                     console.log(ticket);
-                    (0, databaseControl_1.UpdateOpenTicketNotified)({ ticketID: ticket.ticketID, value: true });
+                    databaseControl_1.default.UpdateOpenTicketNotified({ ticketID: ticket.ticketID, value: true });
                     console.log("Expiry warning sent");
                 }
             }

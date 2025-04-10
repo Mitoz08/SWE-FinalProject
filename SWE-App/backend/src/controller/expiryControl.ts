@@ -1,6 +1,6 @@
 import { serverEntity } from "../entity/serverEntity";
 import { OpenTicket } from "../entity/databaseTypes";
-import { UpdateOpenTicketNotified } from "./databaseControl";
+import dataBaseControl from "./databaseControl";
 import { ExpiryNotification } from "./emailControl";
 
 var interval: NodeJS.Timeout;
@@ -41,7 +41,7 @@ async function expiryNotificationSender() {
                 ticket.notified = true
                 console.log(ticket)
                 // Update database
-                UpdateOpenTicketNotified( { ticketID:ticket.ticketID, value:true } )
+                dataBaseControl.UpdateOpenTicketNotified( { ticketID:ticket.ticketID, value:true } )
 
                 console.log("Expiry warning sent")
             }

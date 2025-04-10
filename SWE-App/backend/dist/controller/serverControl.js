@@ -13,15 +13,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const serverEntity_1 = require("../entity/serverEntity");
-const databaseControl_1 = require("./databaseControl");
+const databaseControl_1 = __importDefault(require("./databaseControl"));
 const expiryControl_1 = __importDefault(require("./expiryControl"));
 class serverControl {
     static serverInitialiser() {
         return __awaiter(this, void 0, void 0, function* () {
-            const res = yield (0, databaseControl_1.GetOpenTicket)();
+            const res = yield databaseControl_1.default.GetOpenTicket();
             if (res != null)
-                serverEntity_1.serverEntity.setTickets(yield res);
-            console.log(serverEntity_1.serverEntity.getTicket());
+                serverEntity_1.serverEntity.setTickets(res);
             (0, expiryControl_1.default)();
         });
     }
@@ -29,28 +28,27 @@ class serverControl {
         for (const ticket of serverEntity_1.serverEntity.getTicket()) {
             if (ticket.ticketID == ticketID)
                 return ticket;
-            return null;
         }
+        return null;
     }
     static getOpenTicketByUserID(userID) {
         for (const ticket of serverEntity_1.serverEntity.getTicket()) {
             if (ticket.userID == userID)
                 return ticket;
-            return null;
         }
+        return null;
     }
     static createOpenTicket(object) {
         return __awaiter(this, void 0, void 0, function* () {
-            const res = (0, databaseControl_1.CreateOpenTicket)(object).then((res) => {
-                if (res == null)
-                    console.error("Server fail to create open ticket");
-                return res;
-            });
-            return yield res;
+            const res = yield databaseControl_1.default.CreateOpenTicket(object);
+            if (res == null)
+                console.error("Server fail to create open ticket");
+            return res;
         });
     }
     static addOpenTicketToServer(ticketID) {
-        (0, databaseControl_1.GetOpenTicketByTicketID)(ticketID).then((res) => {
+        return __awaiter(this, void 0, void 0, function* () {
+            const res = yield databaseControl_1.default.GetOpenTicketByTicketID(ticketID);
             if (res == null)
                 console.error("Server fail to retrieve open ticket");
             else {
@@ -66,24 +64,52 @@ class serverControl {
                 console.error("Incorrect data passed into update open ticket");
                 return false;
             }
-            const res = (0, databaseControl_1.UpdateOpenTicketEndTime)(object).then((res) => {
+            const res = databaseControl_1.default.UpdateOpenTicketEndTime(object).then((res) => {
                 if (!res)
                     console.error("Server failed to update database open ticket");
                 else {
                     const ticket = serverControl.getOpenTicketByTicketID(ticketID);
-                    console.log(serverControl.getOpenTicketByTicketID(ticketID));
                     if (!ticket)
                         console.error("Open ticket does not exist in server");
                     else {
-                        console.log(newEndTime);
                         ticket.ticketEndTime = newEndTime;
-                        console.log(serverControl.getOpenTicketByTicketID(ticketID));
                         return true;
                     }
                 }
                 return false;
             });
             return yield res;
+        });
+    }
+    static closeTicket(object) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { ticketID, closeTime } = object;
+            if (!ticketID || !closeTime) {
+                console.error("Incorrect data passed into update open ticket");
+                return false;
+            }
+            const ticket = serverControl.getOpenTicketByTicketID(ticketID);
+            if (!ticket) {
+                console.error("No existing open ticket");
+                return false;
+            }
+            ticket.actualEndTime = closeTime;
+            let res = yield databaseControl_1.default.CreateClosedTicket(ticket);
+            if (!res) {
+                console.error("Fail to create closed ticket");
+                return false;
+            }
+            res = yield databaseControl_1.default.CreateUserClosedTicket(ticket);
+            if (!res) {
+                console.error("Fail to create user closed ticket");
+                return false;
+            }
+            res = yield databaseControl_1.default.DeleteOpenTicket(ticket.ticketID);
+            if (!res) {
+                console.error("Fail to delete open ticket");
+                return false;
+            }
+            return true;
         });
     }
 }

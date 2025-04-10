@@ -14,6 +14,10 @@ class MainEntity {
     getUserEmail() {
         return this.userInformation?.userEmail ?? null;
     }
+    getUserName() {
+        const name = [this.userInformation?.firstName ?? '', this.userInformation?.lastName ?? ''].join(' ');
+        return name.length === 0 ? null : name;
+    }
     getUserFirstName() {
         return this.userInformation?.firstName ?? null;
     }
@@ -25,6 +29,7 @@ class MainEntity {
     }
     setTicket(openTicket) {
         this.openTicket = openTicket;
+        return true;
     }
     getTicket() {
         return this.openTicket;

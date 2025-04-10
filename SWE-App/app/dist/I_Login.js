@@ -5,8 +5,8 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { VerifyLogin } from "./controller/authenticationControl";
 import { AuthContext } from "./AuthContext";
 export default function I_Login({navigation}){
-    const [Email, setEmail] = useState("");
-    const [Password, setPassword] = useState("");
+    const [Email, setEmail] = useState("TIMO0038@e.ntu.edu.sg");
+    const [Password, setPassword] = useState("u2340882G!@");
     
     const {setIsLoggedIn} = useContext(AuthContext)
 
