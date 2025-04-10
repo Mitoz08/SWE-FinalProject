@@ -639,6 +639,58 @@ export default class dataBaseControl {
     }
 
     /**
+     * Function to return all the past closed tickets of the given user ID
+     * @param userID user ID to be queried
+     */
+    static async GetAllClosedTicket(userID:number) {
+        // Get all ticketIDs
+        const res = await Read(TableNames_App.UserClosedTickets,
+            {
+                [ColumnNames_App.userID]:
+                {
+                    [ConditionVariable.operator]: Operator.EqualTo, 
+                    [ConditionVariable.values]: userID
+                }
+            }
+
+        )
+        if (res === null) {
+            return ErrorMsg_MySQL();
+        }
+        if (res[0] === undefined) {
+            return ErrorMsg_NoEntry();
+        }
+
+        const ticketIDs = res.map(item => item.ticketID)
+
+        const allTickets = await Read(TableNames_App.ClosedTickets,
+            {
+                [ColumnNames_App.ticketID]:
+                {
+                    [ConditionVariable.operator] : Operator.In,
+                    [ConditionVariable.values] : ticketIDs
+                }
+            }
+        )
+
+        if (allTickets === null) {
+            return ErrorMsg_MySQL();
+        }
+        if (allTickets[0] === undefined) {
+            return ErrorMsg_NoEntry();
+        }
+
+        for (const ticket of allTickets){
+            ticket.address = await dataBaseControl.GetCarparkAddress(ticket.parkingLotID)
+        }
+
+        console.log(allTickets)
+
+        return allTickets
+
+    }
+
+    /**
      * Function to request for user's past tickets
      * @param ticketID ticket ID to be returned
      * @returns an object with the information of the closed tickets

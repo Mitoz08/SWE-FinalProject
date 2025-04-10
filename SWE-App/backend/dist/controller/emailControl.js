@@ -29,7 +29,7 @@ function NewTicketNotification(ticketID) {
 
     You have create a new ticket with ID: ${ticketID}.\n
     The Carpark is ${yield databaseControl_1.default.GetCarparkAddress(res.parkingLotID)}
-    The ticket ends on ${new Date(res.ticketEndTime)}.`;
+    The ticket ends on ${res.ticketEndTime.toISOString().replace("T", " ").substr(0, 19)}.`;
         const email = yield databaseControl_1.default.GetUserEmail(res.userID);
         if (email == null) {
             console.error(`No existing email found for user ID: ${res.userID}`);
@@ -51,7 +51,7 @@ function ExpiryNotification(ticketID) {
 
     You have ticket that is expiring soon. Ticket ID: ${ticketID}.
     The Carpark is ${yield databaseControl_1.default.GetCarparkAddress(res.parkingLotID)}
-    The ticket ends on ${new Date(res.ticketEndTime)}.`;
+    The ticket ends on ${res.ticketEndTime.toISOString().replace("T", " ").substr(0, 19)}.`;
         const email = yield databaseControl_1.default.GetUserEmail(res.userID);
         if (email == null) {
             console.error(`No existing email found for user ID: ${res.userID}`);

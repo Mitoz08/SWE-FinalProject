@@ -16,7 +16,7 @@ export async function NewTicketNotification(ticketID:number) {
 
     You have create a new ticket with ID: ${ticketID}.\n
     The Carpark is ${await dataBaseControl.GetCarparkAddress(res.parkingLotID)}
-    The ticket ends on ${new Date(res.ticketEndTime)}.`
+    The ticket ends on ${res.ticketEndTime.toISOString().replace("T", " ").substr(0,19)}.`
     const email = await dataBaseControl.GetUserEmail(res.userID)
     if (email == null) {
         console.error(`No existing email found for user ID: ${res.userID}`);
@@ -38,7 +38,7 @@ export async function ExpiryNotification(ticketID:number) {
 
     You have ticket that is expiring soon. Ticket ID: ${ticketID}.
     The Carpark is ${await dataBaseControl.GetCarparkAddress(res.parkingLotID)}
-    The ticket ends on ${new Date(res.ticketEndTime)}.`
+    The ticket ends on ${res.ticketEndTime.toISOString().replace("T", " ").substr(0,19)}.`
     const email = await dataBaseControl.GetUserEmail(res.userID)
     if (email == null) {
         console.error(`No existing email found for user ID: ${res.userID}`);

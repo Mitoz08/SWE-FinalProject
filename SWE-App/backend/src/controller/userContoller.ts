@@ -270,6 +270,25 @@ export async function E_ClosedTicket(req: Request, res:Response) : Promise<void>
 }
 
 
+export async function E_GetClosedTicketsByUserID(req: Request, res: Response) {
+    const {userID} = req.query;
+
+    if (!userID) {
+        res.status(400).json({ message: "userID is required." });
+        return;
+    }
+
+    const request = await dataBaseControl.GetAllClosedTicket(Number(userID as String))
+
+    if (request == null) res.status(500).json({message: "Failed to get closed ticket."})
+        else {
+            res.status(200).json({
+                message: "Closed ticket sucessfully returned",
+                closedTickets: request
+        }) 
+    }
+
+}
 
 export async function E_GetClosedTicket(req: Request, res:Response) : Promise<void> {
     const {ticketID} = req.query;

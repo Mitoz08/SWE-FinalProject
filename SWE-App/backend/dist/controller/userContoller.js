@@ -24,6 +24,7 @@ exports.E_GetOpenTicketByUserID = E_GetOpenTicketByUserID;
 exports.E_GetOpenTicketByTicketID = E_GetOpenTicketByTicketID;
 exports.E_UpdateOpenTicketEndTime = E_UpdateOpenTicketEndTime;
 exports.E_ClosedTicket = E_ClosedTicket;
+exports.E_GetClosedTicketsByUserID = E_GetClosedTicketsByUserID;
 exports.E_GetClosedTicket = E_GetClosedTicket;
 exports.E_CreateUserClosedTicket = E_CreateUserClosedTicket;
 exports.E_GetUserClosedTicket = E_GetUserClosedTicket;
@@ -260,6 +261,24 @@ function E_ClosedTicket(req, res) {
             res.status(201).json({
                 message: "Closed ticket sucessfully create",
                 boolean: request
+            });
+        }
+    });
+}
+function E_GetClosedTicketsByUserID(req, res) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const { userID } = req.query;
+        if (!userID) {
+            res.status(400).json({ message: "userID is required." });
+            return;
+        }
+        const request = yield databaseControl_1.default.GetAllClosedTicket(Number(userID));
+        if (request == null)
+            res.status(500).json({ message: "Failed to get closed ticket." });
+        else {
+            res.status(200).json({
+                message: "Closed ticket sucessfully returned",
+                closedTickets: request
             });
         }
     });
