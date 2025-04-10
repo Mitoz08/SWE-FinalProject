@@ -49,6 +49,7 @@ export default class serverControl {
     static async updateOpenTicketEndTime(object: any) {
 
         const {ticketID, newEndTime} = object
+        // console.log(typeof newEndTime)
 
         if (!ticketID || !newEndTime) {
             console.error("Incorrect data passed into update open ticket")
@@ -62,7 +63,7 @@ export default class serverControl {
                 if (!ticket) console.error("Open ticket does not exist in server")
                 else{
                     // console.log(newEndTime)
-                    ticket.ticketEndTime = newEndTime
+                    ticket.ticketEndTime = new Date(newEndTime)
                     // console.log(serverControl.getOpenTicketByTicketID(ticketID))
                     return true;
                 }

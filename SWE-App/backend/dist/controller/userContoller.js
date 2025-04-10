@@ -236,7 +236,6 @@ function E_UpdateOpenTicketEndTime(req, res) {
             return;
         }
         const request = yield serverControl_1.default.updateOpenTicketEndTime(object);
-        console.log("Request for Update endtime: ", request);
         if (request == null)
             res.status(500).json({ message: "Failed to update open ticket." });
         else {

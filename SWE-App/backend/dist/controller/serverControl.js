@@ -72,7 +72,7 @@ class serverControl {
                     if (!ticket)
                         console.error("Open ticket does not exist in server");
                     else {
-                        ticket.ticketEndTime = newEndTime;
+                        ticket.ticketEndTime = new Date(newEndTime);
                         return true;
                     }
                 }
