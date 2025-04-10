@@ -1,6 +1,6 @@
 import { initializeApp, FirebaseError } from "firebase/app";
 import {getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, User} from "firebase/auth";
-import {InitialiseUser} from "./mainControl";
+import mainControl from "./mainControl";
 //import {getDatabase} from "database.js"
  
 const firebaseConfig = {
@@ -53,7 +53,7 @@ export async function VerifyLogin(Email:string, Password:string) {
         //DC2
         const res = await fetch(`http://localhost:3000/UserID?userFirebaseID=${firebaseId}`, { method: "GET" })
         const {userID} = await res.json()
-        InitialiseUser(userID)
+        mainControl.InitialiseUser(userID)
         return true;
     } catch (error) {
         console.log(error)
@@ -118,7 +118,7 @@ export async function VerifySignUp(FirstName:string, LastName:string, Phone:stri
         }
         else {
             console.log("Initialising user")
-            InitialiseUser(object.userID);
+            mainControl.InitialiseUser(object.userID);
             return true;
         }
     } catch (error) {

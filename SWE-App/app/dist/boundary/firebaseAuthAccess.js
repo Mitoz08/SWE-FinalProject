@@ -1,7 +1,6 @@
 import { initializeApp } from "firebase/app";
 import dotenv from "dotenv";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
 dotenv.config();
 const firebaseConfig = {
     apiKey: process.env.FIREBASE_KEY,
@@ -13,7 +12,6 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const auth = getAuth();
-const db = getFirestore();
 export const SignUpMethod = async (Email, Password) => {
     const firebaseID = createUserWithEmailAndPassword(auth, Email, Password).then((userCredential) => {
         return userCredential.user.uid;

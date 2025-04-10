@@ -23,8 +23,8 @@ export default function I_SuccessfulUI({navigation}) {
                     <Text style={styles.detail}>Parking Lot: <Text style={styles.bold}>{ticket.parkingLotID}</Text></Text>
                     <Text style={styles.detail}>Address: <Text style={styles.bold}>{address}</Text></Text>
                     <Text style={styles.detail}>License Plate: <Text style={styles.bold}>{ticket.licensePlate}</Text></Text>
-                    <Text style={styles.detail}>Start Time: <Text style={styles.bold}>{format(ticket.ticketStartTime, "PPpp")}</Text></Text>
-                    <Text style={styles.detail}>End Time: <Text style={styles.bold}>{format(ticket.ticketEndTime, "PPpp")}</Text></Text>
+                    <Text style={styles.detail}>Start Time: <Text style={styles.bold}>{ticket.ticketStartTime.replace("T", " ").substr(0,19)}</Text></Text>
+                    <Text style={styles.detail}>End Time: <Text style={styles.bold}>{ticket.ticketEndTime.replace("T", " ").substr(0,19)}</Text></Text>
                 </View>
                 <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("I_MainPage")}> 
                     <Text style={styles.buttonText}>Back to Main Page</Text>

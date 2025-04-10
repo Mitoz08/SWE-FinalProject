@@ -110,6 +110,7 @@ function Create(table, data) {
             return result;
         }
         catch (error) {
+            console.log(error);
             return null;
         }
     });
@@ -135,6 +136,7 @@ function Read(table_1, data_1) {
             return result;
         }
         catch (error) {
+            console.log(error);
             return null;
         }
     });
@@ -169,6 +171,7 @@ function Update(table_1, data_1) {
             return result;
         }
         catch (error) {
+            console.log(error);
             return null;
         }
     });
@@ -194,6 +197,7 @@ function Delete(table_1, data_1) {
             return result;
         }
         catch (error) {
+            console.log(error);
             return null;
         }
     });

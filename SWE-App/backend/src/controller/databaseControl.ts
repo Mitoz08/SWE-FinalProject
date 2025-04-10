@@ -531,11 +531,11 @@ export async function GetOpenTicket() : Promise<OpenTicket[]|null> {
  * @returns true if successful
  */
 export async function UpdateOpenTicketEndTime( object:any ) : Promise<boolean|null> {
-    const {ticketID,ticketEndTime} = object
+    const {ticketID,newEndTime} = object
     const res = await Update(TableNames_App.OpenTickets,
         {
             "set": {
-                [ColumnNames_App.ticketEndTime] : dateToString(ticketEndTime)
+                [ColumnNames_App.ticketEndTime] : dateToString(newEndTime)
             },
             "where": {
                 [ColumnNames_App.ticketID]: 

@@ -8,16 +8,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NewTicketNotification = NewTicketNotification;
 exports.ExpiryNotification = ExpiryNotification;
 const emailAccess_1 = require("../boundary/emailAccess");
 const databaseControl_js_1 = require("./databaseControl.js");
-const serverControl_1 = require("./serverControl");
+const serverControl_1 = __importDefault(require("./serverControl"));
 function NewTicketNotification(ticketID) {
     return __awaiter(this, void 0, void 0, function* () {
         const subject = `New ticket created with ID: ${ticketID}`;
-        const res = (0, serverControl_1.getOpenTicketByTicketID)(ticketID);
+        const res = serverControl_1.default.getOpenTicketByTicketID(ticketID);
         if (res == null) {
             console.error(`No existing ticket with ID: ${ticketID}`);
             return false;
@@ -39,7 +42,7 @@ function NewTicketNotification(ticketID) {
 function ExpiryNotification(ticketID) {
     return __awaiter(this, void 0, void 0, function* () {
         const subject = `Expiration alert for ticket ID: ${ticketID}`;
-        const res = (0, serverControl_1.getOpenTicketByTicketID)(ticketID);
+        const res = serverControl_1.default.getOpenTicketByTicketID(ticketID);
         if (res == null) {
             console.error(`No existing ticket with ID: ${ticketID}`);
             return false;

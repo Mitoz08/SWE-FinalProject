@@ -8,6 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.E_AddNewUser = E_AddNewUser;
 exports.E_GetUserID = E_GetUserID;
@@ -29,7 +32,7 @@ exports.E_GetCarparkAddress = E_GetCarparkAddress;
 exports.E_GetRate = E_GetRate;
 const databaseControl_1 = require("./databaseControl");
 const emailControl_1 = require("./emailControl");
-const serverControl_1 = require("./serverControl");
+const serverControl_1 = __importDefault(require("./serverControl"));
 function E_AddNewUser(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { userFirebaseID } = req.body;
@@ -163,7 +166,7 @@ function E_CreateOpenTicket(req, res) {
             res.status(400).json({ message: "object is required." });
             return;
         }
-        const request = yield (0, databaseControl_1.CreateOpenTicket)(object);
+        const request = yield serverControl_1.default.createOpenTicket(object);
         if (request == null)
             res.status(500).json({ message: "Failed to create open ticket." });
         else {
@@ -171,7 +174,7 @@ function E_CreateOpenTicket(req, res) {
                 message: "Open ticket sucessfully created",
                 ticketID: request
             });
-            yield (0, emailControl_1.NewTicketNotification)(request).then(() => (0, serverControl_1.addOpenTicketToServer)(request));
+            yield (0, emailControl_1.NewTicketNotification)(request).then(() => serverControl_1.default.addOpenTicketToServer(request));
         }
     });
 }
@@ -183,7 +186,7 @@ function E_GetOpenTicketByUserID(req, res) {
             return;
         }
         if (typeof userID === "string") {
-            const request = (0, serverControl_1.getOpenTicketByUserID)(Number(userID));
+            const request = serverControl_1.default.getOpenTicketByUserID(Number(userID));
             if (request == null) {
                 res.status(200).json({
                     message: "Open ticket does not exsist",
@@ -210,7 +213,7 @@ function E_GetOpenTicketByTicketID(req, res) {
             return;
         }
         if (typeof ticketID === "string") {
-            const request = (0, serverControl_1.getOpenTicketByTicketID)(Number(ticketID));
+            const request = serverControl_1.default.getOpenTicketByTicketID(Number(ticketID));
             if (request == null)
                 res.status(500).json({ message: "Failed to get open ticket." });
             else {
@@ -228,11 +231,12 @@ function E_GetOpenTicketByTicketID(req, res) {
 function E_UpdateOpenTicketEndTime(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const object = req.body;
+        object.newEndTime = new Date(object.newEndTime);
         if (!object) {
             res.status(400).json({ message: "object is required." });
             return;
         }
-        const request = yield (0, databaseControl_1.GetOpenTicketByTicketID)(object);
+        const request = yield serverControl_1.default.updateOpenTicketEndTime(object);
         if (request == null)
             res.status(500).json({ message: "Failed to update open ticket." });
         else {
