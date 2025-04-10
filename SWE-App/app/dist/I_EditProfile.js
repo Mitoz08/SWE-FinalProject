@@ -84,7 +84,7 @@ export default function I_EditProfile({ navigation }) {
         if (logout) {
             setIsLoggedIn(false);
         } else {
-            navigation.navigate("I_ViewProfile")
+            navigation.goBack()
         }
     };
 
@@ -146,7 +146,7 @@ export default function I_EditProfile({ navigation }) {
 
                 <TouchableOpacity
                     style={styles.button}
-                    onPress={() => navigation.navigate("I_ViewProfile")}>
+                    onPress={() => navigation.goBack()}>
                     <Text style={styles.buttonText}>Back</Text>
                 </TouchableOpacity>
             </SafeAreaView>
