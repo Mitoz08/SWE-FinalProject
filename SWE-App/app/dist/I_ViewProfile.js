@@ -1,18 +1,12 @@
 
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { Text, StyleSheet, TouchableOpacity, Image, View, ScrollView } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { AuthContext } from "./AuthContext";
+import { mainEntity } from './entity/mainEntity';
 
 export default function I_ViewProfile({ navigation }) {
     const { isLoggedIn } = useContext(AuthContext);
-    const [userProfile, setUserProfile] = useState({
-        id: 0,
-        name: "",
-        email: "",
-        phoneNumber: "",
-    });
-    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         (async () => {
@@ -21,42 +15,12 @@ export default function I_ViewProfile({ navigation }) {
                 navigation.navigate("I_Login");
                 return;
             }
-
-            try {
-                // Fetch user profile data
-                // Replace with your actual API endpoint to fetch user profile
-                const response = await fetch("http://localhost:3000/UserInfo?userID="+2, { 
-                    method: "GET",
-                    // Add authentication headers if needed
-                });
-                
-                try {
-                    if (response.ok) {
-                        const res = await response.json();
-                        setUserProfile({
-                            id: res.userInfo.userID,
-                            name: `${res.userInfo.firstName} ${res.userInfo.lastName}`,
-                            email: res.userInfo.userEmail,
-                            phoneNumber: res.userInfo.userPhoneNo,
-                        });
-                    } else {
-                        alert("Failed to load profile data");
-                    }
-                } catch (error) {
-                    console.log("error getting response:", error);
-                }
-            } catch (error) {
-                console.log("error getting user info:", error);
-                alert("An error occurred while fetching profile data");
-            } finally {
-                setIsLoading(false);
-            };
         })();
     }, [isLoggedIn, navigation]);
 
     const handleEditProfile = () => {
         // Navigate to edit profile screen
-        navigation.navigate("I_EditProfile", {userProfile});
+        navigation.navigate("I_EditProfile");
     };
     return (
         <SafeAreaProvider>
@@ -64,24 +28,20 @@ export default function I_ViewProfile({ navigation }) {
                 <ScrollView contentContainerStyle={styles.scrollContainer}>
                     <View style={styles.profileHeader}>
                         <Text style={styles.headerTitle}>User Profile</Text>
-                        <Text style={styles.profileName}>{userProfile.name}</Text>
+                        <Text style={styles.profileName}>{mainEntity.getUserName()}</Text>
                     </View>
 
-                    {isLoading ? (
-                        <Text style={styles.loadingText}>Loading profile...</Text>
-                    ) : (
-                        <View style={styles.profileDetails}>
-                            <View style={styles.profileItem}>
-                                <Text style={styles.itemLabel}>Email:</Text>
-                                <Text style={styles.itemValue}>{userProfile.email}</Text>
-                            </View>
-                            
-                            <View style={styles.profileItem}>
-                                <Text style={styles.itemLabel}>Phone Number:</Text>
-                                <Text style={styles.itemValue}>{userProfile.phoneNumber}</Text>
-                            </View>
+                    <View style={styles.profileDetails}>
+                        <View style={styles.profileItem}>
+                            <Text style={styles.itemLabel}>Email:</Text>
+                            <Text style={styles.itemValue}>{mainEntity.getUserEmail()}</Text>
                         </View>
-                    )}
+
+                        <View style={styles.profileItem}>
+                            <Text style={styles.itemLabel}>Phone Number:</Text>
+                            <Text style={styles.itemValue}>{mainEntity.getUserPhoneNo()}</Text>
+                        </View>
+                    </View>
 
                     <TouchableOpacity 
                         style={styles.button}

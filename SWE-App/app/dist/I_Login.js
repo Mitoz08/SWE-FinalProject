@@ -2,11 +2,11 @@ import React, { useContext, useState } from "react";
 import { Text, StyleSheet, TouchableOpacity, Image, View } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { VerifyLogin } from "../src/controller/authenticationControl";
+import { VerifyLogin } from "./controller/authenticationControl";
 import { AuthContext } from "./AuthContext";
 export default function I_Login({navigation}){
-    const [Email, setEmail] = useState("wildontan2002@gmail.com");
-    const [Password, setPassword] = useState("Qwer1234!");
+    const [Email, setEmail] = useState("");
+    const [Password, setPassword] = useState("");
     
     const {setIsLoggedIn} = useContext(AuthContext)
 
