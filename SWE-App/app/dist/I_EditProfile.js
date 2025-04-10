@@ -100,7 +100,7 @@ export default function I_EditProfile({ navigation }) {
                     
                     <TouchableOpacity 
                         style={styles.button}
-                        onPress={() => navigation.goBack()}>
+                        onPress={() => navigation.navigate("I_ViewPage")}>
                         <Text style={styles.buttonText}>Back</Text>
                     </TouchableOpacity>
                 </ScrollView>
