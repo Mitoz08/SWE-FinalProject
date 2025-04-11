@@ -13,6 +13,7 @@ export default function I_PaymentUI({ navigation, route }) {
     const [max, setMax] = useState(false);
     const [min, setMin] = useState(false);
     const [paymentErrorMsg, setPaymentErrorMsg] = useState("");
+    const [processing, setProcessing] = useState(false)
 
     const increase = () => {
         if (interval >= 48) {
@@ -52,6 +53,21 @@ export default function I_PaymentUI({ navigation, route }) {
         }
     };
 
+    const handlePayment = () => {
+        if (processing) return
+        setProcessing(true)
+        ProcessPayment({
+            carparkNo: carparkID,
+            rate: rate,
+            licensePlate: licensePlate,
+            duration_hour: Math.floor((interval * intervalTime) / 60),
+            duration_min: (interval * intervalTime) % 60
+        })
+        .then(response => response ? navigation.navigate("I_SuccessfulUI") : setPaymentErrorMsg("Open Ticket already exists"))
+        .finally(() => {setProcessing(false)});
+    }
+
+
     return (
         <SafeAreaProvider>
             <SafeAreaView style={styles.container}>
@@ -71,16 +87,8 @@ export default function I_PaymentUI({ navigation, route }) {
                     </Text>
                     <Text style={styles.feeText}> Fee: ${showFee()}</Text>
                 <TouchableOpacity
-                        style={styles.payButton}
-                        onPress={() => {
-                            ProcessPayment({
-                                carparkNo: carparkID,
-                                rate: rate,
-                                licensePlate: licensePlate,
-                                duration_hour: Math.floor((interval * intervalTime) / 60),
-                                duration_min: (interval * intervalTime) % 60
-                            }).then(response => response ? navigation.navigate("I_SuccessfulUI") : setPaymentErrorMsg("Open Ticket already exists"));
-                        }}>
+                        style={[styles.payButton, processing && styles.disabledButton]}
+                        onPress={handlePayment}>
                         <Text style={styles.payButtonText}>Pay</Text>
                 </TouchableOpacity>
                     {paymentErrorMsg !== "" && <Text style={styles.errorMsg}>{paymentErrorMsg}</Text>}
@@ -156,7 +164,9 @@ const styles = StyleSheet.create({
         color: "white",
         fontSize: 18,
         fontWeight: "bold",
+    },  
+    disabledButton: {
+        backgroundColor: "#cccccc",
     },
-
   });
 

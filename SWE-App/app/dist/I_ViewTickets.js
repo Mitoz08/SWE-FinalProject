@@ -269,38 +269,39 @@ const AddTimeModal = ({ticketID, endTime, showModal, setShowModal}) => {
 
 
   return (
-    <Modal
-    visible={showModal}
-    transparent={true}
-    animationType="slide"
-    onRequestClose={() => setShowModal(false)}>
-      <View style={styles.modalBackground}>
-        <View style={styles.modalContainer}>
-          <Text style={styles.modalText}>Current End Time: {curEndTime.toISOString().replace("T", " ").substr(0,19)}</Text>
-          <Text style={styles.modalText}>New End Time: {newEndTime.toISOString().replace("T", " ").substr(0,19)}</Text>
-          <Text style={styles.modalText}>Extension: {incrementStr}</Text>
-          <TouchableOpacity style={styles.button} onPress={addTime}>
-            <Text style={styles.buttonText}>Add</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.button} onPress={removeTime}>
-            <Text style={styles.buttonText}>Minus</Text>
-          </TouchableOpacity>
+<Modal
+  visible={showModal}
+  transparent={true}
+  animationType="slide"
+  onRequestClose={() => setShowModal(false)}>
+  <View style={styles.modalBackground}>
+    <View style={styles.modalContainer}>
+      <Text style={styles.modalText}>Current End Time: {curEndTime.toISOString().replace("T", " ").substr(0,19)}</Text>
+      <Text style={styles.modalText}>New End Time: {newEndTime.toISOString().replace("T", " ").substr(0,19)}</Text>
+      <Text style={styles.modalText}>Extension: {incrementStr}</Text>
 
-          <TouchableOpacity
-            style={[styles.button, processing && styles.disabledButton]} 
-            onPress={handleConfirm}
-            disabled={processing} 
-          >
-            <Text style={styles.buttonText}>Comfirm</Text>
-          </TouchableOpacity>
+      <TouchableOpacity style={styles.payButton} onPress={addTime}>
+        <Text style={styles.payButtonText}>Add</Text>
+      </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button} onPress={() => setShowModal(false)}>
-            <Text style={styles.buttonText}>Cancel</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </Modal>
+      <TouchableOpacity style={styles.payButton} onPress={removeTime}>
+        <Text style={styles.payButtonText}>Minus</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[styles.payButton, processing && styles.disabledButton]} 
+        onPress={handleConfirm}
+        disabled={processing} 
+      >
+        <Text style={styles.payButtonText}>Confirm</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.payButton} onPress={() => setShowModal(false)}>
+        <Text style={styles.payButtonText}>Cancel</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+</Modal>
   )
 }
 
@@ -374,6 +375,22 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: "#f3f4f6",
   },
+  header: {
+    fontSize: 24,
+    fontWeight: "bold",
+    textAlign: "center",
+    color: "#333",
+    marginBottom: 16,
+  },
+  gradientContainer: {
+    padding: 8,
+    margin: 8,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
   card: {
     padding: 16,
     backgroundColor: "white",
@@ -400,37 +417,23 @@ const styles = StyleSheet.create({
     color: "#222",
   },
   button: {
-    margin: 10,
-    paddingVertical: 20, // Increased padding for larger buttons
-    paddingHorizontal: 30, // Increased padding for larger buttons
-    backgroundColor: "#4682b4",
-    borderRadius: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-    elevation: 5,
+      backgroundColor: "#007bff",
+      padding: 12,
+      margin: 16,
+      borderRadius: 10,
+      alignItems: "center",
   },
     buttonText: {
-      color: "#fff",
-      fontSize: 18, // Increased font size for better readability
+      color: "white",
+      fontSize: 16,
       fontWeight: "bold",
-      textAlign: "center",
   },
-  fixedButtonContainer: {
-    marginTop: 16,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-  },
-  fixedButton: {
-    flex: 1,
-    marginHorizontal: 8,
-    backgroundColor: "#007bff",
-    padding: 12,
-    borderRadius: 10,
+  ticketAction: {
+    flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
   },
+
   modalBackground: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -444,6 +447,33 @@ const styles = StyleSheet.create({
     width: '80%',
     alignItems: 'center',
   },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  disabledButton: {
+    backgroundColor: "#cccccc",
+  },
+  payButton: {
+    backgroundColor: '#007bff',
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginVertical: 5,
+  },
+  
+  payButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  
+  disabledButton: {
+    backgroundColor: '#ccc',
+  },
+
 });
 
 // const styles = StyleSheet.create({
@@ -451,22 +481,6 @@ const styles = StyleSheet.create({
 //     flex: 1,
 //     padding: 16,
 //     backgroundColor: "#f3f4f6",
-//   },
-//   header: {
-//     fontSize: 24,
-//     fontWeight: "bold",
-//     textAlign: "center",
-//     color: "#333",
-//     marginBottom: 16,
-//   },
-//   gradientContainer: {
-//     padding: 8,
-//     margin: 8,
-//     borderRadius: 10,
-//     shadowColor: "#000",
-//     shadowOffset: { width: 0, height: 2 },
-//     shadowOpacity: 0.2,
-//     shadowRadius: 4,
 //   },
 //   card: {
 //     padding: 16,
@@ -494,23 +508,37 @@ const styles = StyleSheet.create({
 //     color: "#222",
 //   },
 //   button: {
-//       backgroundColor: "#007bff",
-//       padding: 12,
-//       margin: 16,
-//       borderRadius: 10,
-//       alignItems: "center",
+//     margin: 10,
+//     paddingVertical: 20, // Increased padding for larger buttons
+//     paddingHorizontal: 30, // Increased padding for larger buttons
+//     backgroundColor: "#4682b4",
+//     borderRadius: 10,
+//     shadowColor: "#000",
+//     shadowOffset: { width: 0, height: 2 },
+//     shadowOpacity: 0.3,
+//     shadowRadius: 3,
+//     elevation: 5,
 //   },
-//     buttonText: {
-//       color: "white",
-//       fontSize: 16,
+//   buttonText: {
+//       color: "#fff",
+//       fontSize: 18, // Increased font size for better readability
 //       fontWeight: "bold",
+//       textAlign: "center",
 //   },
-//   ticketAction: {
-//     flexDirection: "row",
+//   fixedButtonContainer: {
+//     marginTop: 16,
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     paddingHorizontal: 16,
+//   },
+//   fixedButton: {
+//     flex: 1,
+//     marginHorizontal: 8,
+//     backgroundColor: "#007bff",
+//     padding: 12,
+//     borderRadius: 10,
 //     alignItems: "center",
-//     justifyContent: "center",
 //   },
-
 //   modalBackground: {
 //     flex: 1,
 //     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -524,12 +552,5 @@ const styles = StyleSheet.create({
 //     width: '80%',
 //     alignItems: 'center',
 //   },
-//   modalText: {
-//     fontSize: 16,
-//     marginBottom: 10,
-//     textAlign: 'center',
-//   },
-//   disabledButton: {
-//     backgroundColor: "#cccccc",
-//   },
 // });
+
