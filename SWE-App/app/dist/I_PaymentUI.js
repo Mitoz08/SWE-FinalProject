@@ -78,9 +78,9 @@ export default function I_PaymentUI({ navigation, route }) {
                     />
                     <Text style={styles.heading}>Parking Payment</Text>
                     <View style={styles.timeControl}>
-                        <AntDesign name="remove-circle" size={50} color={"#007bff"} onPress={decrease} />
+                        <AntDesign name="remove-circle" size={50} color={"#4682b4"} onPress={decrease} />
                         <Text style={styles.timeText}>{showTime()}</Text>
-                        <AntDesign name="add-circle" size={50} color={"#007bff"} onPress={increase} />
+                        <AntDesign name="add-circle" size={50} color={"#4682b4"} onPress={increase} />
                     </View>
                     <Text style={styles.errorMsg}>
                         {min ? "Minimum duration is 30 mins" : max ? "Maximum duration is 24 hours" : ""}
@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     payButton: {
-        backgroundColor: "#007bff",
+        backgroundColor: "#4682b4",
         paddingVertical: 12,
         paddingHorizontal: 20,
         borderRadius: 25,

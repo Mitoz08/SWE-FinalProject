@@ -3,6 +3,7 @@ import { Text, StyleSheet, View, TouchableOpacity, Modal } from "react-native";
 import { SafeAreaProvider, SafeAreaView, useSafeAreaFrame } from "react-native-safe-area-context";
 import viewTicketControl from "./controller/viewTicketsControl";
 import { FlatList } from "react-native-gesture-handler";
+import { AntDesign } from "@expo/vector-icons";
 
 export default function I_ViewTickets({navigation}) {
 
@@ -214,6 +215,8 @@ const AddTimeModal = ({ticketID, endTime, showModal, setShowModal}) => {
   const [incrementStr, setIncrementStr] = useState("")
   const [increment, setIncrement] = useState(1)
   const [processing, setProcessing] = useState(false)
+  const [max, setMax] = useState(false);
+  const [min, setMin] = useState(false);
 
 
   const curEndTime = new Date(endTime)
@@ -221,16 +224,27 @@ const AddTimeModal = ({ticketID, endTime, showModal, setShowModal}) => {
   newEndTime.setMinutes(curEndTime.getMinutes() + intervalTime*increment)
 
   const addTime = () => {
-    if(increment >= 24) return false;
-    setIncrement(increment + 1)
-    return true;
+    if(increment >= 24) {
+      setMax(true)
+      return false;
+    } else {
+      setMin(false)
+      setIncrement(increment + 1)
+      return true;
+    }
   }
 
   const removeTime = () => {
-    if(increment <= 1) return false;
-    setIncrement(increment - 1)
-    return true;
+    if(increment <= 1) {
+      setMin(true)
+      return false;
+    } else {
+      setMax(false)
+      setIncrement(increment - 1)
+      return true;
+    }
   }
+
   useEffect(() => {
       const updateIncrementTime = () => {
         const hour = Math.floor((increment*intervalTime)/60)
@@ -278,27 +292,36 @@ const AddTimeModal = ({ticketID, endTime, showModal, setShowModal}) => {
     <View style={styles.modalContainer}>
       <Text style={styles.modalText}>Current End Time: {curEndTime.toISOString().replace("T", " ").substr(0,19)}</Text>
       <Text style={styles.modalText}>New End Time: {newEndTime.toISOString().replace("T", " ").substr(0,19)}</Text>
-      <Text style={styles.modalText}>Extension: {incrementStr}</Text>
+  
+      <View style={styles.iconButtonRow}>
+        <TouchableOpacity style={styles.payButton} onPress={addTime}>
+          <AntDesign name="pluscircle" size={24} color="#fff" />
+        </TouchableOpacity>
+        <View>
+          <Text style={styles.timeText}>Extension</Text>
+          <Text style={styles.timeText}>{incrementStr}</Text>
+        </View>
+        <TouchableOpacity style={styles.payButton} onPress={removeTime}>
+          <AntDesign name="minuscircle" size={24} color="#fff" />
+        </TouchableOpacity>
+      </View>
+      <Text style={styles.errorMsg}>
+          {min ? "Minimum duration is 30 mins" : max ? "Maximum duration is 12 hours" : ""}
+      </Text>
 
-      <TouchableOpacity style={styles.payButton} onPress={addTime}>
-        <Text style={styles.payButtonText}>Add</Text>
-      </TouchableOpacity>
+      <View style={styles.iconButtonRow}>
+        <TouchableOpacity
+          style={[styles.payButton, processing && styles.disabledButton]} 
+          onPress={handleConfirm}
+          disabled={processing} 
+        >
+          <Text style={styles.payButtonText}>Confirm</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity style={styles.payButton} onPress={removeTime}>
-        <Text style={styles.payButtonText}>Minus</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={[styles.payButton, processing && styles.disabledButton]} 
-        onPress={handleConfirm}
-        disabled={processing} 
-      >
-        <Text style={styles.payButtonText}>Confirm</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity style={styles.payButton} onPress={() => setShowModal(false)}>
-        <Text style={styles.payButtonText}>Cancel</Text>
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.payButton} onPress={() => setShowModal(false)}>
+          <Text style={styles.payButtonText}>Cancel</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   </View>
 </Modal>
@@ -351,17 +374,19 @@ const CloseTicketModal = ({ticket, showModal, setShowModal}) => {
           <Text style={styles.modalText}>Current Time: {currentTime.toISOString().replace("T", " ").substr(0,19)}</Text>
           <Text style={styles.modalText}>Time Charged: {hours} Hr{hours > 1? "s":""} {mins == 0? "00":mins} Mins</Text>
           <Text style={styles.modalText}>Do you want to proceed?</Text>
-          <TouchableOpacity
-            style={[styles.button, processing && styles.disabledButton]} 
-            onPress={handleConfirm}
-            disabled={processing} 
-          >
-            <Text style={styles.buttonText}>Comfirm</Text>
-          </TouchableOpacity>
+          <View style={styles.iconButtonRow}>
+            <TouchableOpacity
+              style={[styles.payButton, processing && styles.disabledButton]} 
+              onPress={handleConfirm}
+              disabled={processing} 
+            >
+              <Text style={styles.payButtonText}>Confirm</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity style={styles.button} onPress={() => setShowModal(false)}>
-            <Text style={styles.buttonText}>Cancel</Text>
-          </TouchableOpacity>
+            <TouchableOpacity style={styles.payButton} onPress={() => setShowModal(false)}>
+              <Text style={styles.payButtonText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </Modal>
@@ -417,13 +442,13 @@ const styles = StyleSheet.create({
     color: "#222",
   },
   button: {
-      backgroundColor: "#007bff",
+      backgroundColor: "#4682b4",
       padding: 12,
       margin: 16,
       borderRadius: 10,
       alignItems: "center",
   },
-    buttonText: {
+  buttonText: {
       color: "white",
       fontSize: 16,
       fontWeight: "bold",
@@ -433,7 +458,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-
+  errorMsg: {
+    color: "#F00",
+    marginTop: 10,
+  },
   modalBackground: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -456,12 +484,19 @@ const styles = StyleSheet.create({
     backgroundColor: "#cccccc",
   },
   payButton: {
-    backgroundColor: '#007bff',
-    paddingVertical: 12,
-    paddingHorizontal: 25,
+    backgroundColor: "#4682b4",
+    padding: 10,
     borderRadius: 10,
     alignItems: 'center',
+    justifyContent: 'center',
     marginVertical: 5,
+    marginHorizontal: 5,
+  },
+  iconButtonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 10,
+    marginVertical: 10,
   },
   
   payButtonText: {
@@ -472,6 +507,17 @@ const styles = StyleSheet.create({
   
   disabledButton: {
     backgroundColor: '#ccc',
+  },
+  timeText: {
+    fontSize: 20,
+    marginHorizontal: 15,
+    color: "#333",
+  },
+
+  timeText: {
+    fontSize: 20,
+    marginHorizontal: 15,
+    color: "#333",
   },
 
 });
