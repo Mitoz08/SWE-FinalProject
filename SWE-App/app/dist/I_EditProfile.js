@@ -157,6 +157,7 @@ export default function I_EditProfile({ navigation }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        alignItems: 'center',
     },
     profileHeader: {
         alignItems: 'center',
@@ -193,7 +194,7 @@ const styles = StyleSheet.create({
         fontWeight: '500',
     },
     button: {
-        width: '100%',
+        width: '90%',
         margin: 10,
         paddingVertical: 20,
         paddingHorizontal: 15,
