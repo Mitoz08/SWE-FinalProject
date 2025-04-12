@@ -93,7 +93,7 @@ export default function I_EditProfile({ navigation }) {
             <SafeAreaView style={styles.container}>
                 <ConfirmationModal
                     isOpen={showConfirmation}
-                    title="Confirm Delete"
+                    title="Confirm Edit"
                     message="You will be logged out when changing your email. Are you sure?"
                     onConfirm={() => handleUpdateProfile(false, true)}
                     onCancel={() => setShowConfirmation(false)}
