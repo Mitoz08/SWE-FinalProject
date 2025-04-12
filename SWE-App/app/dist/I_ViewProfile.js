@@ -1,5 +1,5 @@
 
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Text, StyleSheet, TouchableOpacity, Image, View, ScrollView } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { AuthContext } from "./AuthContext";
@@ -7,6 +7,9 @@ import { mainEntity } from './entity/mainEntity';
 
 export default function I_ViewProfile({ navigation }) {
     const { isLoggedIn } = useContext(AuthContext);
+    const [UserName, setUserName] = useState(mainEntity.getUserName());
+    const [UserEmail, setUserEmail] = useState(mainEntity.getUserEmail());
+    const [UserPhoneNo, setUserPhoneNo] = useState(mainEntity.getUserPhoneNo());
 
     useEffect(() => {
         (async () => {
@@ -16,6 +19,11 @@ export default function I_ViewProfile({ navigation }) {
                 return;
             }
         })();
+        return navigation.addListener('focus', (e) => {
+            setUserName(mainEntity.getUserName());
+            setUserEmail(mainEntity.getUserEmail());
+            setUserPhoneNo(mainEntity.getUserPhoneNo());
+        });
     }, [isLoggedIn, navigation]);
 
     const handleEditProfile = () => {
@@ -28,18 +36,18 @@ export default function I_ViewProfile({ navigation }) {
                 <ScrollView contentContainerStyle={styles.scrollContainer}>
                     <View style={styles.profileHeader}>
                         <Text style={styles.headerTitle}>User Profile</Text>
-                        <Text style={styles.profileName}>{mainEntity.getUserName()}</Text>
+                        <Text style={styles.profileName}>{UserName}</Text>
                     </View>
 
                     <View style={styles.profileDetails}>
                         <View style={styles.profileItem}>
                             <Text style={styles.itemLabel}>Email:</Text>
-                            <Text style={styles.itemValue}>{mainEntity.getUserEmail()}</Text>
+                            <Text style={styles.itemValue}>{UserEmail}</Text>
                         </View>
 
                         <View style={styles.profileItem}>
                             <Text style={styles.itemLabel}>Phone Number:</Text>
-                            <Text style={styles.itemValue}>{mainEntity.getUserPhoneNo()}</Text>
+                            <Text style={styles.itemValue}>{UserPhoneNo}</Text>
                         </View>
                     </View>
 
