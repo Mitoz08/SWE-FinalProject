@@ -1,10 +1,9 @@
 import { 
     TableNames_App, ColumnNames_App, TableNames_HDBInfo, ColumnNames_HDBInfo, Operator, 
-    ConditionVariable, Create, Read, Update, Delete, 
-    endDBConnection
+    ConditionVariable
 } from "../boundary/databaseAccess";
 import { ClosedTicket, OpenTicket, UserInformation } from "../entity/databaseTypes";
-
+import databaseRepository from "../boundary/databaseAccess";
 
 enum feeTypes {
     motorcycle = 0.65,
@@ -37,7 +36,7 @@ export default class dataBaseControl {
      * @returns the inserted ID which is their user ID
      */
         static async AddNewUser( userFirebaseID:String ) : Promise<number|null>{
-        const res = await Create(TableNames_App.UserID, 
+        const res = await databaseRepository.Create(TableNames_App.UserID, 
             {
                 [ColumnNames_App.userFirebaseID] : userFirebaseID
             }
@@ -55,7 +54,7 @@ export default class dataBaseControl {
      * @returns user ID of given FirebaseID
      */
     static async GetUserID( userFirebaseID:String ) : Promise<number|null> {
-        const res = await Read(TableNames_App.UserID, 
+        const res = await databaseRepository.Read(TableNames_App.UserID, 
             {  
                 [ColumnNames_App.userFirebaseID]:
                 {
@@ -142,7 +141,7 @@ export default class dataBaseControl {
      * @returns true if successful
      */
     static async DeleteUser(userID:number) : Promise<boolean|null> {
-        const res = await Delete(TableNames_App.UserID,
+        const res = await databaseRepository.Delete(TableNames_App.UserID,
             {
                 [ColumnNames_App.userID] : 
                 {
@@ -180,7 +179,7 @@ export default class dataBaseControl {
             return null;
         }
         console.log(object)
-        const res = await Create(TableNames_App.UserInformation, 
+        const res = await databaseRepository.Create(TableNames_App.UserInformation, 
             {
                 [ColumnNames_App.userID] : userID,
                 [ColumnNames_App.userEmail] : userEmail,
@@ -201,7 +200,7 @@ export default class dataBaseControl {
      * @returns UserInfomation object
      */
     static async GetUserInfo( userID:number ) : Promise<UserInformation|null> {
-        const res = await Read(TableNames_App.UserInformation, 
+        const res = await databaseRepository.Read(TableNames_App.UserInformation, 
             {  
                 [ColumnNames_App.userID]:
                 {
@@ -227,7 +226,7 @@ export default class dataBaseControl {
      * @returns String of length 8
      */
     static async GetUserEmail( userID:number ) : Promise<string|null> {
-        const res = await Read(TableNames_App.UserInformation, 
+        const res = await databaseRepository.Read(TableNames_App.UserInformation, 
             {  
                 [ColumnNames_App.userID]:
                 {
@@ -268,7 +267,7 @@ export default class dataBaseControl {
             return null;
         }
 
-        const res = await Update(TableNames_App.UserInformation, 
+        const res = await databaseRepository.Update(TableNames_App.UserInformation, 
             {  
                 "set":
                 {
@@ -327,7 +326,7 @@ export default class dataBaseControl {
      */
     static async AddUserPayment( userID:number, customerID:String) : Promise<boolean|null> {
         
-        const res = await Create(TableNames_App.UserPayment, 
+        const res = await databaseRepository.Create(TableNames_App.UserPayment, 
             {
                 [ColumnNames_App.userID] : userID,
                 [ColumnNames_App.customerID] : customerID
@@ -345,7 +344,7 @@ export default class dataBaseControl {
      * @returns the customerID for Stripe API
      */
     static async GetUserPayment( userID:number ) : Promise<String|null> {
-        const res = await Read(TableNames_App.UserPayment, 
+        const res = await databaseRepository.Read(TableNames_App.UserPayment, 
             {  
                 [ColumnNames_App.userID]:
                 {
@@ -373,7 +372,7 @@ export default class dataBaseControl {
      */
     static async UpdateUserPayment(userID:number, customerID:String) : Promise<boolean|null> {
 
-        const res = await Update(TableNames_App.UserPayment, 
+        const res = await databaseRepository.Update(TableNames_App.UserPayment, 
             {  
                 "set":
                 {
@@ -434,7 +433,7 @@ export default class dataBaseControl {
     static async CreateOpenTicket( object:any ) : Promise<number|null> {
         const {vehType, parkingLotID, licensePlate, ticketStartTime, ticketEndTime, userID} = object
         console.log(vehType, parkingLotID, licensePlate, ticketStartTime, ticketEndTime, userID)
-        const res = await Create(TableNames_App.OpenTickets, 
+        const res = await databaseRepository.Create(TableNames_App.OpenTickets, 
             {
                 [ColumnNames_App.vehType] : vehType,
                 [ColumnNames_App.parkingLotID] : parkingLotID,
@@ -457,7 +456,7 @@ export default class dataBaseControl {
      */
     static async GetOpenTicketByUserID( userID:number ) : Promise<OpenTicket|null> {
         
-        const res = await Read(TableNames_App.OpenTickets, 
+        const res = await databaseRepository.Read(TableNames_App.OpenTickets, 
             {
                 [ColumnNames_App.userID]:
                 {
@@ -486,7 +485,7 @@ export default class dataBaseControl {
      */
     static async GetOpenTicketByTicketID( ticketID:number ) : Promise<OpenTicket|null> {
         
-        const res = await Read(TableNames_App.OpenTickets, 
+        const res = await databaseRepository.Read(TableNames_App.OpenTickets, 
             {
                 [ColumnNames_App.ticketID]:
                 {
@@ -509,7 +508,7 @@ export default class dataBaseControl {
 
     static async GetOpenTicket() : Promise<OpenTicket[]|null> {
     
-        const res = await Read(TableNames_App.OpenTickets)
+        const res = await databaseRepository.Read(TableNames_App.OpenTickets)
         if (res === null) {
             return ErrorMsg_MySQL();
         }
@@ -534,7 +533,7 @@ export default class dataBaseControl {
      */
     static async UpdateOpenTicketEndTime( object:any ) : Promise<boolean|null> {
         const {ticketID,newEndTime} = object
-        const res = await Update(TableNames_App.OpenTickets,
+        const res = await databaseRepository.Update(TableNames_App.OpenTickets,
             {
                 "set": {
                     [ColumnNames_App.ticketEndTime] : dataBaseControl.dateToString(new Date(newEndTime))
@@ -561,7 +560,7 @@ export default class dataBaseControl {
 
     static async UpdateOpenTicketNotified( object: {ticketID:number, value:boolean} ) : Promise<boolean|null> {
         const {ticketID,value} = object
-        const res = await Update(TableNames_App.OpenTickets,
+        const res = await databaseRepository.Update(TableNames_App.OpenTickets,
             {
                 "set": {
                     [ColumnNames_App.notified] : value
@@ -593,7 +592,7 @@ export default class dataBaseControl {
      * @returns true if ticket is deleted
      */
     static async DeleteOpenTicket(ticketID:number) : Promise<boolean|null> {
-        const res = await Delete(TableNames_App.OpenTickets,
+        const res = await databaseRepository.Delete(TableNames_App.OpenTickets,
             {
                 [ColumnNames_App.ticketID] : 
                 {
@@ -623,7 +622,7 @@ export default class dataBaseControl {
      */
     static async CreateClosedTicket( object:any ) : Promise<boolean|null> {
         const {ticketID, parkingLotID, licensePlate, ticketStartTime, ticketEndTime, actualEndTime} = object
-        const res = await Create(TableNames_App.ClosedTickets, 
+        const res = await databaseRepository.Create(TableNames_App.ClosedTickets, 
             {
                 [ColumnNames_App.ticketID] : ticketID,
                 [ColumnNames_App.parkingLotID] : parkingLotID,
@@ -645,7 +644,7 @@ export default class dataBaseControl {
      */
     static async GetAllClosedTicket(userID:number) {
         // Get all ticketIDs
-        const res = await Read(TableNames_App.UserClosedTickets,
+        const res = await databaseRepository.Read(TableNames_App.UserClosedTickets,
             {
                 [ColumnNames_App.userID]:
                 {
@@ -664,7 +663,7 @@ export default class dataBaseControl {
 
         const ticketIDs = res.map(item => item.ticketID)
 
-        const allTickets = await Read(TableNames_App.ClosedTickets,
+        const allTickets = await databaseRepository.Read(TableNames_App.ClosedTickets,
             {
                 [ColumnNames_App.ticketID]:
                 {
@@ -683,9 +682,11 @@ export default class dataBaseControl {
 
         for (const ticket of allTickets){
             ticket.address = await dataBaseControl.GetCarparkAddress(ticket.parkingLotID)
+            ticket.fee = await dataBaseControl.GetRate({ carparkID: ticket.parkingLotID , vehType: ticket.vehType })
         }
 
-        console.log(allTickets)
+
+        // console.log(allTickets)
 
         return allTickets
 
@@ -698,7 +699,7 @@ export default class dataBaseControl {
      */
     static async GetClosedTicket( ticketID:number ) : Promise<ClosedTicket|null> {
         
-        const res = await Read(TableNames_App.ClosedTickets, 
+        const res = await databaseRepository.Read(TableNames_App.ClosedTickets, 
             {
                 [ColumnNames_App.ticketID]:
                 {
@@ -725,7 +726,7 @@ export default class dataBaseControl {
      */
     static async CreateUserClosedTicket(object:any): Promise<boolean|null> {
         const {ticketID, userID} = object
-        const res = await Create(TableNames_App.UserClosedTickets,
+        const res = await databaseRepository.Create(TableNames_App.UserClosedTickets,
             {
                 [ColumnNames_App.userID] : userID,
                 [ColumnNames_App.ticketID] : ticketID
@@ -743,7 +744,7 @@ export default class dataBaseControl {
      * @returns an array of (userID,ticketID)
      */
     static async GetUserClosedTicket(userID: number): Promise<object|null> {
-        const res = await Read(TableNames_App.UserClosedTickets,
+        const res = await databaseRepository.Read(TableNames_App.UserClosedTickets,
             {
                 [ColumnNames_App.userID]:
                 {
@@ -796,7 +797,7 @@ export default class dataBaseControl {
      * @returns address of the carparkID
      */
     static async GetCarparkAddress(carparkID: string): Promise<String|null> {
-        const res = await Read(TableNames_HDBInfo.HDBCarpark, {
+        const res = await databaseRepository.Read(TableNames_HDBInfo.HDBCarpark, {
             [ColumnNames_HDBInfo.carparkNo] : {
                 [ConditionVariable.operator] : Operator.EqualTo,
                 [ConditionVariable.values] : carparkID
@@ -824,7 +825,7 @@ export default class dataBaseControl {
         else if (vehType == "HV")
             return feeTypes.heavy_vehicle;
         else if (vehType == "C") {
-            const res = await Read(TableNames_HDBInfo.WithinCtrlArea, {
+            const res = await databaseRepository.Read(TableNames_HDBInfo.WithinCtrlArea, {
                 [ColumnNames_HDBInfo.carparkNo] : {
                     [ConditionVariable.operator] : Operator.EqualTo,
                     [ConditionVariable.values] : carparkID

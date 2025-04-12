@@ -13,11 +13,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ConditionVariable = exports.Operator = exports.ColumnNames_HDBInfo = exports.TableNames_HDBInfo = exports.ColumnNames_App = exports.TableNames_App = void 0;
-exports.Create = Create;
-exports.Read = Read;
-exports.Update = Update;
-exports.Delete = Delete;
-exports.endDBConnection = endDBConnection;
 const mysql2_1 = __importDefault(require("mysql2"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
@@ -99,125 +94,128 @@ const pool = mysql2_1.default.createPool({
     connectionLimit: 10,
     queueLimit: 0,
 }).promise();
-function Create(table, data) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const variables = Object.keys(data).join(",");
-        const values = Object.values(data);
-        const parameter = values.map(() => "?").join(",");
-        try {
-            const [result] = yield pool.execute(`
-            INSERT INTO ${[table]} (${variables})
-            VALUES (${parameter})
-            `, values);
-            return result;
-        }
-        catch (error) {
-            console.log(error);
-            return null;
-        }
-    });
-}
-function Read(table_1, data_1) {
-    return __awaiter(this, arguments, void 0, function* (table, data, by = "AND") {
-        const conditionStatment = [];
-        const values = [];
-        try {
-            var whereStatement = "";
-            if (typeof data === "object") {
-                for (const [column, conditions] of Object.entries(data)) {
-                    if (conditions.operator == Operator.In) {
-                        if (!Array.isArray(conditions.values)) {
-                            console.error("No array was given for \"Where variable IN [array]\". Condition skipped ");
-                            continue;
-                        }
-                        else {
-                            const placeHolders = conditions.values.map(() => '?').join(", ");
-                            conditionStatment.push(`${column} ${[conditions.operator]} (${placeHolders})`);
-                            for (const value of conditions.values) {
-                                values.push(value);
+class databaseRepository {
+    static Create(table, data) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const variables = Object.keys(data).join(",");
+            const values = Object.values(data);
+            const parameter = values.map(() => "?").join(",");
+            try {
+                const [result] = yield pool.execute(`
+                INSERT INTO ${[table]} (${variables})
+                VALUES (${parameter})
+                `, values);
+                return result;
+            }
+            catch (error) {
+                console.log(error);
+                return null;
+            }
+        });
+    }
+    static Read(table_1, data_1) {
+        return __awaiter(this, arguments, void 0, function* (table, data, by = "AND") {
+            const conditionStatment = [];
+            const values = [];
+            try {
+                var whereStatement = "";
+                if (typeof data === "object") {
+                    for (const [column, conditions] of Object.entries(data)) {
+                        if (conditions.operator == Operator.In) {
+                            if (!Array.isArray(conditions.values)) {
+                                console.error("No array was given for \"Where variable IN [array]\". Condition skipped ");
+                                continue;
                             }
-                            continue;
+                            else {
+                                const placeHolders = conditions.values.map(() => '?').join(", ");
+                                conditionStatment.push(`${column} ${[conditions.operator]} (${placeHolders})`);
+                                for (const value of conditions.values) {
+                                    values.push(value);
+                                }
+                                continue;
+                            }
                         }
+                        conditionStatment.push(`${column} ${[conditions.operator]} ?`);
+                        values.push(conditions.values);
                     }
-                    conditionStatment.push(`${column} ${[conditions.operator]} ?`);
-                    values.push(conditions.values);
+                    whereStatement = conditionStatment.length ? `WHERE ${conditionStatment.join(` ${by} `)}` : "";
                 }
-                whereStatement = conditionStatment.length ? `WHERE ${conditionStatment.join(` ${by} `)}` : "";
+                const [result] = yield pool.execute(`
+                SELECT * 
+                FROM ${[table]}
+                ${whereStatement} 
+                `, values);
+                return result;
             }
-            const [result] = yield pool.execute(`
-            SELECT * 
-            FROM ${[table]}
-            ${whereStatement} 
-            `, values);
-            return result;
-        }
-        catch (error) {
-            console.log(error);
-            return null;
-        }
-    });
-}
-function Update(table_1, data_1) {
-    return __awaiter(this, arguments, void 0, function* (table, data, by = "AND") {
-        const variablesStatement = [];
-        const conditionStatment = [];
-        const values = [];
-        var setStatement = "";
-        var whereStatement = "";
-        try {
-            const setData = data.set;
-            const whereData = data.where;
-            for (const [column, value] of Object.entries(setData)) {
-                variablesStatement.push(`${column} = ?`);
-                values.push(value);
+            catch (error) {
+                console.log(error);
+                return null;
             }
-            setStatement = `SET ${variablesStatement.join(",")}`;
-            if (typeof whereData === "object") {
-                for (const [column, conditions] of Object.entries(whereData)) {
-                    conditionStatment.push(`${column} ${[conditions.operator]} ?`);
-                    values.push(conditions.values);
-                }
-                whereStatement = conditionStatment.length ? `WHERE ${conditionStatment.join(` ${by} `)}` : "";
-            }
-            const [result] = yield pool.execute(`
-            UPDATE ${[table]}
-            ${setStatement}
-            ${whereStatement} 
-            `, values);
-            return result;
-        }
-        catch (error) {
-            console.log(error);
-            return null;
-        }
-    });
-}
-function Delete(table_1, data_1) {
-    return __awaiter(this, arguments, void 0, function* (table, data, by = "AND") {
-        const conditionStatment = [];
-        const values = [];
-        try {
+        });
+    }
+    static Update(table_1, data_1) {
+        return __awaiter(this, arguments, void 0, function* (table, data, by = "AND") {
+            const variablesStatement = [];
+            const conditionStatment = [];
+            const values = [];
+            var setStatement = "";
             var whereStatement = "";
-            if (typeof data === "object") {
-                for (const [column, conditions] of Object.entries(data)) {
-                    conditionStatment.push(`${column} ${[conditions.operator]} ?`);
-                    values.push(conditions.values);
+            try {
+                const setData = data.set;
+                const whereData = data.where;
+                for (const [column, value] of Object.entries(setData)) {
+                    variablesStatement.push(`${column} = ?`);
+                    values.push(value);
                 }
-                whereStatement = conditionStatment.length ? `WHERE ${conditionStatment.join(` ${by} `)}` : "";
+                setStatement = `SET ${variablesStatement.join(",")}`;
+                if (typeof whereData === "object") {
+                    for (const [column, conditions] of Object.entries(whereData)) {
+                        conditionStatment.push(`${column} ${[conditions.operator]} ?`);
+                        values.push(conditions.values);
+                    }
+                    whereStatement = conditionStatment.length ? `WHERE ${conditionStatment.join(` ${by} `)}` : "";
+                }
+                const [result] = yield pool.execute(`
+                UPDATE ${[table]}
+                ${setStatement}
+                ${whereStatement} 
+                `, values);
+                return result;
             }
-            const [result] = yield pool.execute(`
-            DELETE 
-            FROM ${[table]}
-            ${whereStatement} 
-            `, values);
-            return result;
-        }
-        catch (error) {
-            console.log(error);
-            return null;
-        }
-    });
+            catch (error) {
+                console.log(error);
+                return null;
+            }
+        });
+    }
+    static Delete(table_1, data_1) {
+        return __awaiter(this, arguments, void 0, function* (table, data, by = "AND") {
+            const conditionStatment = [];
+            const values = [];
+            try {
+                var whereStatement = "";
+                if (typeof data === "object") {
+                    for (const [column, conditions] of Object.entries(data)) {
+                        conditionStatment.push(`${column} ${[conditions.operator]} ?`);
+                        values.push(conditions.values);
+                    }
+                    whereStatement = conditionStatment.length ? `WHERE ${conditionStatment.join(` ${by} `)}` : "";
+                }
+                const [result] = yield pool.execute(`
+                DELETE 
+                FROM ${[table]}
+                ${whereStatement} 
+                `, values);
+                return result;
+            }
+            catch (error) {
+                console.log(error);
+                return null;
+            }
+        });
+    }
+    static endDBConnection() {
+        pool.end();
+    }
 }
-function endDBConnection() {
-    pool.end();
-}
+exports.default = databaseRepository;

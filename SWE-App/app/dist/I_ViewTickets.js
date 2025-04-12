@@ -23,7 +23,7 @@ export default function I_ViewTickets({navigation}) {
       try{
         const {address, ticket} = await viewTicketControl.getTicket();
         const ticketArray = await viewTicketControl.getAllClosedTickets()
-        console.log("Fetching ticket", ticket)
+        // console.log("Fetching ticket", ticket)
         setPastTickets(ticketArray)
         setTicket(ticket);
         setAddress(address);

@@ -89,135 +89,269 @@ const pool = mysql.createPool({
         queueLimit: 0,
     }).promise();
 
-async function Create( table:TableNames, data:object): Promise<ResultSetHeader|null>{
-    const variables = Object.keys(data).join(",");
-    const values = Object.values(data);
-    const parameter = values.map(() => "?").join(",")
+export default class databaseRepository{
 
-
-    try {
-        const [result] = await pool.execute<ResultSetHeader>(`
-            INSERT INTO ${[table]} (${variables})
-            VALUES (${parameter})
-            `, values
-        );
-        return result;
-    } catch (error) {
-        console.log(error)
-        return null;
-    }
-}
-
-async function Read( table:TableNames, data?:object, by:"AND" | "OR" = "AND"): Promise<RowDataPacket[]|null>{
+    static async Create( table:TableNames, data:object): Promise<ResultSetHeader|null>{
+        const variables = Object.keys(data).join(",");
+        const values = Object.values(data);
+        const parameter = values.map(() => "?").join(",")
     
-    const conditionStatment: String[] = [];
-    const values: any[] = [];
-
-    try {
-        var whereStatement:String = "";
-            if (typeof data === "object") {
-                // Column names and conidtions will be checked before input (Using Enum)
-                for (const [column, conditions] of Object.entries(data)) {
-                    if (conditions.operator == Operator.In) {
-                        if (!Array.isArray(conditions.values)) {
-                            console.error("No array was given for \"Where variable IN [array]\". Condition skipped ")
-                            continue;
-                        } else {
-                            const placeHolders = conditions.values.map(() => '?').join(", ")
-                            conditionStatment.push(`${column} ${[conditions.operator]} (${placeHolders})`)
-                            for(const value of conditions.values) {
-                                values.push(value)
+    
+        try {
+            const [result] = await pool.execute<ResultSetHeader>(`
+                INSERT INTO ${[table]} (${variables})
+                VALUES (${parameter})
+                `, values
+            );
+            return result;
+        } catch (error) {
+            console.log(error)
+            return null;
+        }
+    }
+    
+    static async Read( table:TableNames, data?:object, by:"AND" | "OR" = "AND"): Promise<RowDataPacket[]|null>{
+        
+        const conditionStatment: String[] = [];
+        const values: any[] = [];
+    
+        try {
+            var whereStatement:String = "";
+                if (typeof data === "object") {
+                    // Column names and conidtions will be checked before input (Using Enum)
+                    for (const [column, conditions] of Object.entries(data)) {
+                        if (conditions.operator == Operator.In) {
+                            if (!Array.isArray(conditions.values)) {
+                                console.error("No array was given for \"Where variable IN [array]\". Condition skipped ")
+                                continue;
+                            } else {
+                                const placeHolders = conditions.values.map(() => '?').join(", ")
+                                conditionStatment.push(`${column} ${[conditions.operator]} (${placeHolders})`)
+                                for(const value of conditions.values) {
+                                    values.push(value)
+                                }
+                                continue
                             }
-                            continue
                         }
+                        conditionStatment.push(`${column} ${[conditions.operator]} ?`);
+                        values.push(conditions.values);
                     }
-                    conditionStatment.push(`${column} ${[conditions.operator]} ?`);
-                    values.push(conditions.values);
+                    whereStatement = conditionStatment.length? `WHERE ${conditionStatment.join(` ${by} `)}` : "";
                 }
-                whereStatement = conditionStatment.length? `WHERE ${conditionStatment.join(` ${by} `)}` : "";
-            }
-
-        const [result] = await pool.execute<RowDataPacket[]>(`
-            SELECT * 
-            FROM ${[table]}
-            ${whereStatement} 
-            `, values
-        );
-        return result;
-    } catch (error) {
-        console.log(error)
-        return null;
-    }
-} 
-
-async function Update( table:TableNames, data:UpdateQueryData, by:"AND" | "OR" = "AND"): Promise<ResultSetHeader|null>{
-    const variablesStatement: String[] = [];
-    const conditionStatment: String[] = [];
-    const values: any[] = [];
-    var setStatement:String = "";
-    var whereStatement:String = "";
-
-    try {
-        const setData = data.set;
-        const whereData = data.where;
-        // Columns names will be checked before input (Using Enum)
-        for (const [column, value] of Object.entries(setData)) {
-            variablesStatement.push(`${column} = ?`);
-            values.push(value);
+    
+            const [result] = await pool.execute<RowDataPacket[]>(`
+                SELECT * 
+                FROM ${[table]}
+                ${whereStatement} 
+                `, values
+            );
+            return result;
+        } catch (error) {
+            console.log(error)
+            return null;
         }
-        setStatement = `SET ${variablesStatement.join(",")}`;
-
-
-        if (typeof whereData === "object") {
-            // Column names and conidtions will be checked before input (Using Enum)
-            for (const [column, conditions] of Object.entries(whereData)) {
-                conditionStatment.push(`${column} ${[conditions.operator]} ?`);
-                values.push(conditions.values);
-            }
-            whereStatement = conditionStatment.length? `WHERE ${conditionStatment.join(` ${by} `)}` : "";
-        }
-        const [result] = await pool.execute<ResultSetHeader>(`
-            UPDATE ${[table]}
-            ${setStatement}
-            ${whereStatement} 
-            `, values
-        );
-        return result;
-    } catch (error) {
-        console.log(error)
-        return null;
-    }
-}
-
-async function Delete(table:TableNames, data:object, by:"AND" | "OR" = "AND") : Promise<ResultSetHeader|null>{
-    const conditionStatment: String[] = [];
-    const values: any[] = [];
-
-    try {
+    } 
+    
+    static async Update( table:TableNames, data:UpdateQueryData, by:"AND" | "OR" = "AND"): Promise<ResultSetHeader|null>{
+        const variablesStatement: String[] = [];
+        const conditionStatment: String[] = [];
+        const values: any[] = [];
+        var setStatement:String = "";
         var whereStatement:String = "";
-            if (typeof data === "object") {
+    
+        try {
+            const setData = data.set;
+            const whereData = data.where;
+            // Columns names will be checked before input (Using Enum)
+            for (const [column, value] of Object.entries(setData)) {
+                variablesStatement.push(`${column} = ?`);
+                values.push(value);
+            }
+            setStatement = `SET ${variablesStatement.join(",")}`;
+    
+    
+            if (typeof whereData === "object") {
                 // Column names and conidtions will be checked before input (Using Enum)
-                for (const [column, conditions] of Object.entries(data)) {
+                for (const [column, conditions] of Object.entries(whereData)) {
                     conditionStatment.push(`${column} ${[conditions.operator]} ?`);
                     values.push(conditions.values);
                 }
                 whereStatement = conditionStatment.length? `WHERE ${conditionStatment.join(` ${by} `)}` : "";
             }
-        const [result] = await pool.execute<ResultSetHeader>(`
-            DELETE 
-            FROM ${[table]}
-            ${whereStatement} 
-            `, values
-        );
-        return result;
-    } catch (error) {
-        console.log(error)
-        return null;
+            const [result] = await pool.execute<ResultSetHeader>(`
+                UPDATE ${[table]}
+                ${setStatement}
+                ${whereStatement} 
+                `, values
+            );
+            return result;
+        } catch (error) {
+            console.log(error)
+            return null;
+        }
     }
-}
+    
+    static async Delete(table:TableNames, data:object, by:"AND" | "OR" = "AND") : Promise<ResultSetHeader|null>{
+        const conditionStatment: String[] = [];
+        const values: any[] = [];
+    
+        try {
+            var whereStatement:String = "";
+                if (typeof data === "object") {
+                    // Column names and conidtions will be checked before input (Using Enum)
+                    for (const [column, conditions] of Object.entries(data)) {
+                        conditionStatment.push(`${column} ${[conditions.operator]} ?`);
+                        values.push(conditions.values);
+                    }
+                    whereStatement = conditionStatment.length? `WHERE ${conditionStatment.join(` ${by} `)}` : "";
+                }
+            const [result] = await pool.execute<ResultSetHeader>(`
+                DELETE 
+                FROM ${[table]}
+                ${whereStatement} 
+                `, values
+            );
+            return result;
+        } catch (error) {
+            console.log(error)
+            return null;
+        }
+    }
+    
+    static endDBConnection(){
+        pool.end()
+    }
 
-function endDBConnection(){
-    pool.end()
 }
+// async function Create( table:TableNames, data:object): Promise<ResultSetHeader|null>{
+//     const variables = Object.keys(data).join(",");
+//     const values = Object.values(data);
+//     const parameter = values.map(() => "?").join(",")
 
-export {TableNames_App, ColumnNames_App, TableNames_HDBInfo, ColumnNames_HDBInfo, Operator, ConditionVariable, UpdateQueryData, Create, Read, Update, Delete, endDBConnection};
+
+//     try {
+//         const [result] = await pool.execute<ResultSetHeader>(`
+//             INSERT INTO ${[table]} (${variables})
+//             VALUES (${parameter})
+//             `, values
+//         );
+//         return result;
+//     } catch (error) {
+//         console.log(error)
+//         return null;
+//     }
+// }
+
+// async function Read( table:TableNames, data?:object, by:"AND" | "OR" = "AND"): Promise<RowDataPacket[]|null>{
+    
+//     const conditionStatment: String[] = [];
+//     const values: any[] = [];
+
+//     try {
+//         var whereStatement:String = "";
+//             if (typeof data === "object") {
+//                 // Column names and conidtions will be checked before input (Using Enum)
+//                 for (const [column, conditions] of Object.entries(data)) {
+//                     if (conditions.operator == Operator.In) {
+//                         if (!Array.isArray(conditions.values)) {
+//                             console.error("No array was given for \"Where variable IN [array]\". Condition skipped ")
+//                             continue;
+//                         } else {
+//                             const placeHolders = conditions.values.map(() => '?').join(", ")
+//                             conditionStatment.push(`${column} ${[conditions.operator]} (${placeHolders})`)
+//                             for(const value of conditions.values) {
+//                                 values.push(value)
+//                             }
+//                             continue
+//                         }
+//                     }
+//                     conditionStatment.push(`${column} ${[conditions.operator]} ?`);
+//                     values.push(conditions.values);
+//                 }
+//                 whereStatement = conditionStatment.length? `WHERE ${conditionStatment.join(` ${by} `)}` : "";
+//             }
+
+//         const [result] = await pool.execute<RowDataPacket[]>(`
+//             SELECT * 
+//             FROM ${[table]}
+//             ${whereStatement} 
+//             `, values
+//         );
+//         return result;
+//     } catch (error) {
+//         console.log(error)
+//         return null;
+//     }
+// } 
+
+// async function Update( table:TableNames, data:UpdateQueryData, by:"AND" | "OR" = "AND"): Promise<ResultSetHeader|null>{
+//     const variablesStatement: String[] = [];
+//     const conditionStatment: String[] = [];
+//     const values: any[] = [];
+//     var setStatement:String = "";
+//     var whereStatement:String = "";
+
+//     try {
+//         const setData = data.set;
+//         const whereData = data.where;
+//         // Columns names will be checked before input (Using Enum)
+//         for (const [column, value] of Object.entries(setData)) {
+//             variablesStatement.push(`${column} = ?`);
+//             values.push(value);
+//         }
+//         setStatement = `SET ${variablesStatement.join(",")}`;
+
+
+//         if (typeof whereData === "object") {
+//             // Column names and conidtions will be checked before input (Using Enum)
+//             for (const [column, conditions] of Object.entries(whereData)) {
+//                 conditionStatment.push(`${column} ${[conditions.operator]} ?`);
+//                 values.push(conditions.values);
+//             }
+//             whereStatement = conditionStatment.length? `WHERE ${conditionStatment.join(` ${by} `)}` : "";
+//         }
+//         const [result] = await pool.execute<ResultSetHeader>(`
+//             UPDATE ${[table]}
+//             ${setStatement}
+//             ${whereStatement} 
+//             `, values
+//         );
+//         return result;
+//     } catch (error) {
+//         console.log(error)
+//         return null;
+//     }
+// }
+
+// async function Delete(table:TableNames, data:object, by:"AND" | "OR" = "AND") : Promise<ResultSetHeader|null>{
+//     const conditionStatment: String[] = [];
+//     const values: any[] = [];
+
+//     try {
+//         var whereStatement:String = "";
+//             if (typeof data === "object") {
+//                 // Column names and conidtions will be checked before input (Using Enum)
+//                 for (const [column, conditions] of Object.entries(data)) {
+//                     conditionStatment.push(`${column} ${[conditions.operator]} ?`);
+//                     values.push(conditions.values);
+//                 }
+//                 whereStatement = conditionStatment.length? `WHERE ${conditionStatment.join(` ${by} `)}` : "";
+//             }
+//         const [result] = await pool.execute<ResultSetHeader>(`
+//             DELETE 
+//             FROM ${[table]}
+//             ${whereStatement} 
+//             `, values
+//         );
+//         return result;
+//     } catch (error) {
+//         console.log(error)
+//         return null;
+//     }
+// }
+
+// function endDBConnection(){
+//     pool.end()
+// }
+
+export {TableNames_App, ColumnNames_App, TableNames_HDBInfo, ColumnNames_HDBInfo, Operator, ConditionVariable, UpdateQueryData};

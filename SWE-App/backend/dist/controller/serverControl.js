@@ -21,7 +21,7 @@ class serverControl {
             const res = yield databaseControl_1.default.GetOpenTicket();
             if (res != null)
                 serverEntity_1.serverEntity.setTickets(res);
-            (0, expiryControl_1.default)();
+            expiryControl_1.default.expiryInitialiser();
         });
     }
     static getOpenTicketByTicketID(ticketID) {

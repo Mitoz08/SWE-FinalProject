@@ -12,353 +12,338 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.E_AddNewUser = E_AddNewUser;
-exports.E_GetUserID = E_GetUserID;
-exports.E_DeleteUser = E_DeleteUser;
-exports.E_AddUserInfo = E_AddUserInfo;
-exports.E_GetUserInfo = E_GetUserInfo;
-exports.E_GetUserEmail = E_GetUserEmail;
-exports.E_UpdateUserInfo = E_UpdateUserInfo;
-exports.E_CreateOpenTicket = E_CreateOpenTicket;
-exports.E_GetOpenTicketByUserID = E_GetOpenTicketByUserID;
-exports.E_GetOpenTicketByTicketID = E_GetOpenTicketByTicketID;
-exports.E_UpdateOpenTicketEndTime = E_UpdateOpenTicketEndTime;
-exports.E_ClosedTicket = E_ClosedTicket;
-exports.E_GetClosedTicketsByUserID = E_GetClosedTicketsByUserID;
-exports.E_GetClosedTicket = E_GetClosedTicket;
-exports.E_CreateUserClosedTicket = E_CreateUserClosedTicket;
-exports.E_GetUserClosedTicket = E_GetUserClosedTicket;
-exports.E_GetCarparkAddress = E_GetCarparkAddress;
-exports.E_GetRate = E_GetRate;
 const databaseControl_1 = __importDefault(require("./databaseControl"));
-const emailControl_1 = require("./emailControl");
+const emailControl_1 = __importDefault(require("./emailControl"));
 const serverControl_1 = __importDefault(require("./serverControl"));
-function E_AddNewUser(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const { userFirebaseID } = req.body;
-        if (!userFirebaseID) {
-            res.status(400).json({ message: "userFirebaseID is required." });
-            return;
-        }
-        const request = yield databaseControl_1.default.AddNewUser(userFirebaseID);
-        if (request == null)
-            res.status(500).json({ message: "Failed to add new user." });
-        else {
-            res.status(201).json({
-                message: "User added sucessfully",
-                userID: request
-            });
-        }
-    });
-}
-function E_GetUserID(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const { userFirebaseID } = req.query;
-        if (!userFirebaseID) {
-            res.status(400).json({ message: "userFirebaseID is required." });
-            return;
-        }
-        const request = yield databaseControl_1.default.GetUserID(userFirebaseID);
-        if (request == null)
-            res.status(500).json({ message: "Failed to get user ID." });
-        else {
-            res.status(200).json({
-                message: "User ID sucessfully returned",
-                userID: request
-            });
-        }
-    });
-}
-function E_DeleteUser(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const { userID } = req.body;
-        if (!userID) {
-            res.status(400).json({ message: "userID is required." });
-            return;
-        }
-        const request = yield databaseControl_1.default.DeleteUser(userID);
-        if (request == null)
-            res.status(500).json({ message: "Failed to delete user ID." });
-        else {
-            res.status(200).json({
-                message: "User ID sucessfully deleted",
-                boolean: request
-            });
-        }
-    });
-}
-function E_AddUserInfo(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const object = req.body;
-        if (!object) {
-            res.status(400).json({ message: "object is required." });
-            return;
-        }
-        const request = yield databaseControl_1.default.AddUserInfo(object);
-        if (request == null)
-            res.status(500).json({ message: "Failed to add new user information." });
-        else {
-            res.status(201).json({
-                message: "User information added sucessfully",
-                userInfo: request
-            });
-        }
-    });
-}
-function E_GetUserInfo(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const { userID } = req.query;
-        if (!userID) {
-            res.status(400).json({ message: "userID is required." });
-            return;
-        }
-        const request = yield databaseControl_1.default.GetUserInfo(Number(userID));
-        if (request == null)
-            res.status(500).json({ message: "Failed to get user information." });
-        else {
-            res.status(200).json({
-                message: "User information sucessfully returned",
-                userInfo: request
-            });
-        }
-    });
-}
-function E_GetUserEmail(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const { userID } = req.query;
-        if (!userID) {
-            res.status(400).json({ message: "userID is required." });
-            return;
-        }
-        const request = yield databaseControl_1.default.GetUserEmail(Number(userID));
-        if (request == null)
-            res.status(500).json({ message: "Failed to get user email." });
-        else {
-            res.status(200).json({
-                message: "User email sucessfully returned",
-                userEmail: request
-            });
-        }
-    });
-}
-function E_UpdateUserInfo(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const object = req.body;
-        if (!object) {
-            res.status(400).json({ message: "object is required." });
-            return;
-        }
-        const request = yield databaseControl_1.default.UpdateUserInfo(object);
-        if (request == null)
-            res.status(500).json({ message: "Failed to get user email." });
-        else {
-            res.status(200).json({
-                message: "User email sucessfully returned",
-                boolean: request
-            });
-        }
-    });
-}
-function E_CreateOpenTicket(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const object = req.body;
-        if (!object) {
-            res.status(400).json({ message: "object is required." });
-            return;
-        }
-        console.log(object);
-        const request = yield serverControl_1.default.createOpenTicket(object);
-        if (request == null)
-            res.status(500).json({ message: "Failed to create open ticket." });
-        else {
-            yield serverControl_1.default.addOpenTicketToServer(request);
-            (0, emailControl_1.NewTicketNotification)(request);
-            res.status(201).json({
-                message: "Open ticket sucessfully created",
-                ticketID: request
-            });
-        }
-    });
-}
-function E_GetOpenTicketByUserID(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const { userID } = req.query;
-        if (!userID) {
-            res.status(400).json({ message: "userID is required." });
-            return;
-        }
-        if (typeof userID === "string") {
-            const request = serverControl_1.default.getOpenTicketByUserID(Number(userID));
-            if (request == null) {
-                res.status(200).json({
-                    message: "Open ticket does not exsist",
-                    openTicket: {}
-                });
+class userControl {
+    static E_AddNewUser(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { userFirebaseID } = req.body;
+            if (!userFirebaseID) {
+                res.status(400).json({ message: "userFirebaseID is required." });
+                return;
             }
-            else {
-                res.status(200).json({
-                    message: "Open ticket sucessfully returned",
-                    openTicket: request
-                });
-            }
-        }
-        else {
-            res.status(500).json({ message: "Failed to get open ticket." });
-        }
-    });
-}
-function E_GetOpenTicketByTicketID(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const { ticketID } = req.query;
-        if (!ticketID) {
-            res.status(400).json({ message: "ticketID is required." });
-            return;
-        }
-        if (typeof ticketID === "string") {
-            const request = serverControl_1.default.getOpenTicketByTicketID(Number(ticketID));
+            const request = yield databaseControl_1.default.AddNewUser(userFirebaseID);
             if (request == null)
-                res.status(500).json({ message: "Failed to get open ticket." });
+                res.status(500).json({ message: "Failed to add new user." });
             else {
-                res.status(200).json({
-                    message: "Open ticket sucessfully returned",
-                    openTicket: request
+                res.status(201).json({
+                    message: "User added sucessfully",
+                    userID: request
                 });
             }
-        }
-        else {
-            res.status(500).json({ message: "Failed to get open ticket." });
-        }
-    });
+        });
+    }
+    static E_GetUserID(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { userFirebaseID } = req.query;
+            if (!userFirebaseID) {
+                res.status(400).json({ message: "userFirebaseID is required." });
+                return;
+            }
+            const request = yield databaseControl_1.default.GetUserID(userFirebaseID);
+            if (request == null)
+                res.status(500).json({ message: "Failed to get user ID." });
+            else {
+                res.status(200).json({
+                    message: "User ID sucessfully returned",
+                    userID: request
+                });
+            }
+        });
+    }
+    static E_DeleteUser(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { userID } = req.body;
+            if (!userID) {
+                res.status(400).json({ message: "userID is required." });
+                return;
+            }
+            const request = yield databaseControl_1.default.DeleteUser(userID);
+            if (request == null)
+                res.status(500).json({ message: "Failed to delete user ID." });
+            else {
+                res.status(200).json({
+                    message: "User ID sucessfully deleted",
+                    boolean: request
+                });
+            }
+        });
+    }
+    static E_AddUserInfo(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const object = req.body;
+            if (!object) {
+                res.status(400).json({ message: "object is required." });
+                return;
+            }
+            const request = yield databaseControl_1.default.AddUserInfo(object);
+            if (request == null)
+                res.status(500).json({ message: "Failed to add new user information." });
+            else {
+                res.status(201).json({
+                    message: "User information added sucessfully",
+                    userInfo: request
+                });
+            }
+        });
+    }
+    static E_GetUserInfo(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { userID } = req.query;
+            if (!userID) {
+                res.status(400).json({ message: "userID is required." });
+                return;
+            }
+            const request = yield databaseControl_1.default.GetUserInfo(Number(userID));
+            if (request == null)
+                res.status(500).json({ message: "Failed to get user information." });
+            else {
+                res.status(200).json({
+                    message: "User information sucessfully returned",
+                    userInfo: request
+                });
+            }
+        });
+    }
+    static E_GetUserEmail(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { userID } = req.query;
+            if (!userID) {
+                res.status(400).json({ message: "userID is required." });
+                return;
+            }
+            const request = yield databaseControl_1.default.GetUserEmail(Number(userID));
+            if (request == null)
+                res.status(500).json({ message: "Failed to get user email." });
+            else {
+                res.status(200).json({
+                    message: "User email sucessfully returned",
+                    userEmail: request
+                });
+            }
+        });
+    }
+    static E_UpdateUserInfo(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const object = req.body;
+            if (!object) {
+                res.status(400).json({ message: "object is required." });
+                return;
+            }
+            const request = yield databaseControl_1.default.UpdateUserInfo(object);
+            if (request == null)
+                res.status(500).json({ message: "Failed to get user email." });
+            else {
+                res.status(200).json({
+                    message: "User email sucessfully returned",
+                    boolean: request
+                });
+            }
+        });
+    }
+    static E_CreateOpenTicket(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const object = req.body;
+            if (!object) {
+                res.status(400).json({ message: "object is required." });
+                return;
+            }
+            console.log(object);
+            const request = yield serverControl_1.default.createOpenTicket(object);
+            if (request == null)
+                res.status(500).json({ message: "Failed to create open ticket." });
+            else {
+                yield serverControl_1.default.addOpenTicketToServer(request);
+                emailControl_1.default.NewTicketNotification(request);
+                res.status(201).json({
+                    message: "Open ticket sucessfully created",
+                    ticketID: request
+                });
+            }
+        });
+    }
+    static E_GetOpenTicketByUserID(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { userID } = req.query;
+            if (!userID) {
+                res.status(400).json({ message: "userID is required." });
+                return;
+            }
+            if (typeof userID === "string") {
+                const request = serverControl_1.default.getOpenTicketByUserID(Number(userID));
+                if (request == null) {
+                    res.status(200).json({
+                        message: "Open ticket does not exsist",
+                        openTicket: {}
+                    });
+                }
+                else {
+                    res.status(200).json({
+                        message: "Open ticket sucessfully returned",
+                        openTicket: request
+                    });
+                }
+            }
+            else {
+                res.status(500).json({ message: "Failed to get open ticket." });
+            }
+        });
+    }
+    static E_GetOpenTicketByTicketID(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { ticketID } = req.query;
+            if (!ticketID) {
+                res.status(400).json({ message: "ticketID is required." });
+                return;
+            }
+            if (typeof ticketID === "string") {
+                const request = serverControl_1.default.getOpenTicketByTicketID(Number(ticketID));
+                if (request == null)
+                    res.status(500).json({ message: "Failed to get open ticket." });
+                else {
+                    res.status(200).json({
+                        message: "Open ticket sucessfully returned",
+                        openTicket: request
+                    });
+                }
+            }
+            else {
+                res.status(500).json({ message: "Failed to get open ticket." });
+            }
+        });
+    }
+    static E_UpdateOpenTicketEndTime(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const object = req.body;
+            if (!object) {
+                res.status(400).json({ message: "object is required." });
+                return;
+            }
+            const request = yield serverControl_1.default.updateOpenTicketEndTime(object);
+            if (request == null)
+                res.status(500).json({ message: "Failed to update open ticket." });
+            else {
+                res.status(200).json({
+                    message: "Open ticket sucessfully updated",
+                    boolean: request
+                });
+            }
+        });
+    }
+    static E_ClosedTicket(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const object = req.body;
+            if (!object) {
+                res.status(400).json({ message: "object is required." });
+                return;
+            }
+            const request = yield serverControl_1.default.closeTicket(object);
+            if (request == null)
+                res.status(500).json({ message: "Failed to create closed ticket." });
+            else {
+                res.status(201).json({
+                    message: "Closed ticket sucessfully create",
+                    boolean: request
+                });
+            }
+        });
+    }
+    static E_GetClosedTicketsByUserID(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { userID } = req.query;
+            if (!userID) {
+                res.status(400).json({ message: "userID is required." });
+                return;
+            }
+            const request = yield databaseControl_1.default.GetAllClosedTicket(Number(userID));
+            if (request == null)
+                res.status(500).json({ message: "Failed to get closed ticket." });
+            else {
+                res.status(200).json({
+                    message: "Closed ticket sucessfully returned",
+                    closedTickets: request
+                });
+            }
+        });
+    }
+    static E_GetClosedTicket(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { ticketID } = req.query;
+            if (!ticketID) {
+                res.status(400).json({ message: "ticketID is required." });
+                return;
+            }
+            const request = yield databaseControl_1.default.GetClosedTicket(Number(ticketID));
+            if (request == null)
+                res.status(500).json({ message: "Failed to get closed ticket." });
+            else {
+                res.status(200).json({
+                    message: "Closed ticket sucessfully returned",
+                    closedTicket: request
+                });
+            }
+        });
+    }
+    static E_CreateUserClosedTicket(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const object = req.body;
+            if (!object) {
+                res.status(400).json({ message: "object is required." });
+                return;
+            }
+            const request = yield databaseControl_1.default.CreateUserClosedTicket(object);
+            if (request == null)
+                res.status(500).json({ message: "Failed to create user closed ticket." });
+            else {
+                res.status(201).json({
+                    message: "User closed ticket sucessfully created",
+                    boolean: request
+                });
+            }
+        });
+    }
+    static E_GetUserClosedTicket(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { userID } = req.query;
+            const request = yield databaseControl_1.default.GetUserClosedTicket(Number(userID));
+            if (request == null)
+                res.status(500).json({ message: "Failed to get user closed ticket." });
+            else {
+                res.status(200).json({
+                    message: "User closed ticket sucessfully returned",
+                    clostTicketArray: request
+                });
+            }
+        });
+    }
+    static E_GetCarparkAddress(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { carparkID } = req.query;
+            const request = yield databaseControl_1.default.GetCarparkAddress(carparkID);
+            if (request == null)
+                res.status(500).json({ message: "Failed to get carpark address." });
+            else {
+                res.status(200).json({
+                    message: "Carpark address sucessfully returned",
+                    carparkAddress: request
+                });
+            }
+        });
+    }
+    static E_GetRate(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const object = req.query;
+            const request = yield databaseControl_1.default.GetRate(object);
+            if (request == null)
+                res.status(500).json({ message: "Failed to get carpark rate." });
+            else {
+                res.status(200).json({
+                    message: "Carpark rate sucessfully returned",
+                    rate: request
+                });
+            }
+        });
+    }
 }
-function E_UpdateOpenTicketEndTime(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const object = req.body;
-        if (!object) {
-            res.status(400).json({ message: "object is required." });
-            return;
-        }
-        const request = yield serverControl_1.default.updateOpenTicketEndTime(object);
-        if (request == null)
-            res.status(500).json({ message: "Failed to update open ticket." });
-        else {
-            res.status(200).json({
-                message: "Open ticket sucessfully updated",
-                boolean: request
-            });
-        }
-    });
-}
-function E_ClosedTicket(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const object = req.body;
-        if (!object) {
-            res.status(400).json({ message: "object is required." });
-            return;
-        }
-        const request = yield serverControl_1.default.closeTicket(object);
-        if (request == null)
-            res.status(500).json({ message: "Failed to create closed ticket." });
-        else {
-            res.status(201).json({
-                message: "Closed ticket sucessfully create",
-                boolean: request
-            });
-        }
-    });
-}
-function E_GetClosedTicketsByUserID(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const { userID } = req.query;
-        if (!userID) {
-            res.status(400).json({ message: "userID is required." });
-            return;
-        }
-        const request = yield databaseControl_1.default.GetAllClosedTicket(Number(userID));
-        if (request == null)
-            res.status(500).json({ message: "Failed to get closed ticket." });
-        else {
-            res.status(200).json({
-                message: "Closed ticket sucessfully returned",
-                closedTickets: request
-            });
-        }
-    });
-}
-function E_GetClosedTicket(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const { ticketID } = req.query;
-        if (!ticketID) {
-            res.status(400).json({ message: "ticketID is required." });
-            return;
-        }
-        const request = yield databaseControl_1.default.GetClosedTicket(Number(ticketID));
-        if (request == null)
-            res.status(500).json({ message: "Failed to get closed ticket." });
-        else {
-            res.status(200).json({
-                message: "Closed ticket sucessfully returned",
-                closedTicket: request
-            });
-        }
-    });
-}
-function E_CreateUserClosedTicket(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const object = req.body;
-        if (!object) {
-            res.status(400).json({ message: "object is required." });
-            return;
-        }
-        const request = yield databaseControl_1.default.CreateUserClosedTicket(object);
-        if (request == null)
-            res.status(500).json({ message: "Failed to create user closed ticket." });
-        else {
-            res.status(201).json({
-                message: "User closed ticket sucessfully created",
-                boolean: request
-            });
-        }
-    });
-}
-function E_GetUserClosedTicket(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const { userID } = req.query;
-        const request = yield databaseControl_1.default.GetUserClosedTicket(Number(userID));
-        if (request == null)
-            res.status(500).json({ message: "Failed to get user closed ticket." });
-        else {
-            res.status(200).json({
-                message: "User closed ticket sucessfully returned",
-                clostTicketArray: request
-            });
-        }
-    });
-}
-function E_GetCarparkAddress(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const { carparkID } = req.query;
-        const request = yield databaseControl_1.default.GetCarparkAddress(carparkID);
-        if (request == null)
-            res.status(500).json({ message: "Failed to get carpark address." });
-        else {
-            res.status(200).json({
-                message: "Carpark address sucessfully returned",
-                carparkAddress: request
-            });
-        }
-    });
-}
-function E_GetRate(req, res) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const object = req.query;
-        const request = yield databaseControl_1.default.GetRate(object);
-        if (request == null)
-            res.status(500).json({ message: "Failed to get carpark rate." });
-        else {
-            res.status(200).json({
-                message: "Carpark rate sucessfully returned",
-                rate: request
-            });
-        }
-    });
-}
+exports.default = userControl;
