@@ -11,7 +11,6 @@ export default class mainControl {
             fetch(`http://localhost:3000/OpenTicket/UserID?userID=${UserID}`, {
                 method: "GET"
             }).then(res => res.json()).then((object) => {
-                console.log(object);
                 if (object.openTicket != null)
                     mainEntity.setTicket(object.openTicket);
             });

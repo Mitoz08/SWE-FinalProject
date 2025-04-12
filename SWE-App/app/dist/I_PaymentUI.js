@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import AntDesign from "@expo/vector-icons/Ionicons";
-import { ProcessPayment } from "./controller/paymentControl";
+import paymentControl from "./controller/paymentControl";
 
 export default function I_PaymentUI({ navigation, route }) {
     const { vehType, licensePlate, carparkType, carparkID, rate } = route.params;
@@ -56,7 +56,7 @@ export default function I_PaymentUI({ navigation, route }) {
     const handlePayment = () => {
         if (processing) return
         setProcessing(true)
-        ProcessPayment({
+        paymentControl.ProcessPayment({
             vehType: vehType,
             carparkNo: carparkID,
             rate: rate,
