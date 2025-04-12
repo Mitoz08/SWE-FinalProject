@@ -517,7 +517,7 @@ export default class dataBaseControl {
         }
         const tickets = res as OpenTicket[]
         for (const ticket of tickets) {
-            const ticket = res[0] as OpenTicket
+            // const ticket = res[0] as OpenTicket
             ticket.ticketEndTime = dataBaseControl.dateOffsetPlus(ticket.ticketEndTime)
             ticket.ticketStartTime= dataBaseControl.dateOffsetPlus(ticket.ticketStartTime)
         }
@@ -787,6 +787,8 @@ export default class dataBaseControl {
 
     static dateOffsetPlus( date:Date ) : Date {
         const TimeZoneOffset = 8 * 60 * 60000;
+        // console.log(date)
+        // console.log(new Date(date.getTime() + TimeZoneOffset))
         return new Date(date.getTime() + TimeZoneOffset)
     }
 

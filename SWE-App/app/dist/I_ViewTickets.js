@@ -190,6 +190,21 @@ export default function I_ViewTickets({navigation}) {
 
 const PastTicketModal = ({ticket, showModal, setShowModal}) => {
   if (!ticket) return
+  const fee = () => {
+    switch (ticket.vehType) {
+      case "M":
+        return (ticket.fee).toFixed(2)
+      case "C":
+        var interval = Math.ceil(((new Date(ticket.actualEndTime)).getTime() - (new Date(ticket.ticketStartTime)).getTime())/(30*60*1000))
+        if (interval == 0) interval += 1;
+        return (ticket.fee * interval).toFixed(2)
+      default:
+        return (0).toFixed(2)
+    }
+    
+  }
+
+
   return (
     <Modal
     visible={showModal}
@@ -200,6 +215,12 @@ const PastTicketModal = ({ticket, showModal, setShowModal}) => {
         <View style={styles.modalContainer}>
           <Text style={styles.ticketID}>Ticket ID: {ticket.ticketID}</Text>
           <Text style={styles.detail}>Carpark Address: {ticket.address}</Text>
+          <Text style={styles.detail}>License Plate: {ticket.licensePlate}</Text>
+          <Text style={styles.detail}>Start Time: {ticket.ticketStartTime.replace("T", " ").substr(0, 19)}</Text>
+          <Text style={styles.detail}>End Time: {ticket.actualEndTime.replace("T", " ").substr(0, 19)}</Text>
+          <Text style={styles.detail}>Total Fee: {fee()}</Text>
+
+
           <TouchableOpacity style={styles.button} onPress={() => setShowModal(false)}>
             <Text style={styles.buttonText}>Go Back</Text>
           </TouchableOpacity>

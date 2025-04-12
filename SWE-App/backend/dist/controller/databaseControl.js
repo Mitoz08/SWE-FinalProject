@@ -289,7 +289,6 @@ class dataBaseControl {
             }
             const tickets = res;
             for (const ticket of tickets) {
-                const ticket = res[0];
                 ticket.ticketEndTime = dataBaseControl.dateOffsetPlus(ticket.ticketEndTime);
                 ticket.ticketStartTime = dataBaseControl.dateOffsetPlus(ticket.ticketStartTime);
             }
