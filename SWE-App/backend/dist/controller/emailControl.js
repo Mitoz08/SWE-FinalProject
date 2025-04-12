@@ -16,6 +16,20 @@ const emailAccess_1 = __importDefault(require("../boundary/emailAccess"));
 const databaseControl_1 = __importDefault(require("./databaseControl"));
 const serverControl_1 = __importDefault(require("./serverControl"));
 class emailControl {
+    static feeCalculator(startTime, endTime, vehType, parkingLotID) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const fee = yield databaseControl_1.default.GetRate({ carparkID: parkingLotID, vehType: vehType });
+            if (!fee) {
+                console.error("Error getting rate");
+                return null;
+            }
+            if (vehType == "M")
+                return fee.toFixed(2);
+            const interval = (endTime.getTime() - startTime.getTime()) / (30 * 60 * 1000);
+            console.log("Interval:", interval);
+            return (interval * fee).toFixed(2);
+        });
+    }
     static NewTicketNotification(ticketID) {
         return __awaiter(this, void 0, void 0, function* () {
             const subject = `New ticket created with ID: ${ticketID}`;
@@ -24,11 +38,17 @@ class emailControl {
                 console.error(`No existing ticket with ID: ${ticketID}`);
                 return false;
             }
+            const fee = yield emailControl.feeCalculator(res.ticketStartTime, res.ticketEndTime, res.vehType, res.parkingLotID);
+            if (fee == null) {
+                console.error("Failed to obtain fee");
+                return false;
+            }
             const text = `Dear Customer,
     
         You have create a new ticket with ID: ${ticketID}.\n
-        The Carpark is ${yield databaseControl_1.default.GetCarparkAddress(res.parkingLotID)}
-        The ticket ends on ${res.ticketEndTime.toISOString().replace("T", " ").substr(0, 19)}.`;
+        Your ${res.vehType == "M" ? "Motorcycle" : "Car"}, ${res.licensePlate} is parked at ${yield databaseControl_1.default.GetCarparkAddress(res.parkingLotID)}
+        The ticket starts on ${res.ticketStartTime.toISOString().replace("T", " ").substr(0, 19)} and ends on ${res.ticketEndTime.toISOString().replace("T", " ").substr(0, 19)}.
+        Total fee is $${fee}.`;
             const email = yield databaseControl_1.default.GetUserEmail(res.userID);
             if (email == null) {
                 console.error(`No existing email found for user ID: ${res.userID}`);
@@ -48,9 +68,10 @@ class emailControl {
             }
             const text = `Dear Customer,
     
-        You have ticket that is expiring soon. Ticket ID: ${ticketID}.
-        The Carpark is ${yield databaseControl_1.default.GetCarparkAddress(res.parkingLotID)}
-        The ticket ends on ${res.ticketEndTime.toISOString().replace("T", " ").substr(0, 19)}.`;
+        You have ticket that is expiring soon. Ticket ID: ${ticketID}.\n
+        Your ${res.vehType == "M" ? "Motorcycle" : "Car"}, ${res.licensePlate} is parked at ${yield databaseControl_1.default.GetCarparkAddress(res.parkingLotID)}
+        The ticket ends on ${res.ticketEndTime.toISOString().replace("T", " ").substr(0, 19)}.
+        Please extend or close your ticket to avoid fines.`;
             const email = yield databaseControl_1.default.GetUserEmail(res.userID);
             if (email == null) {
                 console.error(`No existing email found for user ID: ${res.userID}`);
