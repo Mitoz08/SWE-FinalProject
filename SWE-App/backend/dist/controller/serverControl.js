@@ -21,7 +21,6 @@ class serverControl {
             const res = yield databaseControl_1.default.GetOpenTicket();
             if (res != null)
                 serverEntity_1.serverEntity.setTickets(res);
-            console.log(serverEntity_1.serverEntity.getTicket());
             expiryControl_1.default.expiryInitialiser();
         });
     }

@@ -8,7 +8,7 @@ export default class serverControl {
     
         if(res != null) serverEntity.setTickets(res)
         
-        console.log(serverEntity.getTicket())
+        // console.log(serverEntity.getTicket())
         // Call the expiry function
         expiryControl.expiryInitialiser()
 

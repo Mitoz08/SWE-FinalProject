@@ -520,7 +520,11 @@ export default class dataBaseControl {
             // const ticket = res[0] as OpenTicket
             ticket.ticketEndTime = dataBaseControl.dateOffsetPlus(ticket.ticketEndTime)
             ticket.ticketStartTime= dataBaseControl.dateOffsetPlus(ticket.ticketStartTime)
+            const fee = await dataBaseControl.GetRate({carparkID:ticket.parkingLotID, vehType:ticket.vehType})
+            ticket.fee = fee ? fee: 0
         }
+
+
 
         return res as OpenTicket[];
     }
