@@ -5,7 +5,9 @@ export type OpenTicket = {
     "ticketStartTime":Date,
     "ticketEndTime":Date,
     "userID":number,
-    "notified":boolean
+    "notified":boolean,
+    "vehType":string,
+    "fee":number
 }
 
 export type ClosedTicket = {
@@ -15,6 +17,7 @@ export type ClosedTicket = {
     "ticketStartTime":Date,
     "ticketEndTime":Date,
     "actualEndTime":Date,
+    "vehType":string
 }
 
 export type UserInformation = {

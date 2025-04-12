@@ -11,23 +11,45 @@ const emailer = nodemailer.createTransport({
     }
 })
 
-export async function emailSender( To:string, Subject:string, Content:string) : Promise<Boolean> {
-    const emailDetail = {
-        from: process.env.EMAIL_USER,
-        to: To,
-        subject: Subject,
-        text: Content
-    }
-    try {
+export default class emailRepository {
+    static async emailSender( To:string, Subject:string, Content:string) : Promise<Boolean> {
+        const emailDetail = {
+            from: process.env.EMAIL_USER,
+            to: To,
+            subject: Subject,
+            text: Content
+        }
+        try {
+            
+        const info = await emailer.sendMail(emailDetail);
+        console.log("Email sent:", info.response)
+        } catch (error) {
+            console.error("Error sending email:", error)
+            return false
+        }
         
-    const info = await emailer.sendMail(emailDetail);
-    console.log("Email sent:", info.response)
-    } catch (error) {
-        console.error("Error sending email:", error)
-        return false
+        return true;
     }
     
-    return true;
 }
+
+// export async function emailSender( To:string, Subject:string, Content:string) : Promise<Boolean> {
+//     const emailDetail = {
+//         from: process.env.EMAIL_USER,
+//         to: To,
+//         subject: Subject,
+//         text: Content
+//     }
+//     try {
+        
+//     const info = await emailer.sendMail(emailDetail);
+//     console.log("Email sent:", info.response)
+//     } catch (error) {
+//         console.error("Error sending email:", error)
+//         return false
+//     }
+    
+//     return true;
+// }
 
 // await emailSender("TIMO0038@e.ntu.edu.sg","SWE Project","Test email")

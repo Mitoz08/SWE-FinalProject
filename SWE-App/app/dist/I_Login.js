@@ -2,8 +2,9 @@ import React, { useContext, useState } from "react";
 import { Text, StyleSheet, TouchableOpacity, Image, View } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { VerifyLogin } from "./controller/authenticationControl";
 import { AuthContext } from "./AuthContext";
+import authenticationControl from "./controller/authenticationControl";
+
 export default function I_Login({navigation}){
     const [Email, setEmail] = useState("");
     const [Password, setPassword] = useState("");
@@ -31,7 +32,7 @@ export default function I_Login({navigation}){
                 />
                 <TouchableOpacity 
                     style= {styles.button}
-                    onPress={() => {VerifyLogin(Email,Password).then((res) => {res ? setIsLoggedIn(true):setIsLoggedIn(false)})}}>
+                    onPress={() => {authenticationControl.VerifyLogin(Email,Password).then((res) => {res ? setIsLoggedIn(true):setIsLoggedIn(false)})}}>
                     <Text style={styles.buttonText}>Login</Text>
                 </TouchableOpacity>
                 <TouchableOpacity

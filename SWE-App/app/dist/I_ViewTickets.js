@@ -20,10 +20,11 @@ export default function I_ViewTickets({navigation}) {
 
   useEffect(() => {
     async function fetchTicket() {
+      setLoading(true)
       try{
         const {address, ticket} = await viewTicketControl.getTicket();
         const ticketArray = await viewTicketControl.getAllClosedTickets()
-        console.log("Fetching ticket", ticket)
+        // console.log("Fetching ticket", ticket)
         setPastTickets(ticketArray)
         setTicket(ticket);
         setAddress(address);
@@ -33,10 +34,10 @@ export default function I_ViewTickets({navigation}) {
         setLoading(false);
       }
     }
-    if (!showAddTimeModal || !showCloseTicketModal){
+    if (loading){
       fetchTicket();
     }
-  }, [showAddTimeModal, showCloseTicketModal]);
+  }, [loading]);
 
   if (loading) {
     return (
@@ -144,14 +145,18 @@ export default function I_ViewTickets({navigation}) {
       />
       <AddTimeModal
         ticketID={ticket.ticketID}
+        fee={ticket.fee}
+        vehType={ticket.vehType}
         endTime={ticket.ticketEndTime}
         showModal={showAddTimeModal}
         setShowModal={setAddTimeModal}
+        setLoading={setLoading}
       />
       <CloseTicketModal
         ticket={ticket}
         showModal={showCloseTicketModal}
         setShowModal={setCloseTicketModal}
+        setLoading={setLoading}
       />
     </SafeAreaView>
   </SafeAreaProvider>
@@ -190,6 +195,21 @@ export default function I_ViewTickets({navigation}) {
 
 const PastTicketModal = ({ticket, showModal, setShowModal}) => {
   if (!ticket) return
+  const fee = () => {
+    switch (ticket.vehType) {
+      case "M":
+        return (ticket.fee).toFixed(2)
+      case "C":
+        var interval = Math.ceil(((new Date(ticket.actualEndTime)).getTime() - (new Date(ticket.ticketStartTime)).getTime())/(30*60*1000))
+        if (interval == 0) interval += 1;
+        return (ticket.fee * interval).toFixed(2)
+      default:
+        return (0).toFixed(2)
+    }
+    
+  }
+
+
   return (
     <Modal
     visible={showModal}
@@ -200,6 +220,12 @@ const PastTicketModal = ({ticket, showModal, setShowModal}) => {
         <View style={styles.modalContainer}>
           <Text style={styles.ticketID}>Ticket ID: {ticket.ticketID}</Text>
           <Text style={styles.detail}>Carpark Address: {ticket.address}</Text>
+          <Text style={styles.detail}>License Plate: {ticket.licensePlate}</Text>
+          <Text style={styles.detail}>Start Time: {ticket.ticketStartTime.replace("T", " ").substr(0, 19)}</Text>
+          <Text style={styles.detail}>End Time: {ticket.actualEndTime.replace("T", " ").substr(0, 19)}</Text>
+          <Text style={styles.detail}>Total Fee: {fee()}</Text>
+
+
           <TouchableOpacity style={styles.button} onPress={() => setShowModal(false)}>
             <Text style={styles.buttonText}>Go Back</Text>
           </TouchableOpacity>
@@ -209,7 +235,7 @@ const PastTicketModal = ({ticket, showModal, setShowModal}) => {
   )
 }
 
-const AddTimeModal = ({ticketID, endTime, showModal, setShowModal}) => {
+const AddTimeModal = ({ticketID, fee, vehType, endTime, showModal, setShowModal, setLoading}) => {
 
   const intervalTime = 30;
   const [incrementStr, setIncrementStr] = useState("")
@@ -217,7 +243,6 @@ const AddTimeModal = ({ticketID, endTime, showModal, setShowModal}) => {
   const [processing, setProcessing] = useState(false)
   const [max, setMax] = useState(false);
   const [min, setMin] = useState(false);
-
 
   const curEndTime = new Date(endTime)
   const newEndTime = new Date(endTime)
@@ -263,6 +288,7 @@ const AddTimeModal = ({ticketID, endTime, showModal, setShowModal}) => {
     }
   }, [showModal])
 
+
   const handleConfirm = () => {
     if (processing) return
     setProcessing(true)
@@ -271,6 +297,7 @@ const AddTimeModal = ({ticketID, endTime, showModal, setShowModal}) => {
         if (res) {
           setTimeout(() => {
             setShowModal(false)
+            setLoading(true)
           }, 1000);
         } else {
           console.log("Error adding time in I_ViewTickets")
@@ -305,6 +332,11 @@ const AddTimeModal = ({ticketID, endTime, showModal, setShowModal}) => {
           <AntDesign name="minuscircle" size={24} color="#fff" />
         </TouchableOpacity>
       </View>
+      <Text style={styles.modalText}>
+        {vehType == "M"? "No addition fee incurred for motorcycle": `Addition fee: $${(fee*increment).toFixed(2)}`}
+      </Text>
+
+
       <Text style={styles.errorMsg}>
           {min ? "Minimum duration is 30 mins" : max ? "Maximum duration is 12 hours" : ""}
       </Text>
@@ -328,7 +360,7 @@ const AddTimeModal = ({ticketID, endTime, showModal, setShowModal}) => {
   )
 }
 
-const CloseTicketModal = ({ticket, showModal, setShowModal}) => {
+const CloseTicketModal = ({ticket, showModal, setShowModal, setLoading}) => {
 
   const [processing, setProcessing] = useState(false)
 
@@ -351,6 +383,7 @@ const CloseTicketModal = ({ticket, showModal, setShowModal}) => {
         if (res) {
           setTimeout(() => {
             setShowModal(false)
+            setLoading(true)
           }, 1000);
         } else {
           console.log("Error closing ticket in I_ViewTickets")

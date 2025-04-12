@@ -72,7 +72,7 @@ export default class viewTicketControl {
         
         const {closedTickets} = await res.json()
         
-        console.log(closedTickets)
+        // console.log(closedTickets)
         if(!closedTickets) return [];
         return closedTickets
     }

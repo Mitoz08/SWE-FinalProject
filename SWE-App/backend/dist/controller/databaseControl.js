@@ -8,8 +8,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const databaseAccess_1 = require("../boundary/databaseAccess");
+const databaseAccess_2 = __importDefault(require("../boundary/databaseAccess"));
 var feeTypes;
 (function (feeTypes) {
     feeTypes[feeTypes["motorcycle"] = 0.65] = "motorcycle";
@@ -32,7 +36,7 @@ function ErrorMsg_DeletionFailed() {
 class dataBaseControl {
     static AddNewUser(userFirebaseID) {
         return __awaiter(this, void 0, void 0, function* () {
-            const res = yield (0, databaseAccess_1.Create)(databaseAccess_1.TableNames_App.UserID, {
+            const res = yield databaseAccess_2.default.Create(databaseAccess_1.TableNames_App.UserID, {
                 [databaseAccess_1.ColumnNames_App.userFirebaseID]: userFirebaseID
             });
             if (res === null) {
@@ -43,7 +47,7 @@ class dataBaseControl {
     }
     static GetUserID(userFirebaseID) {
         return __awaiter(this, void 0, void 0, function* () {
-            const res = yield (0, databaseAccess_1.Read)(databaseAccess_1.TableNames_App.UserID, {
+            const res = yield databaseAccess_2.default.Read(databaseAccess_1.TableNames_App.UserID, {
                 [databaseAccess_1.ColumnNames_App.userFirebaseID]: {
                     [databaseAccess_1.ConditionVariable.operator]: databaseAccess_1.Operator.EqualTo,
                     [databaseAccess_1.ConditionVariable.values]: userFirebaseID
@@ -60,7 +64,7 @@ class dataBaseControl {
     }
     static DeleteUser(userID) {
         return __awaiter(this, void 0, void 0, function* () {
-            const res = yield (0, databaseAccess_1.Delete)(databaseAccess_1.TableNames_App.UserID, {
+            const res = yield databaseAccess_2.default.Delete(databaseAccess_1.TableNames_App.UserID, {
                 [databaseAccess_1.ColumnNames_App.userID]: {
                     [databaseAccess_1.ConditionVariable.operator]: databaseAccess_1.Operator.EqualTo,
                     [databaseAccess_1.ConditionVariable.values]: userID
@@ -84,7 +88,7 @@ class dataBaseControl {
                 return null;
             }
             console.log(object);
-            const res = yield (0, databaseAccess_1.Create)(databaseAccess_1.TableNames_App.UserInformation, {
+            const res = yield databaseAccess_2.default.Create(databaseAccess_1.TableNames_App.UserInformation, {
                 [databaseAccess_1.ColumnNames_App.userID]: userID,
                 [databaseAccess_1.ColumnNames_App.userEmail]: userEmail,
                 [databaseAccess_1.ColumnNames_App.firstName]: firstName,
@@ -99,7 +103,7 @@ class dataBaseControl {
     }
     static GetUserInfo(userID) {
         return __awaiter(this, void 0, void 0, function* () {
-            const res = yield (0, databaseAccess_1.Read)(databaseAccess_1.TableNames_App.UserInformation, {
+            const res = yield databaseAccess_2.default.Read(databaseAccess_1.TableNames_App.UserInformation, {
                 [databaseAccess_1.ColumnNames_App.userID]: {
                     [databaseAccess_1.ConditionVariable.operator]: databaseAccess_1.Operator.EqualTo,
                     [databaseAccess_1.ConditionVariable.values]: userID
@@ -116,7 +120,7 @@ class dataBaseControl {
     }
     static GetUserEmail(userID) {
         return __awaiter(this, void 0, void 0, function* () {
-            const res = yield (0, databaseAccess_1.Read)(databaseAccess_1.TableNames_App.UserInformation, {
+            const res = yield databaseAccess_2.default.Read(databaseAccess_1.TableNames_App.UserInformation, {
                 [databaseAccess_1.ColumnNames_App.userID]: {
                     [databaseAccess_1.ConditionVariable.operator]: databaseAccess_1.Operator.EqualTo,
                     [databaseAccess_1.ConditionVariable.values]: userID
@@ -142,7 +146,7 @@ class dataBaseControl {
                 console.error("Email does not follow the right regex");
                 return null;
             }
-            const res = yield (0, databaseAccess_1.Update)(databaseAccess_1.TableNames_App.UserInformation, {
+            const res = yield databaseAccess_2.default.Update(databaseAccess_1.TableNames_App.UserInformation, {
                 "set": {
                     [databaseAccess_1.ColumnNames_App.userEmail]: userEmail,
                     [databaseAccess_1.ColumnNames_App.firstName]: firstName,
@@ -167,7 +171,7 @@ class dataBaseControl {
     }
     static AddUserPayment(userID, customerID) {
         return __awaiter(this, void 0, void 0, function* () {
-            const res = yield (0, databaseAccess_1.Create)(databaseAccess_1.TableNames_App.UserPayment, {
+            const res = yield databaseAccess_2.default.Create(databaseAccess_1.TableNames_App.UserPayment, {
                 [databaseAccess_1.ColumnNames_App.userID]: userID,
                 [databaseAccess_1.ColumnNames_App.customerID]: customerID
             });
@@ -179,7 +183,7 @@ class dataBaseControl {
     }
     static GetUserPayment(userID) {
         return __awaiter(this, void 0, void 0, function* () {
-            const res = yield (0, databaseAccess_1.Read)(databaseAccess_1.TableNames_App.UserPayment, {
+            const res = yield databaseAccess_2.default.Read(databaseAccess_1.TableNames_App.UserPayment, {
                 [databaseAccess_1.ColumnNames_App.userID]: {
                     [databaseAccess_1.ConditionVariable.operator]: databaseAccess_1.Operator.EqualTo,
                     [databaseAccess_1.ConditionVariable.values]: userID
@@ -196,7 +200,7 @@ class dataBaseControl {
     }
     static UpdateUserPayment(userID, customerID) {
         return __awaiter(this, void 0, void 0, function* () {
-            const res = yield (0, databaseAccess_1.Update)(databaseAccess_1.TableNames_App.UserPayment, {
+            const res = yield databaseAccess_2.default.Update(databaseAccess_1.TableNames_App.UserPayment, {
                 "set": {
                     [databaseAccess_1.ColumnNames_App.customerID]: customerID
                 },
@@ -218,8 +222,10 @@ class dataBaseControl {
     }
     static CreateOpenTicket(object) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { parkingLotID, licensePlate, ticketStartTime, ticketEndTime, userID } = object;
-            const res = yield (0, databaseAccess_1.Create)(databaseAccess_1.TableNames_App.OpenTickets, {
+            const { vehType, parkingLotID, licensePlate, ticketStartTime, ticketEndTime, userID } = object;
+            console.log(vehType, parkingLotID, licensePlate, ticketStartTime, ticketEndTime, userID);
+            const res = yield databaseAccess_2.default.Create(databaseAccess_1.TableNames_App.OpenTickets, {
+                [databaseAccess_1.ColumnNames_App.vehType]: vehType,
                 [databaseAccess_1.ColumnNames_App.parkingLotID]: parkingLotID,
                 [databaseAccess_1.ColumnNames_App.licensePlate]: licensePlate,
                 [databaseAccess_1.ColumnNames_App.ticketStartTime]: dataBaseControl.dateToString(new Date(ticketStartTime)),
@@ -234,7 +240,7 @@ class dataBaseControl {
     }
     static GetOpenTicketByUserID(userID) {
         return __awaiter(this, void 0, void 0, function* () {
-            const res = yield (0, databaseAccess_1.Read)(databaseAccess_1.TableNames_App.OpenTickets, {
+            const res = yield databaseAccess_2.default.Read(databaseAccess_1.TableNames_App.OpenTickets, {
                 [databaseAccess_1.ColumnNames_App.userID]: {
                     [databaseAccess_1.ConditionVariable.operator]: databaseAccess_1.Operator.EqualTo,
                     [databaseAccess_1.ConditionVariable.values]: userID
@@ -254,7 +260,7 @@ class dataBaseControl {
     }
     static GetOpenTicketByTicketID(ticketID) {
         return __awaiter(this, void 0, void 0, function* () {
-            const res = yield (0, databaseAccess_1.Read)(databaseAccess_1.TableNames_App.OpenTickets, {
+            const res = yield databaseAccess_2.default.Read(databaseAccess_1.TableNames_App.OpenTickets, {
                 [databaseAccess_1.ColumnNames_App.ticketID]: {
                     [databaseAccess_1.ConditionVariable.operator]: databaseAccess_1.Operator.EqualTo,
                     [databaseAccess_1.ConditionVariable.values]: ticketID
@@ -274,7 +280,7 @@ class dataBaseControl {
     }
     static GetOpenTicket() {
         return __awaiter(this, void 0, void 0, function* () {
-            const res = yield (0, databaseAccess_1.Read)(databaseAccess_1.TableNames_App.OpenTickets);
+            const res = yield databaseAccess_2.default.Read(databaseAccess_1.TableNames_App.OpenTickets);
             if (res === null) {
                 return ErrorMsg_MySQL();
             }
@@ -283,9 +289,10 @@ class dataBaseControl {
             }
             const tickets = res;
             for (const ticket of tickets) {
-                const ticket = res[0];
                 ticket.ticketEndTime = dataBaseControl.dateOffsetPlus(ticket.ticketEndTime);
                 ticket.ticketStartTime = dataBaseControl.dateOffsetPlus(ticket.ticketStartTime);
+                const fee = yield dataBaseControl.GetRate({ carparkID: ticket.parkingLotID, vehType: ticket.vehType });
+                ticket.fee = fee ? fee : 0;
             }
             return res;
         });
@@ -293,7 +300,7 @@ class dataBaseControl {
     static UpdateOpenTicketEndTime(object) {
         return __awaiter(this, void 0, void 0, function* () {
             const { ticketID, newEndTime } = object;
-            const res = yield (0, databaseAccess_1.Update)(databaseAccess_1.TableNames_App.OpenTickets, {
+            const res = yield databaseAccess_2.default.Update(databaseAccess_1.TableNames_App.OpenTickets, {
                 "set": {
                     [databaseAccess_1.ColumnNames_App.ticketEndTime]: dataBaseControl.dateToString(new Date(newEndTime))
                 },
@@ -316,7 +323,7 @@ class dataBaseControl {
     static UpdateOpenTicketNotified(object) {
         return __awaiter(this, void 0, void 0, function* () {
             const { ticketID, value } = object;
-            const res = yield (0, databaseAccess_1.Update)(databaseAccess_1.TableNames_App.OpenTickets, {
+            const res = yield databaseAccess_2.default.Update(databaseAccess_1.TableNames_App.OpenTickets, {
                 "set": {
                     [databaseAccess_1.ColumnNames_App.notified]: value
                 },
@@ -338,7 +345,7 @@ class dataBaseControl {
     }
     static DeleteOpenTicket(ticketID) {
         return __awaiter(this, void 0, void 0, function* () {
-            const res = yield (0, databaseAccess_1.Delete)(databaseAccess_1.TableNames_App.OpenTickets, {
+            const res = yield databaseAccess_2.default.Delete(databaseAccess_1.TableNames_App.OpenTickets, {
                 [databaseAccess_1.ColumnNames_App.ticketID]: {
                     [databaseAccess_1.ConditionVariable.operator]: databaseAccess_1.Operator.EqualTo,
                     [databaseAccess_1.ConditionVariable.values]: ticketID
@@ -353,7 +360,7 @@ class dataBaseControl {
     static CreateClosedTicket(object) {
         return __awaiter(this, void 0, void 0, function* () {
             const { ticketID, parkingLotID, licensePlate, ticketStartTime, ticketEndTime, actualEndTime } = object;
-            const res = yield (0, databaseAccess_1.Create)(databaseAccess_1.TableNames_App.ClosedTickets, {
+            const res = yield databaseAccess_2.default.Create(databaseAccess_1.TableNames_App.ClosedTickets, {
                 [databaseAccess_1.ColumnNames_App.ticketID]: ticketID,
                 [databaseAccess_1.ColumnNames_App.parkingLotID]: parkingLotID,
                 [databaseAccess_1.ColumnNames_App.licensePlate]: licensePlate,
@@ -369,7 +376,7 @@ class dataBaseControl {
     }
     static GetAllClosedTicket(userID) {
         return __awaiter(this, void 0, void 0, function* () {
-            const res = yield (0, databaseAccess_1.Read)(databaseAccess_1.TableNames_App.UserClosedTickets, {
+            const res = yield databaseAccess_2.default.Read(databaseAccess_1.TableNames_App.UserClosedTickets, {
                 [databaseAccess_1.ColumnNames_App.userID]: {
                     [databaseAccess_1.ConditionVariable.operator]: databaseAccess_1.Operator.EqualTo,
                     [databaseAccess_1.ConditionVariable.values]: userID
@@ -382,7 +389,7 @@ class dataBaseControl {
                 return ErrorMsg_NoEntry();
             }
             const ticketIDs = res.map(item => item.ticketID);
-            const allTickets = yield (0, databaseAccess_1.Read)(databaseAccess_1.TableNames_App.ClosedTickets, {
+            const allTickets = yield databaseAccess_2.default.Read(databaseAccess_1.TableNames_App.ClosedTickets, {
                 [databaseAccess_1.ColumnNames_App.ticketID]: {
                     [databaseAccess_1.ConditionVariable.operator]: databaseAccess_1.Operator.In,
                     [databaseAccess_1.ConditionVariable.values]: ticketIDs
@@ -396,14 +403,14 @@ class dataBaseControl {
             }
             for (const ticket of allTickets) {
                 ticket.address = yield dataBaseControl.GetCarparkAddress(ticket.parkingLotID);
+                ticket.fee = yield dataBaseControl.GetRate({ carparkID: ticket.parkingLotID, vehType: ticket.vehType });
             }
-            console.log(allTickets);
             return allTickets;
         });
     }
     static GetClosedTicket(ticketID) {
         return __awaiter(this, void 0, void 0, function* () {
-            const res = yield (0, databaseAccess_1.Read)(databaseAccess_1.TableNames_App.ClosedTickets, {
+            const res = yield databaseAccess_2.default.Read(databaseAccess_1.TableNames_App.ClosedTickets, {
                 [databaseAccess_1.ColumnNames_App.ticketID]: {
                     [databaseAccess_1.ConditionVariable.operator]: databaseAccess_1.Operator.EqualTo,
                     [databaseAccess_1.ConditionVariable.values]: ticketID
@@ -421,7 +428,7 @@ class dataBaseControl {
     static CreateUserClosedTicket(object) {
         return __awaiter(this, void 0, void 0, function* () {
             const { ticketID, userID } = object;
-            const res = yield (0, databaseAccess_1.Create)(databaseAccess_1.TableNames_App.UserClosedTickets, {
+            const res = yield databaseAccess_2.default.Create(databaseAccess_1.TableNames_App.UserClosedTickets, {
                 [databaseAccess_1.ColumnNames_App.userID]: userID,
                 [databaseAccess_1.ColumnNames_App.ticketID]: ticketID
             });
@@ -433,7 +440,7 @@ class dataBaseControl {
     }
     static GetUserClosedTicket(userID) {
         return __awaiter(this, void 0, void 0, function* () {
-            const res = yield (0, databaseAccess_1.Read)(databaseAccess_1.TableNames_App.UserClosedTickets, {
+            const res = yield databaseAccess_2.default.Read(databaseAccess_1.TableNames_App.UserClosedTickets, {
                 [databaseAccess_1.ColumnNames_App.userID]: {
                     [databaseAccess_1.ConditionVariable.operator]: databaseAccess_1.Operator.EqualTo,
                     [databaseAccess_1.ConditionVariable.values]: userID
@@ -463,7 +470,7 @@ class dataBaseControl {
     }
     static GetCarparkAddress(carparkID) {
         return __awaiter(this, void 0, void 0, function* () {
-            const res = yield (0, databaseAccess_1.Read)(databaseAccess_1.TableNames_HDBInfo.HDBCarpark, {
+            const res = yield databaseAccess_2.default.Read(databaseAccess_1.TableNames_HDBInfo.HDBCarpark, {
                 [databaseAccess_1.ColumnNames_HDBInfo.carparkNo]: {
                     [databaseAccess_1.ConditionVariable.operator]: databaseAccess_1.Operator.EqualTo,
                     [databaseAccess_1.ConditionVariable.values]: carparkID
@@ -486,7 +493,7 @@ class dataBaseControl {
             else if (vehType == "HV")
                 return feeTypes.heavy_vehicle;
             else if (vehType == "C") {
-                const res = yield (0, databaseAccess_1.Read)(databaseAccess_1.TableNames_HDBInfo.WithinCtrlArea, {
+                const res = yield databaseAccess_2.default.Read(databaseAccess_1.TableNames_HDBInfo.WithinCtrlArea, {
                     [databaseAccess_1.ColumnNames_HDBInfo.carparkNo]: {
                         [databaseAccess_1.ConditionVariable.operator]: databaseAccess_1.Operator.EqualTo,
                         [databaseAccess_1.ConditionVariable.values]: carparkID

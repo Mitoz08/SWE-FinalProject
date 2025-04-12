@@ -1,6 +1,6 @@
 import { serverEntity } from "../entity/serverEntity";
 import dataBaseControl from "./databaseControl";
-import expiryInitialiser from "./expiryControl";
+import expiryControl from "./expiryControl";
 
 export default class serverControl {
     static async serverInitialiser() {
@@ -10,7 +10,7 @@ export default class serverControl {
         
         // console.log(serverEntity.getTicket())
         // Call the expiry function
-        expiryInitialiser()
+        expiryControl.expiryInitialiser()
 
     }
 

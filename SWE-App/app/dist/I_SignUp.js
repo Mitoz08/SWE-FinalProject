@@ -3,8 +3,7 @@ import { Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { AuthContext } from "./AuthContext";
-import { VerifySignUp } from "./controller/authenticationControl";
-
+import authenticationControl from "./controller/authenticationControl";
 //AuB1
 function PasswordValidation(Password1, Password2) {
     const result = (Password1 === Password2) ? 1 : 0;
@@ -54,7 +53,7 @@ async function OnSignUp(FirstName, LastName, Phone, Email, Password, ConfirmPass
         if(PasswordChecker(Password)){
             //AuC2
             console.log("In Password Checker")
-            if(await VerifySignUp(FirstName, LastName, Phone, Email, Password)){
+            if(await authenticationControl.VerifySignUp(FirstName, LastName, Phone, Email, Password)){
                 console.log("Sign Up Successful")
                 return true
             } else {

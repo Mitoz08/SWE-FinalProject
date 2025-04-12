@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Text, StyleSheet, TouchableOpacity, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { mainEntity } from "./entity/mainEntity";
-import { add, format } from "date-fns";
 
 export default function I_SuccessfulUI({navigation}) {
     const ticket = mainEntity.getTicket()

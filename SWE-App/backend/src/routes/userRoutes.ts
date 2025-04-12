@@ -1,44 +1,43 @@
-import Express, { Request, Response } from 'express';
-import { E_GetClosedTicketsByUserID, E_AddNewUser, E_AddUserInfo, E_ClosedTicket, E_CreateOpenTicket, E_CreateUserClosedTicket, E_DeleteUser, E_GetCarparkAddress, E_GetClosedTicket, E_GetOpenTicketByTicketID, E_GetOpenTicketByUserID, E_GetRate, E_GetUserClosedTicket, E_GetUserEmail, E_GetUserID, E_GetUserInfo, E_UpdateOpenTicketEndTime, E_UpdateUserInfo } from '../controller/userContoller';
-
+import Express from 'express';
+import userControl from '../controller/userContoller';
 const router = Express.Router();
 
-router.post("/UserID", E_AddNewUser)
+router.post("/UserID", userControl.E_AddNewUser)
 
-router.get("/UserID", E_GetUserID)
+router.get("/UserID", userControl.E_GetUserID)
 
-router.delete("/UserID", E_DeleteUser)
+router.delete("/UserID", userControl.E_DeleteUser)
 
-router.post("/UserInfo", E_AddUserInfo)
+router.post("/UserInfo", userControl.E_AddUserInfo)
 
-router.get("/UserInfo", E_GetUserInfo)
+router.get("/UserInfo", userControl.E_GetUserInfo)
 
-router.get("/UserInfo/Email", E_GetUserEmail)
+router.get("/UserInfo/Email", userControl.E_GetUserEmail)
 
-router.put("/UserInfo", E_UpdateUserInfo)
+router.put("/UserInfo", userControl.E_UpdateUserInfo)
 
-router.post("/OpenTicket", E_CreateOpenTicket)
+router.post("/OpenTicket", userControl.E_CreateOpenTicket)
 
-router.get("/OpenTicket/UserID", E_GetOpenTicketByUserID)
+router.get("/OpenTicket/UserID", userControl.E_GetOpenTicketByUserID)
 
-router.get("/OpenTicket/TicketID", E_GetOpenTicketByTicketID)
+router.get("/OpenTicket/TicketID", userControl.E_GetOpenTicketByTicketID)
 
-router.put("/OpenTicket", E_UpdateOpenTicketEndTime)
+router.put("/OpenTicket", userControl.E_UpdateOpenTicketEndTime)
 
 // router.delete("/OpenTicket", E_DeleteOpenTicket)
 
-router.post("/ClosedTicket", E_ClosedTicket)
+router.post("/ClosedTicket", userControl.E_ClosedTicket)
 
-router.get("/ClosedTickets", E_GetClosedTicketsByUserID)
+router.get("/ClosedTickets", userControl.E_GetClosedTicketsByUserID)
 
-router.get("/ClosedTicket", E_GetClosedTicket)
+router.get("/ClosedTicket", userControl.E_GetClosedTicket)
 
-router.post("/UserClosedTicket", E_CreateUserClosedTicket)
+router.post("/UserClosedTicket", userControl.E_CreateUserClosedTicket)
 
-router.get("/UserClosedTicket", E_GetUserClosedTicket)
+router.get("/UserClosedTicket", userControl.E_GetUserClosedTicket)
 
-router.get("/CarparkAddress", E_GetCarparkAddress)
+router.get("/CarparkAddress", userControl.E_GetCarparkAddress)
 
-router.get("/Rate", E_GetRate)
+router.get("/Rate", userControl.E_GetRate)
 
 export { router as userRouter };

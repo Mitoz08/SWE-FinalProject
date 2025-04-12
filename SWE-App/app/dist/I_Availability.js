@@ -4,7 +4,7 @@ import { Picker } from '@react-native-picker/picker';
 import { Linking } from 'react-native';
 import carparkData from './HDBCarparkInformation.json';
 import { ScrollView } from 'react-native-gesture-handler';
-import { fetchCarparkData, fetchCarparkRates } from './controller/availabilityControl.js';
+import availabilityControl from './controller/availabilityControl.js';
 
 export default function ContactScreen({ navigation }) {
   const [carparks, setCarparks] = useState([]);
@@ -17,7 +17,7 @@ export default function ContactScreen({ navigation }) {
 
   useEffect(() => {
     const loadCarparkData = async () => {
-      const data = await fetchCarparkData();
+      const data = await availabilityControl.fetchCarparkData();
       setCarparks(data);
       setLoading(false);
     };
@@ -55,7 +55,7 @@ export default function ContactScreen({ navigation }) {
     const loadRates = async () => {
       for (let item of filteredCarparks) {
         if (rates[item.carpark_number]) continue;
-        const rate = await fetchCarparkRates(item.carpark_number, selectedCarparkType);
+        const rate = await availabilityControl.fetchCarparkRates(item.carpark_number, selectedCarparkType);
         setRates(prevRates => ({
           ...prevRates,
           [item.carpark_number]: rate,
@@ -146,6 +146,7 @@ export default function ContactScreen({ navigation }) {
                         return;
                       }
                       navigation.navigate("I_PaymentUI", {
+                        vehType: selectedCarparkType,
                         licensePlate: licensePlate,
                         carparkType: selectedCarparkType,
                         carparkID: item.carpark_number,
@@ -163,7 +164,7 @@ export default function ContactScreen({ navigation }) {
                           <Text>Total Lots: {info.total_lots}</Text>
                           <Text>Lot Type: {info.lot_type}</Text>
                           <Text>Available Lots: {info.lots_available}</Text>
-                          <Text>Rate: {Rate}</Text>
+                          <Text>Rate: {Rate.toFixed(2)} {selectedCarparkType == "M"? "per lot" : "per half-hour"}</Text>
                         </View>
                       )
                     ))}
