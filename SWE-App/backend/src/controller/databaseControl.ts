@@ -432,10 +432,11 @@ export default class dataBaseControl {
      * @returns the inserted ID which is the ticket ID
      */
     static async CreateOpenTicket( object:any ) : Promise<number|null> {
-        const {parkingLotID, licensePlate, ticketStartTime, ticketEndTime, userID} = object
-
+        const {vehType, parkingLotID, licensePlate, ticketStartTime, ticketEndTime, userID} = object
+        console.log(vehType, parkingLotID, licensePlate, ticketStartTime, ticketEndTime, userID)
         const res = await Create(TableNames_App.OpenTickets, 
             {
+                [ColumnNames_App.vehType] : vehType,
                 [ColumnNames_App.parkingLotID] : parkingLotID,
                 [ColumnNames_App.licensePlate] : licensePlate,
                 [ColumnNames_App.ticketStartTime] : dataBaseControl.dateToString(new Date(ticketStartTime)),

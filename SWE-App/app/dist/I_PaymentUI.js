@@ -6,7 +6,7 @@ import AntDesign from "@expo/vector-icons/Ionicons";
 import { ProcessPayment } from "./controller/paymentControl";
 
 export default function I_PaymentUI({ navigation, route }) {
-    const { licensePlate, carparkType, carparkID, rate } = route.params;
+    const { vehType, licensePlate, carparkType, carparkID, rate } = route.params;
 
     const intervalTime = 30;
     const [interval, setInterval] = useState(1);
@@ -57,6 +57,7 @@ export default function I_PaymentUI({ navigation, route }) {
         if (processing) return
         setProcessing(true)
         ProcessPayment({
+            vehType: vehType,
             carparkNo: carparkID,
             rate: rate,
             licensePlate: licensePlate,

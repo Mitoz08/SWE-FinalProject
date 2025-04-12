@@ -15,6 +15,7 @@ enum TableNames_App {
 }
 
 enum ColumnNames_App {
+    vehType = "vehType",
     userFirebaseID = "userFirebaseID",
     firstName = "firstName",
     lastName = "lastName",

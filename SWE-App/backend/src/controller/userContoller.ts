@@ -148,7 +148,7 @@ export async function E_CreateOpenTicket(req: Request, res:Response) : Promise<v
         return;
     }
 
-
+    console.log(object)
     const request = await serverControl.createOpenTicket(object)
 
     if (request == null) res.status(500).json({message: "Failed to create open ticket."})

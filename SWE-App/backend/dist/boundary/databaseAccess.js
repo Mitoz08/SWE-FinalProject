@@ -32,6 +32,7 @@ var TableNames_App;
 })(TableNames_App || (exports.TableNames_App = TableNames_App = {}));
 var ColumnNames_App;
 (function (ColumnNames_App) {
+    ColumnNames_App["vehType"] = "vehType";
     ColumnNames_App["userFirebaseID"] = "userFirebaseID";
     ColumnNames_App["firstName"] = "firstName";
     ColumnNames_App["lastName"] = "lastName";

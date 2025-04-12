@@ -166,6 +166,7 @@ function E_CreateOpenTicket(req, res) {
             res.status(400).json({ message: "object is required." });
             return;
         }
+        console.log(object);
         const request = yield serverControl_1.default.createOpenTicket(object);
         if (request == null)
             res.status(500).json({ message: "Failed to create open ticket." });

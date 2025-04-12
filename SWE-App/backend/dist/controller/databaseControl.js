@@ -218,8 +218,10 @@ class dataBaseControl {
     }
     static CreateOpenTicket(object) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { parkingLotID, licensePlate, ticketStartTime, ticketEndTime, userID } = object;
+            const { vehType, parkingLotID, licensePlate, ticketStartTime, ticketEndTime, userID } = object;
+            console.log(vehType, parkingLotID, licensePlate, ticketStartTime, ticketEndTime, userID);
             const res = yield (0, databaseAccess_1.Create)(databaseAccess_1.TableNames_App.OpenTickets, {
+                [databaseAccess_1.ColumnNames_App.vehType]: vehType,
                 [databaseAccess_1.ColumnNames_App.parkingLotID]: parkingLotID,
                 [databaseAccess_1.ColumnNames_App.licensePlate]: licensePlate,
                 [databaseAccess_1.ColumnNames_App.ticketStartTime]: dataBaseControl.dateToString(new Date(ticketStartTime)),

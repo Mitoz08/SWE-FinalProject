@@ -3,7 +3,9 @@ export async function ProcessPayment(createTicketDetails) {
     const ticketStartTime = new Date();
     const ticketEndTime = new Date(new Date().setMinutes(ticketStartTime.getMinutes() + createTicketDetails.duration_hour * 60 + createTicketDetails.duration_min));
     const userID = mainEntity.getUserID();
+    console.log(createTicketDetails);
     const parameter = {
+        vehType: createTicketDetails.vehType,
         parkingLotID: createTicketDetails.carparkNo,
         licensePlate: createTicketDetails.licensePlate,
         ticketStartTime: ticketStartTime,
