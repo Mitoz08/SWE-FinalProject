@@ -146,6 +146,7 @@ export default function ContactScreen({ navigation }) {
                         return;
                       }
                       navigation.navigate("I_PaymentUI", {
+                        vehType: selectedCarparkType,
                         licensePlate: licensePlate,
                         carparkType: selectedCarparkType,
                         carparkID: item.carpark_number,
@@ -163,7 +164,7 @@ export default function ContactScreen({ navigation }) {
                           <Text>Total Lots: {info.total_lots}</Text>
                           <Text>Lot Type: {info.lot_type}</Text>
                           <Text>Available Lots: {info.lots_available}</Text>
-                          <Text>Rate: {Rate}</Text>
+                          <Text>Rate: {Rate.toFixed(2)} {selectedCarparkType == "M"? "per lot" : "per half-hour"}</Text>
                         </View>
                       )
                     ))}
