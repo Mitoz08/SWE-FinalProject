@@ -50,11 +50,21 @@ export default function I_EditProfile({ navigation }) {
     const [showConfirmation, setShowConfirmation] = useState(false);
 
     const handleUpdateProfile = async (prompt, logout = false) => {
+        // Check if email is valid
+        if (!email.match(/^[\w-\.]+[+]?[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/i)) {
+            alert("invalid email");
+            return;
+        }
+        // Check if phone number is valid
+        if (!phoneNo.match(/^(8|9)([0-9]{7}$)/i)) {
+            alert("invalid phone number");
+            return;
+        }
         // If prompt is true, and if we're updating email
         if (prompt && email !== mainEntity.getUserEmail()) {
             // Display confirmation prompt
             setShowConfirmation(true);
-            return
+            return;
         }
 
         const userInfo = {
