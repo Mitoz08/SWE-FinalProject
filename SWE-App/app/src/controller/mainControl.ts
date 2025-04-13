@@ -40,6 +40,7 @@ export default class mainControl {
     }
 
     static RemoveTicket() {
+        console.log(mainEntity.getTicket())
         mainEntity.setTicket(null)
     }
 

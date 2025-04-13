@@ -29,8 +29,8 @@ class ServerEntity {
             }
             curIndex++;
         }
-        if (index > -1) {
-            this.openTickets = this.openTickets.splice(index, 1);
+        if (index != -1) {
+            this.openTickets.splice(index, 1);
         }
     }
 }
