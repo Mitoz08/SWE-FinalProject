@@ -23,8 +23,10 @@ class ServerEntity {
         var index = -1;
         var curIndex = 0;
         for (const ticket of this.openTickets) {
-            if (ticket.ticketID == ticketID)
+            if (ticket.ticketID == ticketID) {
+                console.log(ticket);
                 index = curIndex;
+            }
             curIndex++;
         }
         if (index > -1) {

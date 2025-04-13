@@ -104,11 +104,12 @@ class serverControl {
                 console.error("Fail to create user closed ticket");
                 return false;
             }
-            res = yield databaseControl_1.default.DeleteOpenTicket(ticket.ticketID);
+            res = yield databaseControl_1.default.DeleteOpenTicket(ticketID);
             if (!res) {
                 console.error("Fail to delete open ticket");
                 return false;
             }
+            serverEntity_1.serverEntity.removeTicket(ticketID);
             return true;
         });
     }
