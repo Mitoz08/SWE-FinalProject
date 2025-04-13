@@ -150,15 +150,6 @@ export default function I_EditProfile({ navigation }) {
                     onConfirm={() => onConfirm()}
                     onCancel={() => setShowConfirmation(false)}
                 />
-                <View style={styles.profileHeader}>
-                    <Text style={styles.headerTitle}>First Name</Text>
-                    <TextInput
-                        style={styles.input}
-                        onChangeText={setFirstName}
-                        value={firstName}
-                        placeholder="FirstName"
-                    />
-
 
                     <ScrollView 
                         style={styles.scrollView}
