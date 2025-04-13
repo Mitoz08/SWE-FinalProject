@@ -107,12 +107,15 @@ export default class serverControl {
             return false;
         }
 
-        res = await dataBaseControl.DeleteOpenTicket(ticket.ticketID)
+        res = await dataBaseControl.DeleteOpenTicket(ticketID)
 
         if (!res) {
             console.error("Fail to delete open ticket")
             return false;
         }
+
+        serverEntity.removeTicket(ticketID)
+
 
         return true;
 

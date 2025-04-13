@@ -118,11 +118,11 @@ export default function I_EditProfile({ navigation }) {
         updateEmail(auth.currentUser, email).then(() => {
             console.log("Email updated successfully");
             alert("Email updated successfully");
+            handleUpdateProfile(false, true);
         }).catch((error) => {
             console.log("Error updating email", error);
             alert("Error updating email");
         });
-        handleUpdateProfile(false, true);
     }
     
     return (
@@ -142,14 +142,6 @@ export default function I_EditProfile({ navigation }) {
                         <Text style={styles.headerTitle}>Edit Profile</Text>
                         <View style={styles.headerRight} />
                     </View>
-                <ConfirmationModal
-                    isOpen={showConfirmation}
-                    title="Confirm Edit"
-                    message="You will be logged out when changing your email. Are you sure?"
-                    //onConfirm={() => handleUpdateProfile(false, true)}
-                    onConfirm={() => onConfirm()}
-                    onCancel={() => setShowConfirmation(false)}
-                />
 
                     <ScrollView 
                         style={styles.scrollView}
@@ -206,9 +198,10 @@ export default function I_EditProfile({ navigation }) {
 
                     <ConfirmationModal
                         isOpen={showConfirmation}
-                        title="Confirm Changes"
+                        title="Confirm Edit"
                         message="You will be logged out when changing your email. Are you sure?"
-                        onConfirm={() => handleUpdateProfile(false, true)}
+                        //onConfirm={() => handleUpdateProfile(false, true)}
+                        onConfirm={() => onConfirm()}
                         onCancel={() => setShowConfirmation(false)}
                     />
                 </SafeAreaView>
