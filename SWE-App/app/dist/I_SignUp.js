@@ -67,7 +67,7 @@ function PasswordChecker(Password) {
 }
 
 // You can put all the method calls in this function or just put it in the onPress arrow function
-function OnSignUp(FirstName, LastName, Phone, Email, Password, ConfirmPassword) {
+async function OnSignUp(FirstName, LastName, Phone, Email, Password, ConfirmPassword) {
     
     if(FirstName === "" || LastName === "" || Phone === "" || Email === "" || Password === "" || ConfirmPassword === "") {
         alert("Please fill in all the fields");
@@ -80,7 +80,7 @@ function OnSignUp(FirstName, LastName, Phone, Email, Password, ConfirmPassword) 
         if(PasswordChecker(Password)){
             //AuC2
             console.log("In Password Checker")
-            if(VerifySignUp(FirstName, LastName, Phone, Email, Password)){
+            if(await authenticationControl.VerifySignUp(FirstName, LastName, Phone, Email, Password)){
                 console.log("Sign Up Successful");
                 return true
             } else {
