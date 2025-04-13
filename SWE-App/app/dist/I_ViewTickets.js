@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Text, StyleSheet, View, TouchableOpacity, Modal } from "react-native";
-import { SafeAreaProvider, SafeAreaView, useSafeAreaFrame } from "react-native-safe-area-context";
+import { Text, StyleSheet, View, TouchableOpacity, Modal, ActivityIndicator } from "react-native";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import viewTicketControl from "./controller/viewTicketsControl";
 import { FlatList } from "react-native-gesture-handler";
 import { AntDesign } from "@expo/vector-icons";
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function I_ViewTickets({navigation}) {
-
   const [ticket, setTicket] = useState(null);
   const [address, setAddress] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -14,18 +14,15 @@ export default function I_ViewTickets({navigation}) {
   const [showCloseTicketModal, setCloseTicketModal] = useState(false);
   const [showPastTicketModal, setPastTicketModal] = useState(false);
   const [PastTicket, setPastTicket] = useState(null);
-  const [pastTickets, setPastTickets] = useState([])
-
-
+  const [pastTickets, setPastTickets] = useState([]);
 
   useEffect(() => {
     async function fetchTicket() {
-      setLoading(true)
-      try{
+      setLoading(true);
+      try {
         const {address, ticket} = await viewTicketControl.getTicket();
-        const ticketArray = await viewTicketControl.getAllClosedTickets()
-        // console.log("Fetching ticket", ticket)
-        setPastTickets(ticketArray)
+        const ticketArray = await viewTicketControl.getAllClosedTickets();
+        setPastTickets(ticketArray);
         setTicket(ticket);
         setAddress(address);
       } catch (error) {
@@ -34,7 +31,7 @@ export default function I_ViewTickets({navigation}) {
         setLoading(false);
       }
     }
-    if (loading){
+    if (loading) {
       fetchTicket();
     }
   }, [loading]);
@@ -42,458 +39,638 @@ export default function I_ViewTickets({navigation}) {
   if (loading) {
     return (
       <SafeAreaProvider>
-        <SafeAreaView>
-          <View>
-            <Text>Loading ticket info...</Text>
+        <SafeAreaView style={styles.container}>
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#4682b4" />
+            <Text style={styles.loadingText}>Loading ticket info...</Text>
           </View>
         </SafeAreaView>
       </SafeAreaProvider>
     );
   }
-  if (!ticket?.ticketID) return (
-    <SafeAreaProvider>
-      <SafeAreaView style={{ flex: 1 }}>
-        <View style={{ padding: 16 }}>
-          <Text>No Open Tickets</Text>
-        </View>
 
-        {/* Display Past Tickets and Back to Main Page Button */}
-        <FlatList
-          style={{ flex: 1 }}
-          data={pastTickets.sort((a, b) => b.ticketID - a.ticketID)}
-          keyExtractor={(item) => item.ticketID.toString()}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.card}
-              onPress={() => {
-                setPastTicket(item);
-                setPastTicketModal(true);
-              }}
+  if (!ticket?.ticketID) {
+    return (
+      <SafeAreaProvider>
+        <SafeAreaView style={styles.container}>
+          <LinearGradient
+            colors={['#4c669f', '#3b5998', '#192f6a']}
+            style={styles.gradientBackground}
+          >
+            <View style={styles.headerContainer}>
+              <Text style={styles.headerText}>No Open Tickets</Text>
+            </View>
+
+            <FlatList
+              style={styles.pastTicketsList}
+              data={pastTickets.sort((a, b) => b.ticketID - a.ticketID)}
+              keyExtractor={(item) => item.ticketID.toString()}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.pastTicketCard}
+                  onPress={() => {
+                    setPastTicket(item);
+                    setPastTicketModal(true);
+                  }}
+                >
+                  <View style={styles.pastTicketHeader}>
+                    <Text style={styles.pastTicketId}>Ticket #{item.ticketID}</Text>
+                    <AntDesign name="right" size={20} color="#4682b4" />
+                  </View>
+                  <Text style={styles.pastTicketAddress}>{item.address}</Text>
+                </TouchableOpacity>
+              )}
+            />
+
+            <TouchableOpacity 
+              style={styles.mainButton}
+              onPress={() => navigation.navigate("I_MainPage")}
             >
-              <Text>Ticket ID: {item.ticketID}</Text>
-              <Text>Address: {item.address}</Text>
+              <Text style={styles.buttonText}>Back to Main Page</Text>
             </TouchableOpacity>
-          )}
-        />
 
-        <View style={styles.fixedButtonContainer}>
-          <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("I_MainPage")}>
-            <Text style={styles.buttonText}>Back to Main Page</Text>
-          </TouchableOpacity>
-        </View>
-        <PastTicketModal
-        ticket={PastTicket}
-        showModal={showPastTicketModal}
-        setShowModal={setPastTicketModal}
-        />
-      </SafeAreaView>
-    </SafeAreaProvider>
-  )
+            <PastTicketModal
+              ticket={PastTicket}
+              showModal={showPastTicketModal}
+              setShowModal={setPastTicketModal}
+            />
+          </LinearGradient>
+        </SafeAreaView>
+      </SafeAreaProvider>
+    );
+  }
 
-  return(
+  return (
     <SafeAreaProvider>
-    <SafeAreaView style={{ flex: 1 }}>
-      <View style={{ flex: 1 }}>
+      <SafeAreaView style={styles.container}>
+        <LinearGradient
+          colors={['#4c669f', '#3b5998', '#192f6a']}
+          style={styles.gradientBackground}
+        >
+          <View style={styles.mainContent}>
+            <View style={styles.activeTicketCard}>
+              <Text style={styles.activeTicketHeader}>Active Ticket</Text>
+              <View style={styles.ticketDetails}>
+                <View style={styles.detailRow}>
+                  <Text style={styles.label}>Ticket ID:</Text>
+                  <Text style={styles.value}>#{ticket.ticketID}</Text>
+                </View>
+                <View style={styles.detailRow}>
+                  <Text style={styles.label}>Parking Lot:</Text>
+                  <Text style={styles.value}>{ticket.parkingLotID}</Text>
+                </View>
+                <View style={styles.detailRow}>
+                  <Text style={styles.label}>Address:</Text>
+                  <Text style={styles.value}>{address}</Text>
+                </View>
+                <View style={styles.detailRow}>
+                  <Text style={styles.label}>License Plate:</Text>
+                  <Text style={styles.value}>{ticket.licensePlate}</Text>
+                </View>
+                <View style={styles.detailRow}>
+                  <Text style={styles.label}>Start Time:</Text>
+                  <Text style={styles.value}>{ticket.ticketStartTime.replace("T", " ").substr(0, 19)}</Text>
+                </View>
+                <View style={styles.detailRow}>
+                  <Text style={styles.label}>End Time:</Text>
+                  <Text style={styles.value}>{ticket.ticketEndTime.replace("T", " ").substr(0, 19)}</Text>
+                </View>
+              </View>
+            </View>
 
-        <View style={{ padding: 16 }}>
-          <View style={styles.card}>
-            <Text style={styles.ticketID}>Ticket ID: {ticket.ticketID}</Text>
-            <Text style={styles.detail}>Parking Lot: <Text style={styles.bold}>{ticket.parkingLotID}</Text></Text>
-            <Text style={styles.detail}>Address: <Text style={styles.bold}>{address}</Text></Text>
-            <Text style={styles.detail}>License Plate: <Text style={styles.bold}>{ticket.licensePlate}</Text></Text>
-            <Text style={styles.detail}>Start Time: <Text style={styles.bold}>{ticket.ticketStartTime.replace("T", " ").substr(0, 19)} </Text></Text>
-            <Text style={styles.detail}>End Time: <Text style={styles.bold}>{ticket.ticketEndTime.replace("T", " ").substr(0, 19)}</Text></Text>
-          </View>
-          
+            <View style={styles.actionButtonsContainer}>
+              <TouchableOpacity 
+                style={[styles.actionButton, styles.addTimeButton]}
+                onPress={() => setAddTimeModal(true)}
+              >
+                <AntDesign name="clockcircle" size={24} color="white" />
+                <Text style={styles.actionButtonText}>Add Time</Text>
+              </TouchableOpacity>
 
-          <View style={styles.fixedButtonContainer}>
-            <TouchableOpacity style={styles.button} onPress={() => { setAddTimeModal(true) }}>
-              <Text style={styles.buttonText}>Add Time</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => { setCloseTicketModal(true) }}>
-              <Text style={styles.buttonText}>Close Ticket</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate("I_MainPage")}>
+              <TouchableOpacity 
+                style={[styles.actionButton, styles.closeTicketButton]}
+                onPress={() => setCloseTicketModal(true)}
+              >
+                <AntDesign name="checkcircle" size={24} color="white" />
+                <Text style={styles.actionButtonText}>Close Ticket</Text>
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.pastTicketsHeader}>Past Tickets</Text>
+            
+            <FlatList
+              style={styles.pastTicketsList}
+              data={pastTickets.sort((a, b) => b.ticketID - a.ticketID)}
+              keyExtractor={(item) => item.ticketID.toString()}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.pastTicketCard}
+                  onPress={() => {
+                    setPastTicket(item);
+                    setPastTicketModal(true);
+                  }}
+                >
+                  <View style={styles.pastTicketHeader}>
+                    <Text style={styles.pastTicketId}>Ticket #{item.ticketID}</Text>
+                    <AntDesign name="right" size={20} color="#4682b4" />
+                  </View>
+                  <Text style={styles.pastTicketAddress}>{item.address}</Text>
+                </TouchableOpacity>
+              )}
+            />
+
+            <TouchableOpacity 
+              style={styles.mainButton}
+              onPress={() => navigation.navigate("I_MainPage")}
+            >
               <Text style={styles.buttonText}>Back to Main Page</Text>
             </TouchableOpacity>
           </View>
-        </View>
-        
-        <FlatList
-          style={{ flex: 1 }}
-          data={pastTickets.sort((a, b) => b.ticketID - a.ticketID)}
-          keyExtractor={(item) => item.ticketID.toString()}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.card}
-              onPress={() => {
-                setPastTicket(item);
-                setPastTicketModal(true);
-              }}
-            >
-              <Text>Ticket ID: {item.ticketID}</Text>
-              <Text>Address: {item.address}</Text>
-            </TouchableOpacity>
-          )}
-        />
-      </View>
-      
-      <PastTicketModal
-        ticket={PastTicket}
-        showModal={showPastTicketModal}
-        setShowModal={setPastTicketModal}
-      />
-      <AddTimeModal
-        ticketID={ticket.ticketID}
-        fee={ticket.fee}
-        vehType={ticket.vehType}
-        endTime={ticket.ticketEndTime}
-        showModal={showAddTimeModal}
-        setShowModal={setAddTimeModal}
-        setLoading={setLoading}
-      />
-      <CloseTicketModal
-        ticket={ticket}
-        showModal={showCloseTicketModal}
-        setShowModal={setCloseTicketModal}
-        setLoading={setLoading}
-      />
-    </SafeAreaView>
-  </SafeAreaProvider>
 
-  )
+          <PastTicketModal
+            ticket={PastTicket}
+            showModal={showPastTicketModal}
+            setShowModal={setPastTicketModal}
+          />
+          <AddTimeModal
+            ticketID={ticket.ticketID}
+            fee={ticket.fee}
+            vehType={ticket.vehType}
+            endTime={ticket.ticketEndTime}
+            showModal={showAddTimeModal}
+            setShowModal={setAddTimeModal}
+            setLoading={setLoading}
+          />
+          <CloseTicketModal
+            ticket={ticket}
+            showModal={showCloseTicketModal}
+            setShowModal={setCloseTicketModal}
+            setLoading={setLoading}
+          />
+        </LinearGradient>
+      </SafeAreaView>
+    </SafeAreaProvider>
+  );
 }
 
-// const PastTicketFlatList = ({ticketArray, setShowModal, setTicketID}) => {
-
-//   const sortedTickets = ticketArray.sort((a,b) => b.ticketID - a.ticketID)
-
-//   return (
-//     <SafeAreaView style={{flex:1}} >
-//       <View>
-//         <FlatList
-//           data={sortedTickets}
-//           keyExtractor={(item) => item.ticketID.toString()}
-//           renderItem={({ item }) => (
-//             <TouchableOpacity 
-//               style={styles.card}
-//               onPress={() => {
-//                 setTicketID(item)
-//                 setShowModal(true)
-//               }}
-//             >
-//               <Text>Ticket ID: ${item.ticketID}</Text>
-//               <Text>Address: ${item.address}</Text>
-//             </TouchableOpacity>
-//           )}
-//         />
-//       </View>
-//     </SafeAreaView>
-//   )
-// }
-
-
 const PastTicketModal = ({ticket, showModal, setShowModal}) => {
-  if (!ticket) return
+  if (!ticket) return null;
+
   const fee = () => {
     switch (ticket.vehType) {
       case "M":
-        return (ticket.fee).toFixed(2)
+        return (ticket.fee).toFixed(2);
       case "C":
-        var interval = Math.ceil(((new Date(ticket.actualEndTime)).getTime() - (new Date(ticket.ticketStartTime)).getTime())/(30*60*1000))
+        var interval = Math.ceil(((new Date(ticket.actualEndTime)).getTime() - (new Date(ticket.ticketStartTime)).getTime())/(30*60*1000));
         if (interval == 0) interval += 1;
-        return (ticket.fee * interval).toFixed(2)
+        return (ticket.fee * interval).toFixed(2);
       default:
-        return (0).toFixed(2)
+        return (0).toFixed(2);
     }
-    
-  }
-
+  };
 
   return (
     <Modal
-    visible={showModal}
-    transparent={true}
-    animationType="slide"
-    onRequestClose={() => setShowModal(false)}>
+      visible={showModal}
+      transparent={true}
+      animationType="slide"
+      onRequestClose={() => setShowModal(false)}
+    >
       <View style={styles.modalBackground}>
         <View style={styles.modalContainer}>
-          <Text style={styles.ticketID}>Ticket ID: {ticket.ticketID}</Text>
-          <Text style={styles.detail}>Carpark Address: {ticket.address}</Text>
-          <Text style={styles.detail}>License Plate: {ticket.licensePlate}</Text>
-          <Text style={styles.detail}>Start Time: {ticket.ticketStartTime.replace("T", " ").substr(0, 19)}</Text>
-          <Text style={styles.detail}>End Time: {ticket.actualEndTime.replace("T", " ").substr(0, 19)}</Text>
-          <Text style={styles.detail}>Total Fee: {fee()}</Text>
+          <Text style={styles.modalTitle}>Past Ticket Details</Text>
+          <View style={styles.modalContent}>
+            <View style={styles.modalDetailRow}>
+              <Text style={styles.modalLabel}>Ticket ID:</Text>
+              <Text style={styles.modalValue}>#{ticket.ticketID}</Text>
+            </View>
+            <View style={styles.modalDetailRow}>
+              <Text style={styles.modalLabel}>Address:</Text>
+              <Text style={styles.modalValue}>{ticket.address}</Text>
+            </View>
+            <View style={styles.modalDetailRow}>
+              <Text style={styles.modalLabel}>License:</Text>
+              <Text style={styles.modalValue}>{ticket.licensePlate}</Text>
+            </View>
+            <View style={styles.modalDetailRow}>
+              <Text style={styles.modalLabel}>Start:</Text>
+              <Text style={styles.modalValue}>{ticket.ticketStartTime.replace("T", " ").substr(0, 19)}</Text>
+            </View>
+            <View style={styles.modalDetailRow}>
+              <Text style={styles.modalLabel}>End:</Text>
+              <Text style={styles.modalValue}>{ticket.actualEndTime.replace("T", " ").substr(0, 19)}</Text>
+            </View>
+            <View style={styles.modalDetailRow}>
+              <Text style={styles.modalLabel}>Total Fee:</Text>
+              <Text style={styles.modalValue}>${fee()}</Text>
+            </View>
+          </View>
 
-
-          <TouchableOpacity style={styles.button} onPress={() => setShowModal(false)}>
-            <Text style={styles.buttonText}>Go Back</Text>
+          <TouchableOpacity 
+            style={styles.modalButton} 
+            onPress={() => setShowModal(false)}
+          >
+            <Text style={styles.modalButtonText}>Close</Text>
           </TouchableOpacity>
         </View>
       </View>
     </Modal>
-  )
-}
+  );
+};
 
 const AddTimeModal = ({ticketID, fee, vehType, endTime, showModal, setShowModal, setLoading}) => {
-
   const intervalTime = 30;
-  const [incrementStr, setIncrementStr] = useState("")
-  const [increment, setIncrement] = useState(1)
-  const [processing, setProcessing] = useState(false)
+  const [incrementStr, setIncrementStr] = useState("");
+  const [increment, setIncrement] = useState(1);
+  const [processing, setProcessing] = useState(false);
   const [max, setMax] = useState(false);
   const [min, setMin] = useState(false);
 
-  const curEndTime = new Date(endTime)
-  const newEndTime = new Date(endTime)
-  newEndTime.setMinutes(curEndTime.getMinutes() + intervalTime*increment)
+  const curEndTime = new Date(endTime);
+  const newEndTime = new Date(endTime);
+  newEndTime.setMinutes(curEndTime.getMinutes() + intervalTime*increment);
 
   const addTime = () => {
     if(increment >= 24) {
-      setMax(true)
+      setMax(true);
       return false;
     } else {
-      setMin(false)
-      setIncrement(increment + 1)
+      setMin(false);
+      setIncrement(increment + 1);
       return true;
     }
-  }
+  };
 
   const removeTime = () => {
     if(increment <= 1) {
-      setMin(true)
+      setMin(true);
       return false;
     } else {
-      setMax(false)
-      setIncrement(increment - 1)
+      setMax(false);
+      setIncrement(increment - 1);
       return true;
     }
-  }
+  };
 
   useEffect(() => {
-      const updateIncrementTime = () => {
-        const hour = Math.floor((increment*intervalTime)/60)
-        const mins = (increment*intervalTime)%60
-        setIncrementStr(`${hour} Hr${hour > 1? "s":""} ${mins == 0? "00":mins} Mins`)
-      }
-
-      updateIncrementTime()
-    }, [increment]
-  )
+    const updateIncrementTime = () => {
+      const hour = Math.floor((increment*intervalTime)/60);
+      const mins = (increment*intervalTime)%60;
+      setIncrementStr(`${hour} Hr${hour > 1? "s":""} ${mins == 0? "00":mins} Mins`);
+    };
+    updateIncrementTime();
+  }, [increment]);
 
   useEffect(() => {
     if (showModal) {
       setIncrement(1);
-      setIncrementStr(`0 Hr 30 Mins`); 
+      setIncrementStr(`0 Hr 30 Mins`);
     }
-  }, [showModal])
-
+  }, [showModal]);
 
   const handleConfirm = () => {
-    if (processing) return
-    setProcessing(true)
+    if (processing) return;
+    setProcessing(true);
     viewTicketControl.addTime(ticketID, newEndTime)
       .then((res) => {
         if (res) {
           setTimeout(() => {
-            setShowModal(false)
-            setLoading(true)
+            setShowModal(false);
+            setLoading(true);
           }, 1000);
         } else {
-          console.log("Error adding time in I_ViewTickets")
+          console.log("Error adding time in I_ViewTickets");
         }
       })
       .finally(() => {
-        setProcessing(false)
-      })
-  }
-
-
-  return (
-<Modal
-  visible={showModal}
-  transparent={true}
-  animationType="slide"
-  onRequestClose={() => setShowModal(false)}>
-  <View style={styles.modalBackground}>
-    <View style={styles.modalContainer}>
-      <Text style={styles.modalText}>Current End Time: {curEndTime.toISOString().replace("T", " ").substr(0,19)}</Text>
-      <Text style={styles.modalText}>New End Time: {newEndTime.toISOString().replace("T", " ").substr(0,19)}</Text>
-  
-      <View style={styles.iconButtonRow}>
-        <TouchableOpacity style={styles.payButton} onPress={addTime}>
-          <AntDesign name="pluscircle" size={24} color="#fff" />
-        </TouchableOpacity>
-        <View>
-          <Text style={styles.timeText}>Extension</Text>
-          <Text style={styles.timeText}>{incrementStr}</Text>
-        </View>
-        <TouchableOpacity style={styles.payButton} onPress={removeTime}>
-          <AntDesign name="minuscircle" size={24} color="#fff" />
-        </TouchableOpacity>
-      </View>
-      <Text style={styles.modalText}>
-        {vehType == "M"? "No addition fee incurred for motorcycle": `Addition fee: $${(fee*increment).toFixed(2)}`}
-      </Text>
-
-
-      <Text style={styles.errorMsg}>
-          {min ? "Minimum duration is 30 mins" : max ? "Maximum duration is 12 hours" : ""}
-      </Text>
-
-      <View style={styles.iconButtonRow}>
-        <TouchableOpacity
-          style={[styles.payButton, processing && styles.disabledButton]} 
-          onPress={handleConfirm}
-          disabled={processing} 
-        >
-          <Text style={styles.payButtonText}>Confirm</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.payButton} onPress={() => setShowModal(false)}>
-          <Text style={styles.payButtonText}>Cancel</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  </View>
-</Modal>
-  )
-}
-
-const CloseTicketModal = ({ticket, showModal, setShowModal, setLoading}) => {
-
-  const [processing, setProcessing] = useState(false)
-
-  const ticketID = ticket.ticketID
-  const ticketStartTime = new Date(ticket.ticketStartTime)
-  const ticketEndTime = new Date(ticket.ticketEndTime)
-  const currentTime = new Date()
-  currentTime.setHours(currentTime.getHours() + 8)
-  const duration = (currentTime - ticketStartTime)/(60*60*1000)
-  const totalHalfHours = Math.ceil(duration * 2); 
-  const hours = Math.floor(totalHalfHours / 2);
-  const mins = totalHalfHours % 2 === 0 ? 0 : 30;
-
-  const handleConfirm = () => {
-    if (processing) return
-    setProcessing(true)
-    viewTicketControl.closeTicket(ticketID, currentTime)
-      .then((res) => {
-        console.log(res)
-        if (res) {
-          setTimeout(() => {
-            setShowModal(false)
-            setLoading(true)
-          }, 1000);
-        } else {
-          console.log("Error closing ticket in I_ViewTickets")
-        }
-      })
-      .finally(() => {
-        setProcessing(false)
-      })
-  }
+        setProcessing(false);
+      });
+  };
 
   return (
     <Modal
-    visible={showModal}
-    transparent={true}
-    animationType="slide"
-    onRequestClose={() => setShowModal(false)}>
+      visible={showModal}
+      transparent={true}
+      animationType="slide"
+      onRequestClose={() => setShowModal(false)}
+    >
       <View style={styles.modalBackground}>
         <View style={styles.modalContainer}>
-          <Text style={styles.modalText}>Start Time: {ticketStartTime.toISOString().replace("T", " ").substr(0,19)}</Text>
-          <Text style={styles.modalText}>End Time: {ticketEndTime.toISOString().replace("T", " ").substr(0,19)}</Text>
-          <Text style={styles.modalText}>Current Time: {currentTime.toISOString().replace("T", " ").substr(0,19)}</Text>
-          <Text style={styles.modalText}>Time Charged: {hours} Hr{hours > 1? "s":""} {mins == 0? "00":mins} Mins</Text>
-          <Text style={styles.modalText}>Do you want to proceed?</Text>
-          <View style={styles.iconButtonRow}>
+          <Text style={styles.modalTitle}>Add Time</Text>
+          
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>Current End: {curEndTime.toISOString().replace("T", " ").substr(0,19)}</Text>
+            <Text style={styles.modalText}>New End: {newEndTime.toISOString().replace("T", " ").substr(0,19)}</Text>
+
+            <View style={styles.timeAdjustContainer}>
+              <TouchableOpacity 
+                style={styles.timeAdjustButton} 
+                onPress={removeTime}
+              >
+                <AntDesign name="minuscircle" size={30} color="#4682b4" />
+              </TouchableOpacity>
+              
+              <View style={styles.timeDisplay}>
+                <Text style={styles.timeLabel}>Extension</Text>
+                <Text style={styles.timeValue}>{incrementStr}</Text>
+              </View>
+              
+              <TouchableOpacity 
+                style={styles.timeAdjustButton} 
+                onPress={addTime}
+              >
+                <AntDesign name="pluscircle" size={30} color="#4682b4" />
+              </TouchableOpacity>
+            </View>
+
+            <Text style={styles.feeText}>
+              {vehType == "M" 
+                ? "No additional fee for motorcycle" 
+                : `Additional fee: $${(fee*increment).toFixed(2)}`
+              }
+            </Text>
+
+            {(min || max) && (
+              <Text style={styles.errorText}>
+                {min ? "Minimum duration is 30 mins" : "Maximum duration is 12 hours"}
+              </Text>
+            )}
+          </View>
+
+          <View style={styles.modalButtonsRow}>
             <TouchableOpacity
-              style={[styles.payButton, processing && styles.disabledButton]} 
+              style={[styles.modalButton, processing && styles.disabledButton]}
               onPress={handleConfirm}
-              disabled={processing} 
+              disabled={processing}
             >
-              <Text style={styles.payButtonText}>Confirm</Text>
+              <Text style={styles.modalButtonText}>
+                {processing ? "Processing..." : "Confirm"}
+              </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.payButton} onPress={() => setShowModal(false)}>
-              <Text style={styles.payButtonText}>Cancel</Text>
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => setShowModal(false)}
+            >
+              <Text style={styles.modalButtonText}>Cancel</Text>
             </TouchableOpacity>
           </View>
         </View>
       </View>
     </Modal>
-  )
-}
+  );
+};
 
+const CloseTicketModal = ({ticket, showModal, setShowModal, setLoading}) => {
+  const [processing, setProcessing] = useState(false);
+
+  const ticketID = ticket.ticketID;
+  const ticketStartTime = new Date(ticket.ticketStartTime);
+  const ticketEndTime = new Date(ticket.ticketEndTime);
+  const currentTime = new Date();
+  currentTime.setHours(currentTime.getHours() + 8);
+  const duration = (currentTime - ticketStartTime)/(60*60*1000);
+  const totalHalfHours = Math.ceil(duration * 2);
+  const hours = Math.floor(totalHalfHours / 2);
+  const mins = totalHalfHours % 2 === 0 ? 0 : 30;
+
+  const handleConfirm = () => {
+    if (processing) return;
+    setProcessing(true);
+    viewTicketControl.closeTicket(ticketID, currentTime)
+      .then((res) => {
+        if (res) {
+          setTimeout(() => {
+            setShowModal(false);
+            setLoading(true);
+          }, 1000);
+        } else {
+          console.log("Error closing ticket in I_ViewTickets");
+        }
+      })
+      .finally(() => {
+        setProcessing(false);
+      });
+  };
+
+  return (
+    <Modal
+      visible={showModal}
+      transparent={true}
+      animationType="slide"
+      onRequestClose={() => setShowModal(false)}
+    >
+      <View style={styles.modalBackground}>
+        <View style={styles.modalContainer}>
+          <Text style={styles.modalTitle}>Close Ticket</Text>
+          
+          <View style={styles.modalContent}>
+            <View style={styles.modalDetailRow}>
+              <Text style={styles.modalLabel}>Start Time:</Text>
+              <Text style={styles.modalValue}>
+                {ticketStartTime.toISOString().replace("T", " ").substr(0,19)}
+              </Text>
+            </View>
+            
+            <View style={styles.modalDetailRow}>
+              <Text style={styles.modalLabel}>End Time:</Text>
+              <Text style={styles.modalValue}>
+                {ticketEndTime.toISOString().replace("T", " ").substr(0,19)}
+              </Text>
+            </View>
+            
+            <View style={styles.modalDetailRow}>
+              <Text style={styles.modalLabel}>Current Time:</Text>
+              <Text style={styles.modalValue}>
+                {currentTime.toISOString().replace("T", " ").substr(0,19)}
+              </Text>
+            </View>
+            
+            <View style={styles.modalDetailRow}>
+              <Text style={styles.modalLabel}>Time Charged:</Text>
+              <Text style={styles.modalValue}>
+                {hours} Hr{hours > 1 ? "s" : ""} {mins == 0 ? "00" : mins} Mins
+              </Text>
+            </View>
+          </View>
+
+          <Text style={styles.confirmationText}>
+            Are you sure you want to close this ticket?
+          </Text>
+
+          <View style={styles.modalButtonsRow}>
+            <TouchableOpacity
+              style={[styles.modalButton, processing && styles.disabledButton]}
+              onPress={handleConfirm}
+              disabled={processing}
+            >
+              <Text style={styles.modalButtonText}>
+                {processing ? "Processing..." : "Confirm"}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.modalButton}
+              onPress={() => setShowModal(false)}
+            >
+              <Text style={styles.modalButtonText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: "#f3f4f6",
   },
-  header: {
+  gradientBackground: {
+    flex: 1,
+    padding: 16,
+  },
+  mainContent: {
+    flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#4682b4',
+  },
+  headerContainer: {
+    padding: 20,
+    alignItems: 'center',
+  },
+  headerText: {
     fontSize: 24,
-    fontWeight: "bold",
-    textAlign: "center",
-    color: "#333",
-    marginBottom: 16,
+    fontWeight: 'bold',
+    color: 'white',
   },
-  gradientContainer: {
-    padding: 8,
-    margin: 8,
-    borderRadius: 10,
+  activeTicketCard: {
+    backgroundColor: 'white',
+    borderRadius: 15,
+    padding: 20,
+    marginBottom: 20,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
-  card: {
-    padding: 16,
-    backgroundColor: "white",
+  activeTicketHeader: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#4682b4',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  ticketDetails: {
+    gap: 10,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 5,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  label: {
+    fontSize: 16,
+    color: '#666',
+    flex: 1,
+  },
+  value: {
+    fontSize: 16,
+    color: '#333',
+    fontWeight: '500',
+    flex: 2,
+    textAlign: 'right',
+  },
+  actionButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  actionButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 15,
     borderRadius: 10,
+    marginHorizontal: 5,
+    gap: 10,
+  },
+  addTimeButton: {
+    backgroundColor: '#4CAF50',
+  },
+  closeTicketButton: {
+    backgroundColor: '#f44336',
+  },
+  actionButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  pastTicketsHeader: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'white',
+    marginVertical: 15,
+  },
+  pastTicketsList: {
+    flex: 1,
+  },
+  pastTicketCard: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 10,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    borderWidth: 1,
-    borderColor: "#ddd",
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+    elevation: 3,
   },
-  ticketID: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#333",
+  pastTicketHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 5,
   },
-  detail: {
+  pastTicketId: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#4682b4',
+  },
+  pastTicketAddress: {
     fontSize: 14,
-    color: "#555",
-    marginTop: 4,
+    color: '#666',
   },
-  bold: {
-    fontWeight: "600",
-    color: "#222",
-  },
-  button: {
-      backgroundColor: "#4682b4",
-      padding: 12,
-      margin: 16,
-      borderRadius: 10,
-      alignItems: "center",
+  mainButton: {
+    backgroundColor: '#4682b4',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 10,
   },
   buttonText: {
-      color: "white",
-      fontSize: 16,
-      fontWeight: "bold",
-  },
-  ticketAction: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  errorMsg: {
-    color: "#F00",
-    marginTop: 10,
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   modalBackground: {
     flex: 1,
@@ -503,133 +680,111 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     backgroundColor: 'white',
+    borderRadius: 15,
     padding: 20,
-    borderRadius: 10,
-    width: '80%',
+    width: '90%',
+    maxWidth: 400,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#4682b4',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  modalContent: {
+    marginBottom: 20,
+  },
+  modalDetailRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  modalLabel: {
+    fontSize: 16,
+    color: '#666',
+    flex: 1,
+  },
+  modalValue: {
+    fontSize: 16,
+    color: '#333',
+    fontWeight: '500',
+    flex: 2,
+    textAlign: 'right',
   },
   modalText: {
     fontSize: 16,
+    color: '#333',
     marginBottom: 10,
-    textAlign: 'center',
   },
-  disabledButton: {
-    backgroundColor: "#cccccc",
+  timeAdjustContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginVertical: 20,
   },
-  payButton: {
-    backgroundColor: "#4682b4",
+  timeAdjustButton: {
     padding: 10,
+  },
+  timeDisplay: {
+    alignItems: 'center',
+  },
+  timeLabel: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 5,
+  },
+  timeValue: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#4682b4',
+  },
+  feeText: {
+    fontSize: 16,
+    color: '#4682b4',
+    textAlign: 'center',
+    marginTop: 10,
+  },
+  errorText: {
+    color: '#f44336',
+    textAlign: 'center',
+    marginTop: 10,
+  },
+  confirmationText: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  modalButtonsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    gap: 10,
+  },
+  modalButton: {
+    flex: 1,
+    backgroundColor: '#4682b4',
+    padding: 15,
     borderRadius: 10,
     alignItems: 'center',
-    justifyContent: 'center',
-    marginVertical: 5,
-    marginHorizontal: 5,
   },
-  iconButtonRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 10,
-    marginVertical: 10,
-  },
-  
-  payButtonText: {
-    color: '#fff',
+  modalButtonText: {
+    color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
   },
-  
   disabledButton: {
     backgroundColor: '#ccc',
   },
-  timeText: {
-    fontSize: 20,
-    marginHorizontal: 15,
-    color: "#333",
-  },
-
-  timeText: {
-    fontSize: 20,
-    marginHorizontal: 15,
-    color: "#333",
-  },
-
 });
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     padding: 16,
-//     backgroundColor: "#f3f4f6",
-//   },
-//   card: {
-//     padding: 16,
-//     backgroundColor: "white",
-//     borderRadius: 10,
-//     shadowColor: "#000",
-//     shadowOffset: { width: 0, height: 1 },
-//     shadowOpacity: 0.1,
-//     shadowRadius: 3,
-//     borderWidth: 1,
-//     borderColor: "#ddd",
-//   },
-//   ticketID: {
-//     fontSize: 18,
-//     fontWeight: "bold",
-//     color: "#333",
-//   },
-//   detail: {
-//     fontSize: 14,
-//     color: "#555",
-//     marginTop: 4,
-//   },
-//   bold: {
-//     fontWeight: "600",
-//     color: "#222",
-//   },
-//   button: {
-//     margin: 10,
-//     paddingVertical: 20, // Increased padding for larger buttons
-//     paddingHorizontal: 30, // Increased padding for larger buttons
-//     backgroundColor: "#4682b4",
-//     borderRadius: 10,
-//     shadowColor: "#000",
-//     shadowOffset: { width: 0, height: 2 },
-//     shadowOpacity: 0.3,
-//     shadowRadius: 3,
-//     elevation: 5,
-//   },
-//   buttonText: {
-//       color: "#fff",
-//       fontSize: 18, // Increased font size for better readability
-//       fontWeight: "bold",
-//       textAlign: "center",
-//   },
-//   fixedButtonContainer: {
-//     marginTop: 16,
-//     flexDirection: 'row',
-//     justifyContent: 'space-between',
-//     paddingHorizontal: 16,
-//   },
-//   fixedButton: {
-//     flex: 1,
-//     marginHorizontal: 8,
-//     backgroundColor: "#007bff",
-//     padding: 12,
-//     borderRadius: 10,
-//     alignItems: "center",
-//   },
-//   modalBackground: {
-//     flex: 1,
-//     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//   },
-//   modalContainer: {
-//     backgroundColor: 'white',
-//     padding: 20,
-//     borderRadius: 10,
-//     width: '80%',
-//     alignItems: 'center',
-//   },
-// });
-

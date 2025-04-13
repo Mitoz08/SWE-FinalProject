@@ -1,19 +1,45 @@
-
-import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import React, { useState, useEffect } from "react";
+import { 
+    View, 
+    Text, 
+    StyleSheet, 
+    TouchableOpacity, 
+    Image, 
+    Animated, 
+    ActivityIndicator 
+} from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import AntDesign from "@expo/vector-icons/Ionicons";
+import { MaterialIcons } from "@expo/vector-icons";
 import paymentControl from "./controller/paymentControl";
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function I_PaymentUI({ navigation, route }) {
     const { vehType, licensePlate, carparkType, carparkID, rate } = route.params;
-
     const intervalTime = 30;
     const [interval, setInterval] = useState(1);
     const [max, setMax] = useState(false);
     const [min, setMin] = useState(false);
     const [paymentErrorMsg, setPaymentErrorMsg] = useState("");
-    const [processing, setProcessing] = useState(false)
+    const [processing, setProcessing] = useState(false);
+    
+    // Animation values
+    const [fadeAnim] = useState(new Animated.Value(0));
+    const [slideAnim] = useState(new Animated.Value(50));
+
+    useEffect(() => {
+        Animated.parallel([
+            Animated.timing(fadeAnim, {
+                toValue: 1,
+                duration: 800,
+                useNativeDriver: true,
+            }),
+            Animated.timing(slideAnim, {
+                toValue: 0,
+                duration: 800,
+                useNativeDriver: true,
+            })
+        ]).start();
+    }, []);
 
     const increase = () => {
         if (interval >= 48) {
@@ -38,10 +64,10 @@ export default function I_PaymentUI({ navigation, route }) {
     };
 
     const showTime = () => {
-        hour = Math.floor((interval*intervalTime)/60)
-        mins = (interval*intervalTime)%60
-        return `${hour} Hr${hour > 1? "s":""} ${mins == 0? "00":mins} Mins`
-    }
+        const hour = Math.floor((interval * intervalTime) / 60);
+        const mins = (interval * intervalTime) % 60;
+        return `${hour} Hr${hour > 1 ? "s" : ""} ${mins === 0 ? "00" : mins} Mins`;
+    };
 
     const showFee = () => {
         if (carparkType === "M") return rate.toFixed(2);
@@ -54,8 +80,10 @@ export default function I_PaymentUI({ navigation, route }) {
     };
 
     const handlePayment = () => {
-        if (processing) return
-        setProcessing(true)
+        if (processing) return;
+        setProcessing(true);
+        setPaymentErrorMsg("");
+        
         paymentControl.ProcessPayment({
             vehType: vehType,
             carparkNo: carparkID,
@@ -64,37 +92,113 @@ export default function I_PaymentUI({ navigation, route }) {
             duration_hour: Math.floor((interval * intervalTime) / 60),
             duration_min: (interval * intervalTime) % 60
         })
-        .then(response => response ? navigation.navigate("I_SuccessfulUI") : setPaymentErrorMsg("Open Ticket already exists"))
-        .finally(() => {setProcessing(false)});
-    }
-
+        .then(response => {
+            if (response) {
+                navigation.navigate("I_SuccessfulUI");
+            } else {
+                setPaymentErrorMsg("Open Ticket already exists");
+            }
+        })
+        .finally(() => {
+            setProcessing(false);
+        });
+    };
 
     return (
         <SafeAreaProvider>
-            <SafeAreaView style={styles.container}>
-                <View style={styles.card}>
-                    <Image
-                        source={require('../../assets/payment_logo.png')}
-                        style={styles.logo}
-                    />
-                    <Text style={styles.heading}>Parking Payment</Text>
-                    <View style={styles.timeControl}>
-                        <AntDesign name="remove-circle" size={50} color={"#4682b4"} onPress={decrease} />
-                        <Text style={styles.timeText}>{showTime()}</Text>
-                        <AntDesign name="add-circle" size={50} color={"#4682b4"} onPress={increase} />
-                    </View>
-                    <Text style={styles.errorMsg}>
-                        {min ? "Minimum duration is 30 mins" : max ? "Maximum duration is 24 hours" : ""}
-                    </Text>
-                    <Text style={styles.feeText}> Fee: ${showFee()}</Text>
-                <TouchableOpacity
-                        style={[styles.payButton, processing && styles.disabledButton]}
-                        onPress={handlePayment}>
-                        <Text style={styles.payButtonText}>Pay</Text>
-                </TouchableOpacity>
-                    {paymentErrorMsg !== "" && <Text style={styles.errorMsg}>{paymentErrorMsg}</Text>}
-                </View>
-            </SafeAreaView>
+            <LinearGradient
+                colors={['#4c669f', '#3b5998', '#192f6a']}
+                style={styles.container}
+            >
+                <SafeAreaView style={styles.safeArea}>
+                    <Animated.View 
+                        style={[
+                            styles.card,
+                            {
+                                opacity: fadeAnim,
+                                transform: [{ translateY: slideAnim }]
+                            }
+                        ]}
+                    >
+                        <View style={styles.headerSection}>
+                            <Image
+                                source={require('../../assets/payment_logo.png')}
+                                style={styles.logo}
+                            />
+                            <Text style={styles.heading}>Parking Payment</Text>
+                        </View>
+
+                        <View style={styles.infoSection}>
+                            <View style={styles.infoRow}>
+                                <MaterialIcons name="local-parking" size={24} color="#4682b4" />
+                                <Text style={styles.infoText}>Carpark: {carparkID}</Text>
+                            </View>
+                            <View style={styles.infoRow}>
+                                <MaterialIcons name="directions-car" size={24} color="#4682b4" />
+                                <Text style={styles.infoText}>Vehicle: {licensePlate}</Text>
+                            </View>
+                        </View>
+
+                        <View style={styles.timeSection}>
+                            <Text style={styles.timeLabel}>Duration</Text>
+                            <View style={styles.timeControl}>
+                                <TouchableOpacity 
+                                    style={styles.timeButton} 
+                                    onPress={decrease}
+                                >
+                                    <MaterialIcons name="remove-circle" size={50} color="#4682b4" />
+                                </TouchableOpacity>
+                                <View style={styles.timeDisplay}>
+                                    <Text style={styles.timeText}>{showTime()}</Text>
+                                </View>
+                                <TouchableOpacity 
+                                    style={styles.timeButton} 
+                                    onPress={increase}
+                                >
+                                    <MaterialIcons name="add-circle" size={50} color="#4682b4" />
+                                </TouchableOpacity>
+                            </View>
+                            {(min || max) && (
+                                <Text style={styles.errorMsg}>
+                                    {min ? "Minimum duration is 30 mins" : "Maximum duration is 24 hours"}
+                                </Text>
+                            )}
+                        </View>
+
+                        <View style={styles.feeSection}>
+                            <Text style={styles.feeLabel}>Total Amount</Text>
+                            <Text style={styles.feeAmount}>${showFee()}</Text>
+                        </View>
+
+                        <TouchableOpacity
+                            style={[styles.payButton, processing && styles.disabledButton]}
+                            onPress={handlePayment}
+                            disabled={processing}
+                        >
+                            <LinearGradient
+                                colors={processing ? ['#cccccc', '#cccccc'] : ['#4facfe', '#00f2fe']}
+                                style={styles.payButtonGradient}
+                            >
+                                {processing ? (
+                                    <ActivityIndicator color="#ffffff" />
+                                ) : (
+                                    <>
+                                        <MaterialIcons name="payment" size={24} color="#fff" />
+                                        <Text style={styles.payButtonText}>Pay Now</Text>
+                                    </>
+                                )}
+                            </LinearGradient>
+                        </TouchableOpacity>
+
+                        {paymentErrorMsg !== "" && (
+                            <View style={styles.errorContainer}>
+                                <MaterialIcons name="error" size={20} color="#dc3545" />
+                                <Text style={styles.errorMsg}>{paymentErrorMsg}</Text>
+                            </View>
+                        )}
+                    </Animated.View>
+                </SafeAreaView>
+            </LinearGradient>
         </SafeAreaProvider>
     );
 }
@@ -102,72 +206,130 @@ export default function I_PaymentUI({ navigation, route }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    safeArea: {
+        flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#f5f5f5",
     },
     card: {
         width: "90%",
-        padding: 20,
+        maxWidth: 400,
         backgroundColor: "white",
-        borderRadius: 15,
+        borderRadius: 20,
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 5,
-        borderWidth: 1,
-        borderColor: "#ddd",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 5,
+        elevation: 8,
+    },
+    headerSection: {
         alignItems: "center",
+        padding: 20,
+        borderBottomWidth: 1,
+        borderBottomColor: "#f0f0f0",
     },
     logo: {
-        width: 100,
-        height: 100,
+        width: 80,
+        height: 80,
         resizeMode: 'contain',
-        marginBottom: 20,
+        marginBottom: 15,
     },
     heading: {
-        fontSize: 22,
+        fontSize: 24,
         fontWeight: "bold",
         color: "#333",
-        marginBottom: 20,
+    },
+    infoSection: {
+        padding: 20,
+        backgroundColor: '#f8f9fa',
+        borderBottomWidth: 1,
+        borderBottomColor: "#f0f0f0",
+    },
+    infoRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+    infoText: {
+        marginLeft: 10,
+        fontSize: 16,
+        color: '#495057',
+    },
+    timeSection: {
+        padding: 20,
+        alignItems: 'center',
+    },
+    timeLabel: {
+        fontSize: 18,
+        color: '#495057',
+        marginBottom: 15,
     },
     timeControl: {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
     },
+    timeButton: {
+        padding: 10,
+    },
+    timeDisplay: {
+        minWidth: 150,
+        alignItems: 'center',
+    },
     timeText: {
-        fontSize: 20,
-        marginHorizontal: 15,
-        color: "#333",
+        fontSize: 22,
+        fontWeight: '600',
+        color: "#4682b4",
     },
-    errorMsg: {
-        color: "#F00",
-        marginTop: 10,
+    feeSection: {
+        padding: 20,
+        alignItems: 'center',
+        backgroundColor: '#f8f9fa',
+        borderTopWidth: 1,
+        borderTopColor: "#f0f0f0",
     },
-    feeText: {
-        fontSize: 18,
+    feeLabel: {
+        fontSize: 16,
+        color: '#495057',
+        marginBottom: 5,
+    },
+    feeAmount: {
+        fontSize: 32,
         fontWeight: "bold",
-        color: "#333",
-        marginTop: 20,
+        color: "#4682b4",
     },
     payButton: {
-        backgroundColor: "#4682b4",
-        paddingVertical: 12,
-        paddingHorizontal: 20,
-        borderRadius: 25,
-        marginTop: 30,
-        alignItems: "center",
-        width: "80%",
+        margin: 20,
+        borderRadius: 15,
+        overflow: 'hidden',
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    payButtonGradient: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 15,
     },
     payButtonText: {
         color: "white",
         fontSize: 18,
         fontWeight: "bold",
-    },  
-    disabledButton: {
-        backgroundColor: "#cccccc",
+        marginLeft: 10,
     },
-  });
-
+    errorContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 20,
+    },
+    errorMsg: {
+        color: "#dc3545",
+        marginLeft: 5,
+        fontSize: 14,
+    },
+});

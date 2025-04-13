@@ -1,33 +1,64 @@
+
 import React, { useContext } from "react";
-import { Text, StyleSheet, TouchableOpacity } from "react-native";
+import { Text, StyleSheet, TouchableOpacity, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { AuthContext } from "./AuthContext";
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function I_MainPage({navigation}) {
     const {setIsLoggedIn} = useContext(AuthContext)
+
+    const MenuButton = ({ onPress, title, gradient }) => (
+        <TouchableOpacity 
+            style={styles.buttonContainer}
+            onPress={onPress}
+        >
+            <LinearGradient
+                colors={gradient}
+                style={styles.button}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+            >
+                <Text style={styles.buttonText}>{title}</Text>
+            </LinearGradient>
+        </TouchableOpacity>
+    );
+
     return(
         <SafeAreaProvider>
             <SafeAreaView style={styles.container}>
-                <TouchableOpacity 
-                    style={styles.button}   
-                    onPress={() => {navigation.navigate("I_Availability")}}>
-                    <Text style={styles.buttonText}>Availability</Text>
-                </TouchableOpacity>
-                <TouchableOpacity 
-                    style={styles.button}   
-                    onPress={() => {navigation.navigate("I_ViewTickets")}}>
-                    <Text style={styles.buttonText}>View Tickets</Text>
-                </TouchableOpacity>
-                <TouchableOpacity 
-                    style={styles.button}   
-                    onPress={() => {navigation.navigate("I_ViewProfile")}}>
-                    <Text style={styles.buttonText}>View Profile</Text>
-                </TouchableOpacity>
-                <TouchableOpacity 
-                    style={styles.button}   
-                    onPress={() => {setIsLoggedIn(false)}}>
-                    <Text style={styles.buttonText}>Logout</Text>
-                </TouchableOpacity>
+                <LinearGradient
+                    colors={['#4c669f', '#3b5998', '#192f6a']}
+                    style={styles.background}
+                >
+                    <View style={styles.contentContainer}>
+                        <Text style={styles.title}>Main Page</Text>
+                        
+                        <MenuButton 
+                            onPress={() => navigation.navigate("I_Availability")}
+                            title="Availability"
+                            gradient={['#4facfe', '#00f2fe']}
+                        />
+                        
+                        <MenuButton 
+                            onPress={() => navigation.navigate("I_ViewTickets")}
+                            title="View Tickets"
+                            gradient={['#43e97b', '#38f9d7']}
+                        />
+                        
+                        <MenuButton 
+                            onPress={() => navigation.navigate("I_ViewProfile")}
+                            title="View Profile"
+                            gradient={['#fa709a', '#fee140']}
+                        />
+                        
+                        <MenuButton 
+                            onPress={() => setIsLoggedIn(false)}
+                            title="Logout"
+                            gradient={['#ff6b6b', '#ff8e8e']}
+                        />
+                    </View>
+                </LinearGradient>
             </SafeAreaView>
         </SafeAreaProvider>
     )
@@ -36,26 +67,51 @@ export default function I_MainPage({navigation}) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    background: {
+        flex: 1,
+        width: '100%',
+    },
+    contentContainer: {
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#f0f8ff',
+        paddingHorizontal: 20,
     },
-    button: {
-        margin: 10,
-        paddingVertical: 20, // Increased padding for larger buttons
-        paddingHorizontal: 30, // Increased padding for larger buttons
-        backgroundColor: "#4682b4",
-        borderRadius: 10,
+    title: {
+        fontSize: 32,
+        fontWeight: 'bold',
+        color: '#ffffff',
+        marginBottom: 40,
+        textShadowColor: 'rgba(0, 0, 0, 0.3)',
+        textShadowOffset: { width: 0, height: 2 },
+        textShadowRadius: 3,
+    },
+    buttonContainer: {
+        width: '100%',
+        maxWidth: 300,
+        marginVertical: 10,
+        borderRadius: 15,
+        overflow: 'hidden',
+        elevation: 5,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 3,
-        elevation: 5,
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+    },
+    button: {
+        paddingVertical: 15,
+        paddingHorizontal: 30,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     buttonText: {
-        color: "#fff",
-        fontSize: 18, // Increased font size for better readability
-        fontWeight: "bold",
-        textAlign: "center",
+        color: "#ffffff",
+        fontSize: 20,
+        fontWeight: "600",
+        letterSpacing: 1,
+        textShadowColor: 'rgba(0, 0, 0, 0.2)',
+        textShadowOffset: { width: 0, height: 1 },
+        textShadowRadius: 2,
     },
 });

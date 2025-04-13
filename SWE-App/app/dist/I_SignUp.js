@@ -1,19 +1,18 @@
 import React, { useContext, useState } from "react";
-import { Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { Text, StyleSheet, TouchableOpacity, Image, View, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { AuthContext } from "./AuthContext";
 import authenticationControl from "./controller/authenticationControl";
-//AuB1
-//AuB1
+import { LinearGradient } from 'expo-linear-gradient';
+import { MaterialIcons } from '@expo/vector-icons';
+
+// Password validation functions remain unchanged
 function PasswordValidation(Password1, Password2) {
-    const result = (Password1 === Password2) ? 1 : 0;
-    return result
+    return Password1 === Password2 ? 1 : 0;
 }
 
-//AuB2
 function PasswordChecker(Password) {
-    //Driver Code Starts{
     const levels = {
         1: "Very Weak",
         2: "Weak",
@@ -23,10 +22,10 @@ function PasswordChecker(Password) {
 
     if (Password.length > 15) {
         alert(Password + " - Too lengthy");
-        return(false);
+        return false;
     } else if (Password.length < 8) {
         alert(Password + " - Too short");
-        return(false);
+        return false;
     }
 
     const checks = [
@@ -36,73 +35,55 @@ function PasswordChecker(Password) {
         /[@.#$!%^&*.?]/ // Special character
     ];
     let score = checks.reduce((acc, rgx) => acc + rgx.test(Password), 0);
-    console.log(Password + " - " + levels[score]);
-
+    
     const res = [];
-
-    const checks_lower = [/[a-z]/];
-    if(!checks_lower.reduce((acc, rgx) => acc + rgx.test(Password), 0)){
-        res.push("Lowercase letters missing.");
-    };
-    const checks_upper = [/[A-Z]/];
-    if(!checks_upper.reduce((acc, rgx) => acc + rgx.test(Password), 0)){
-        res.push("Uppercase letters missing.");
-    };
-    const checks_digit = [/\d/];
-    if(!checks_digit.reduce((acc, rgx) => acc + rgx.test(Password), 0)){
-        res.push("Digits missing.");
-    };
-    const checks_special = /[@.#$!%^&*.?]/;
-    if(!checks_special.test(Password)){
-        res.push("Special characters missing.");
-    };
+    if(!(/[a-z]/).test(Password)) res.push("Lowercase letters missing.");
+    if(!(/[A-Z]/).test(Password)) res.push("Uppercase letters missing.");
+    if(!(/\d/).test(Password)) res.push("Digits missing.");
+    if(!(/[@.#$!%^&*.?]/).test(Password)) res.push("Special characters missing.");
     
-    console.log(res)
-    alert(res.join("\n"));
-
-    if(score < 4){
-        return false;
-    }
-    return true;
+    if(res.length > 0) alert(res.join("\n"));
+    return score >= 4;
 }
 
-// You can put all the method calls in this function or just put it in the onPress arrow function
 async function OnSignUp(FirstName, LastName, Phone, Email, Password, ConfirmPassword) {
-    
-    if(FirstName === "" || LastName === "" || Phone === "" || Email === "" || Password === "" || ConfirmPassword === "") {
+    if(!FirstName || !LastName || !Phone || !Email || !Password || !ConfirmPassword) {
         alert("Please fill in all the fields");
-        console.log("Please fill in all the fields");
         return false;
     }
-    //AuB1,
-    if(PasswordValidation(Password, ConfirmPassword)){
-        //AuB2
-        if(PasswordChecker(Password)){
-            //AuC2
-            console.log("In Password Checker")
-            if(await authenticationControl.VerifySignUp(FirstName, LastName, Phone, Email, Password)){
-                console.log("Sign Up Successful");
-                return true
-            } else {
-                alert("Sign Up Unsuccessful");
-                console.log("Sign Up Unsuccessful");
-                return false;
-            }
-        }
-        else{
-            alert("Password is not strong enough");
-            console.log("Password is not strong enough");
-            return false;
-        }
-    }
-    else{
+
+    if(!PasswordValidation(Password, ConfirmPassword)) {
         alert("Password and Confirm Password do not match");
-        console.log("Password and Confirm Password do not match");
         return false;
     }
 
+    if(!PasswordChecker(Password)) {
+        alert("Password is not strong enough");
+        return false;
+    }
 
+    if(await authenticationControl.VerifySignUp(FirstName, LastName, Phone, Email, Password)) {
+        console.log("Sign Up Successful");
+        return true;
+    }
+    
+    alert("Sign Up Unsuccessful");
+    return false;
 }
+
+const FormInput = ({ icon, placeholder, value, onChangeText, secureTextEntry }) => (
+    <View style={styles.inputContainer}>
+        <MaterialIcons name={icon} size={24} color="#4682b4" style={styles.inputIcon} />
+        <TextInput
+            style={styles.input}
+            onChangeText={onChangeText}
+            value={value}
+            placeholder={placeholder}
+            placeholderTextColor="#666"
+            secureTextEntry={secureTextEntry}
+        />
+    </View>
+);
 
 export default function I_SignUp({navigation}) {
     const [FirstName, setFirstName] = useState("");
@@ -111,104 +92,201 @@ export default function I_SignUp({navigation}) {
     const [Email, setEmail] = useState("");
     const [Password, setPassword] = useState("");
     const [ConfirmPassword, setConfirmPassword] = useState("");
+    const {setIsLoggedIn} = useContext(AuthContext);
 
-    const {setIsLoggedIn} = useContext(AuthContext)
-    
     return(
         <SafeAreaProvider>
             <SafeAreaView style={styles.container}>
-                <Image
-                    source={require('../../assets/carpark_logo.png')}
-                    style={styles.logo}/>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={setFirstName}
-                    value={FirstName}
-                    placeholder="First Name"
-                />
-                <TextInput
-                    style={styles.input}
-                    onChangeText={setLastName}
-                    value={LastName}
-                    placeholder="Last Name"
-                />
-                <TextInput
-                    style={styles.input}
-                    onChangeText={setPhone}
-                    value={Phone}
-                    placeholder="Phone No."
-                />
-                <TextInput
-                    style={styles.input}
-                    onChangeText={setEmail}
-                    value={Email}
-                    placeholder="Email"
-                />
-                <TextInput
-                    style={styles.input}
-                    onChangeText={setPassword}
-                    value={Password}
-                    placeholder="Password"
-                />
-                <TextInput
-                    style={styles.input}
-                    onChangeText={setConfirmPassword}
-                    value={ConfirmPassword}
-                    placeholder="Confirm Password"
-                />
-                <TouchableOpacity 
-                    style={styles.button}   
-                    onPress={() => {OnSignUp(FirstName, LastName, Phone, Email,Password,ConfirmPassword).then((res) => {res? setIsLoggedIn(true) : setIsLoggedIn(false)})}}>
-                    <Text style={styles.buttonText}>Sign Up</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.button}
-                    onPress={() => {navigation.navigate("I_Login")}}>
-                    <Text style={styles.buttonText}>Login here</Text>
-                </TouchableOpacity>
+                <LinearGradient
+                    colors={['#4c669f', '#3b5998', '#192f6a']}
+                    style={styles.gradientBackground}
+                >
+                    <KeyboardAvoidingView
+                        behavior={Platform.OS === "ios" ? "padding" : "height"}
+                        style={styles.keyboardAvoidView}
+                    >
+                        <ScrollView
+                            contentContainerStyle={styles.scrollContainer}
+                            showsVerticalScrollIndicator={false}
+                        >
+                            <Image
+                                source={require('../../assets/carpark_logo.png')}
+                                style={styles.logo}
+                            />
+                            
+                            <View style={styles.formContainer}>
+                                <Text style={styles.headerText}>Create Account</Text>
+                                
+                                <FormInput
+                                    icon="person"
+                                    placeholder="First Name"
+                                    value={FirstName}
+                                    onChangeText={setFirstName}
+                                />
+                                
+                                <FormInput
+                                    icon="person-outline"
+                                    placeholder="Last Name"
+                                    value={LastName}
+                                    onChangeText={setLastName}
+                                />
+                                
+                                <FormInput
+                                    icon="phone"
+                                    placeholder="Phone No."
+                                    value={Phone}
+                                    onChangeText={setPhone}
+                                />
+                                
+                                <FormInput
+                                    icon="email"
+                                    placeholder="Email"
+                                    value={Email}
+                                    onChangeText={setEmail}
+                                />
+                                
+                                <FormInput
+                                    icon="lock"
+                                    placeholder="Password"
+                                    value={Password}
+                                    onChangeText={setPassword}
+                                    secureTextEntry
+                                />
+                                
+                                <FormInput
+                                    icon="lock-outline"
+                                    placeholder="Confirm Password"
+                                    value={ConfirmPassword}
+                                    onChangeText={setConfirmPassword}
+                                    secureTextEntry
+                                />
+
+                                <TouchableOpacity 
+                                    style={styles.signUpButton}   
+                                    onPress={() => {
+                                        OnSignUp(FirstName, LastName, Phone, Email, Password, ConfirmPassword)
+                                            .then((res) => setIsLoggedIn(res));
+                                    }}
+                                >
+                                    <Text style={styles.buttonText}>Sign Up</Text>
+                                </TouchableOpacity>
+
+                                <View style={styles.loginContainer}>
+                                    <Text style={styles.loginText}>Already have an account?</Text>
+                                    <TouchableOpacity
+                                        style={styles.loginButton}
+                                        onPress={() => navigation.navigate("I_Login")}
+                                    >
+                                        <Text style={styles.loginButtonText}>Login here</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </ScrollView>
+                    </KeyboardAvoidingView>
+                </LinearGradient>
             </SafeAreaView>
         </SafeAreaProvider>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
-
-    logo: {
-        width: 300, // Adjust width as needed
-        height: 300, // Adjust height as needed
-        marginBottom: 20,
-    },
     container: {
         flex: 1,
-        justifyContent: 'center',
+    },
+    gradientBackground: {
+        flex: 1,
+    },
+    keyboardAvoidView: {
+        flex: 1,
+    },
+    scrollContainer: {
+        flexGrow: 1,
         alignItems: 'center',
+        paddingVertical: 30,
+    },
+    logo: {
+        width: 150,
+        height: 150,
+        marginBottom: 20,
+        resizeMode: 'contain',
+    },
+    formContainer: {
+        width: '90%',
+        maxWidth: 400,
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        borderRadius: 20,
         padding: 20,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 4,
+        },
+        shadowOpacity: 0.3,
+        shadowRadius: 5,
+        elevation: 8,
+    },
+    headerText: {
+        fontSize: 28,
+        fontWeight: 'bold',
+        color: '#4682b4',
+        textAlign: 'center',
+        marginBottom: 20,
+    },
+    inputContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#f8f9fa',
+        borderRadius: 12,
+        marginBottom: 15,
+        paddingHorizontal: 15,
+        borderWidth: 1,
+        borderColor: '#e1e1e1',
+    },
+    inputIcon: {
+        marginRight: 10,
     },
     input: {
-        height: 40,
-        margin: 12,
-        borderWidth: 1,
-        paddingVertical: 20, // Match the button's vertical padding
-        paddingHorizontal: 10, // Match the button's horizontal padding
-        borderRadius: 10,
-        textAlign: "left",
+        flex: 1,
+        paddingVertical: 15,
+        fontSize: 16,
+        color: '#333',
     },
-    button: {
-        margin: 10,
-        paddingVertical: 20, // Increased padding for larger buttons
-        paddingHorizontal: 15, // Increased padding for larger buttons
-        backgroundColor: "#4682b4",
-        borderRadius: 10,
+    signUpButton: {
+        backgroundColor: '#4682b4',
+        paddingVertical: 15,
+        borderRadius: 12,
+        marginTop: 10,
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 3,
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
         elevation: 5,
     },
     buttonText: {
-        color: "#fff",
+        color: '#fff',
         fontSize: 18,
-        fontWeight: "bold",
-        textAlign: "center",
+        fontWeight: 'bold',
+        textAlign: 'center',
     },
-  });
+    loginContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 20,
+    },
+    loginText: {
+        color: '#666',
+        fontSize: 16,
+    },
+    loginButton: {
+        marginLeft: 5,
+    },
+    loginButtonText: {
+        color: '#4682b4',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+});
