@@ -45,8 +45,8 @@ class emailControl {
             }
             const text = `Dear Customer,
     
-        You have create a new ticket with ID: ${ticketID}.\n
-        Your ${res.vehType == "M" ? "Motorcycle" : "Car"}, ${res.licensePlate} is parked at ${yield databaseControl_1.default.GetCarparkAddress(res.parkingLotID)}
+        You have created a new ticket with ID: ${ticketID}.\n
+        Your ${res.vehType == "M" ? "motorcycle" : "car"}, ${res.licensePlate} is parked at ${yield databaseControl_1.default.GetCarparkAddress(res.parkingLotID)}
         The ticket starts on ${res.ticketStartTime.toISOString().replace("T", " ").substr(0, 19)} and ends on ${res.ticketEndTime.toISOString().replace("T", " ").substr(0, 19)}.
         Total fee is $${fee}.`;
             const email = yield databaseControl_1.default.GetUserEmail(res.userID);
@@ -68,8 +68,8 @@ class emailControl {
             }
             const text = `Dear Customer,
     
-        You have ticket that is expiring soon. Ticket ID: ${ticketID}.\n
-        Your ${res.vehType == "M" ? "Motorcycle" : "Car"}, ${res.licensePlate} is parked at ${yield databaseControl_1.default.GetCarparkAddress(res.parkingLotID)}
+        You have a ticket that is expiring soon. Ticket ID: ${ticketID}.\n
+        Your ${res.vehType == "M" ? "motorcycle" : "car"}, ${res.licensePlate} is parked at ${yield databaseControl_1.default.GetCarparkAddress(res.parkingLotID)}
         The ticket ends on ${res.ticketEndTime.toISOString().replace("T", " ").substr(0, 19)}.
         Please extend or close your ticket to avoid fines.`;
             const email = yield databaseControl_1.default.GetUserEmail(res.userID);

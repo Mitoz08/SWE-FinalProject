@@ -41,7 +41,6 @@ export default class authenticationControl {
             const res = await fetch(`http://localhost:3000/UserID?userFirebaseID=${firebaseId}`, { method: "GET" });
             const { userID } = await res.json();
             mainControl.InitialiseUser(userID);
-            alert('Login Successful!');
             return true;
         }
         catch (error) {
@@ -64,7 +63,7 @@ export default class authenticationControl {
                     return false;
                 }
                 else {
-                    alert('Unable to create account.');
+                    alert('Unable to create User.');
                     return false;
                 }
             }

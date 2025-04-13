@@ -15,6 +15,7 @@ export default class viewTicketControl {
             ticket: ticket,
             address: carparkAddress 
         }
+        // console.log(returnObj)
         return returnObj;
     }
 

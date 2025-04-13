@@ -199,6 +199,7 @@ class userControl {
             }
             if (typeof ticketID === "string") {
                 const request = serverControl_1.default.getOpenTicketByTicketID(Number(ticketID));
+                console.log(request);
                 if (request == null)
                     res.status(500).json({ message: "Failed to get open ticket." });
                 else {
