@@ -5,6 +5,9 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { TextInput } from "react-native-gesture-handler";
 import { AuthContext } from "./AuthContext";
 import { mainEntity } from './entity/mainEntity';
+import { getAuth, updateEmail } from "firebase/auth";
+
+const auth = getAuth();
 
 function ConfirmationModal({ isOpen, title, message, onConfirm, onCancel }) {
     if (!isOpen) {
@@ -98,6 +101,17 @@ export default function I_EditProfile({ navigation }) {
         }
     };
 
+    function onConfirm(){
+        updateEmail(auth.currentUser, email).then(() => {
+            console.log("Email updated successfully");
+            alert("Email updated successfully");
+        }).catch((error) => {
+            console.log("Error updating email", error);
+            alert("Error updating email");
+        });
+        handleUpdateProfile(false, true);
+    }
+    
     return (
         <SafeAreaProvider>
             <SafeAreaView style={styles.container}>
@@ -105,7 +119,8 @@ export default function I_EditProfile({ navigation }) {
                     isOpen={showConfirmation}
                     title="Confirm Edit"
                     message="You will be logged out when changing your email. Are you sure?"
-                    onConfirm={() => handleUpdateProfile(false, true)}
+                    //onConfirm={() => handleUpdateProfile(false, true)}
+                    onConfirm={() => onConfirm()}
                     onCancel={() => setShowConfirmation(false)}
                 />
                 <View style={styles.profileHeader}>
