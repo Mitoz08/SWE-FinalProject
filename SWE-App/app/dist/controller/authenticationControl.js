@@ -64,7 +64,7 @@ export default class authenticationControl {
                     return false;
                 }
                 else {
-                    alert('Unable to create User.');
+                    alert('Unable to create account.');
                     return false;
                 }
             }
