@@ -41,6 +41,7 @@ export default class authenticationControl {
             const res = await fetch(`http://localhost:3000/UserID?userFirebaseID=${firebaseId}`, { method: "GET" });
             const { userID } = await res.json();
             mainControl.InitialiseUser(userID);
+            alert('Login Successful!');
             return true;
         }
         catch (error) {
