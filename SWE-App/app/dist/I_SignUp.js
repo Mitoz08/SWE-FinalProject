@@ -64,6 +64,7 @@ async function OnSignUp(FirstName, LastName, Phone, Email, Password, ConfirmPass
 
     if(await authenticationControl.VerifySignUp(FirstName, LastName, Phone, Email, Password)) {
         console.log("Sign Up Successful");
+        alert("Sign Up Successful");
         return true;
     }
     

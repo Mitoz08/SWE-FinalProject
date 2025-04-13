@@ -6,6 +6,9 @@ import { AuthContext } from "./AuthContext";
 import { mainEntity } from './entity/mainEntity';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
+import { getAuth, updateEmail } from "firebase/auth";
+
+const auth = getAuth();
 
 function ConfirmationModal({ isOpen, title, message, onConfirm, onCancel }) {
     if (!isOpen) return null;
@@ -111,6 +114,17 @@ export default function I_EditProfile({ navigation }) {
         }
     };
 
+    function onConfirm(){
+        updateEmail(auth.currentUser, email).then(() => {
+            console.log("Email updated successfully");
+            alert("Email updated successfully");
+        }).catch((error) => {
+            console.log("Error updating email", error);
+            alert("Error updating email");
+        });
+        handleUpdateProfile(false, true);
+    }
+    
     return (
         <SafeAreaProvider>
             <LinearGradient
@@ -128,6 +142,23 @@ export default function I_EditProfile({ navigation }) {
                         <Text style={styles.headerTitle}>Edit Profile</Text>
                         <View style={styles.headerRight} />
                     </View>
+                <ConfirmationModal
+                    isOpen={showConfirmation}
+                    title="Confirm Edit"
+                    message="You will be logged out when changing your email. Are you sure?"
+                    //onConfirm={() => handleUpdateProfile(false, true)}
+                    onConfirm={() => onConfirm()}
+                    onCancel={() => setShowConfirmation(false)}
+                />
+                <View style={styles.profileHeader}>
+                    <Text style={styles.headerTitle}>First Name</Text>
+                    <TextInput
+                        style={styles.input}
+                        onChangeText={setFirstName}
+                        value={firstName}
+                        placeholder="FirstName"
+                    />
+
 
                     <ScrollView 
                         style={styles.scrollView}
