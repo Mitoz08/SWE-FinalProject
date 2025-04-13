@@ -5,6 +5,7 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { AuthContext } from "./AuthContext";
 import authenticationControl from "./controller/authenticationControl";
 //AuB1
+//AuB1
 function PasswordValidation(Password1, Password2) {
     const result = (Password1 === Password2) ? 1 : 0;
     return result
@@ -35,8 +36,29 @@ function PasswordChecker(Password) {
         /[@.#$!%^&*.?]/ // Special character
     ];
     let score = checks.reduce((acc, rgx) => acc + rgx.test(Password), 0);
-
     console.log(Password + " - " + levels[score]);
+
+    const res = [];
+
+    const checks_lower = [/[a-z]/];
+    if(!checks_lower.reduce((acc, rgx) => acc + rgx.test(Password), 0)){
+        res.push("Lowercase letters missing.");
+    };
+    const checks_upper = [/[A-Z]/];
+    if(!checks_upper.reduce((acc, rgx) => acc + rgx.test(Password), 0)){
+        res.push("Uppercase letters missing.");
+    };
+    const checks_digit = [/\d/];
+    if(!checks_digit.reduce((acc, rgx) => acc + rgx.test(Password), 0)){
+        res.push("Digits missing.");
+    };
+    const checks_special = /[@.#$!%^&*.?]/;
+    if(!checks_special.test(Password)){
+        res.push("Special characters missing.");
+    };
+    
+    console.log(res)
+    alert(res.join("\n"));
 
     if(score < 4){
         return false;
@@ -45,24 +67,41 @@ function PasswordChecker(Password) {
 }
 
 // You can put all the method calls in this function or just put it in the onPress arrow function
-async function OnSignUp(FirstName, LastName, Phone, Email, Password, ConfirmPassword) {
+function OnSignUp(FirstName, LastName, Phone, Email, Password, ConfirmPassword) {
     
+    if(FirstName === "" || LastName === "" || Phone === "" || Email === "" || Password === "" || ConfirmPassword === "") {
+        alert("Please fill in all the fields");
+        console.log("Please fill in all the fields");
+        return false;
+    }
     //AuB1,
     if(PasswordValidation(Password, ConfirmPassword)){
         //AuB2
         if(PasswordChecker(Password)){
             //AuC2
             console.log("In Password Checker")
-            if(await authenticationControl.VerifySignUp(FirstName, LastName, Phone, Email, Password)){
-                console.log("Sign Up Successful")
+            if(VerifySignUp(FirstName, LastName, Phone, Email, Password)){
+                console.log("Sign Up Successful");
                 return true
             } else {
-                console.log("Sign Up Unsuccessful")
+                alert("Sign Up Unsuccessful");
+                console.log("Sign Up Unsuccessful");
+                return false;
             }
         }
+        else{
+            alert("Password is not strong enough");
+            console.log("Password is not strong enough");
+            return false;
+        }
     }
-    
-    return false;
+    else{
+        alert("Password and Confirm Password do not match");
+        console.log("Password and Confirm Password do not match");
+        return false;
+    }
+
+
 }
 
 export default function I_SignUp({navigation}) {
