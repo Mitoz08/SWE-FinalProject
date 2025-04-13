@@ -199,7 +199,7 @@ export default class userControl {
         if (typeof ticketID === "string") {
             
             const request = serverControl.getOpenTicketByTicketID(Number(ticketID))
-    
+            console.log(request)
             if (request == null) res.status(500).json({message: "Failed to get open ticket."})
             else {
                 res.status(200).json({

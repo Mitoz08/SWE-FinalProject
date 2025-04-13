@@ -62,14 +62,14 @@ const AuthStack = () => {
 const MainStack = () => {
 	return(
 	<Stack.Navigator screenOptions={{cardStyle:{flex:1}}}initialRouteName="I_MainPage">
-		<Stack.Screen name="I_MainPage" component={I_MainPage} />
-		<Stack.Screen name="I_InputVehDetail" component={I_InputVehDetail}/>
-		<Stack.Screen name="I_Availability" component={I_Availability}/>
-		<Stack.Screen name="I_PaymentUI" component={I_PaymentUI}/>
-		<Stack.Screen name="I_SuccessfulUI" component={I_SuccessfulUI}/>
-		<Stack.Screen name="I_ViewTickets" component={I_ViewTickets}/>
-		<Stack.Screen name="I_ViewProfile" component={I_ViewProfile}/>
-		<Stack.Screen name="I_EditProfile" component={I_EditProfile}/>
+		<Stack.Screen options={{headerShown: false}} name="I_MainPage" component={I_MainPage} />
+		<Stack.Screen options={{headerShown: false}} name="I_InputVehDetail" component={I_InputVehDetail}/>
+		<Stack.Screen options={{headerShown: false}} name="I_Availability" component={I_Availability}/>
+		<Stack.Screen options={{headerShown: false}} name="I_PaymentUI" component={I_PaymentUI}/>
+		<Stack.Screen options={{headerShown: false}} name="I_SuccessfulUI" component={I_SuccessfulUI}/>
+		<Stack.Screen options={{headerShown: false}} name="I_ViewTickets" component={I_ViewTickets}/>
+		<Stack.Screen options={{headerShown: false}} name="I_ViewProfile" component={I_ViewProfile}/>
+		<Stack.Screen options={{headerShown: false}} name="I_EditProfile" component={I_EditProfile}/>
 	</Stack.Navigator>
 	)
 }

@@ -255,6 +255,8 @@ class dataBaseControl {
             const ticket = res[0];
             ticket.ticketEndTime = dataBaseControl.dateOffsetPlus(ticket.ticketEndTime);
             ticket.ticketStartTime = dataBaseControl.dateOffsetPlus(ticket.ticketStartTime);
+            const fee = yield dataBaseControl.GetRate({ carparkID: ticket.parkingLotID, vehType: ticket.vehType });
+            ticket.fee = fee ? fee : 0;
             return ticket;
         });
     }
@@ -275,6 +277,8 @@ class dataBaseControl {
             const ticket = res[0];
             ticket.ticketEndTime = dataBaseControl.dateOffsetPlus(ticket.ticketEndTime);
             ticket.ticketStartTime = dataBaseControl.dateOffsetPlus(ticket.ticketStartTime);
+            const fee = yield dataBaseControl.GetRate({ carparkID: ticket.parkingLotID, vehType: ticket.vehType });
+            ticket.fee = fee ? fee : 0;
             return ticket;
         });
     }

@@ -5,7 +5,7 @@ import emailControl from "./emailControl";
 var interval: NodeJS.Timeout;
 
 const TIMEZONE_OFFSET = 8 * 60 * 60 * 1000;
-const CHECK_INTERVAL = 0.25 * 60 * 1000;
+const CHECK_INTERVAL = 0.25 * 60 * 1000; // Every 15 seconds
 // const EXPIRY_THRESHOLD = 15 * 60 * 1000;
 const EXPIRY_THRESHOLD = 60 * 60 * 1000 + TIMEZONE_OFFSET; // Set to 60 Minutes for testing purposes 
 
