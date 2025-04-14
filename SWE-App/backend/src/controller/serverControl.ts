@@ -1,10 +1,10 @@
 import { serverEntity } from "../entity/serverEntity";
-import dataBaseControl from "./databaseControl";
+import databaseControl from "./databaseControl";
 import expiryControl from "./expiryControl";
 
 export default class serverControl {
     static async serverInitialiser() {
-        const res = await dataBaseControl.GetOpenTicket()
+        const res = await databaseControl.GetOpenTicket()
     
         if(res != null) serverEntity.setTickets(res)
         
@@ -31,14 +31,14 @@ export default class serverControl {
 
     static async createOpenTicket(object:any ) {
         // console.log("creating open ticket")
-        const res = await dataBaseControl.CreateOpenTicket(object)
+        const res = await databaseControl.CreateOpenTicket(object)
         if (res == null) console.error("Server fail to create open ticket")
         return res;
     }
 
     static async addOpenTicketToServer(ticketID:number) {
         // console.log("Adding open ticket")
-        const res = await dataBaseControl.GetOpenTicketByTicketID(ticketID)
+        const res = await databaseControl.GetOpenTicketByTicketID(ticketID)
 
         if (res == null) console.error("Server fail to retrieve open ticket")
         else {
@@ -56,7 +56,7 @@ export default class serverControl {
             console.error("Incorrect data passed into update open ticket")
             return false;
         }
-        const res = dataBaseControl.UpdateOpenTicketEndTime(object).then((res) => {
+        const res = databaseControl.UpdateOpenTicketEndTime(object).then((res) => {
             if (!res) console.error("Server failed to update database open ticket")
             else {
                 const ticket = serverControl.getOpenTicketByTicketID(ticketID)
@@ -94,21 +94,21 @@ export default class serverControl {
 
         (ticket as any).actualEndTime = closeTime
 
-        let res = await dataBaseControl.CreateClosedTicket(ticket)
+        let res = await databaseControl.CreateClosedTicket(ticket)
         
         if (!res) {
             console.error("Fail to create closed ticket")
             return false;
         }
 
-        res = await dataBaseControl.CreateUserClosedTicket(ticket)
+        res = await databaseControl.CreateUserClosedTicket(ticket)
 
         if (!res) {
             console.error("Fail to create user closed ticket")
             return false;
         }
 
-        res = await dataBaseControl.DeleteOpenTicket(ticketID)
+        res = await databaseControl.DeleteOpenTicket(ticketID)
 
         if (!res) {
             console.error("Fail to delete open ticket")

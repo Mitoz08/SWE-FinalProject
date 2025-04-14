@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import dataBaseControl from "./databaseControl";
+import databaseControl from "./databaseControl";
 import emailControl from "./emailControl";
 import serverControl from "./serverControl";
 
@@ -12,7 +12,7 @@ export default class userControl {
             return;
         }
     
-        const request = await dataBaseControl.AddNewUser(userFirebaseID)
+        const request = await databaseControl.AddNewUser(userFirebaseID)
     
         if (request == null) res.status(500).json({message: "Failed to add new user."})
         else {
@@ -32,7 +32,7 @@ export default class userControl {
             return;
         }
     
-        const request = await dataBaseControl.GetUserID(userFirebaseID as string)
+        const request = await databaseControl.GetUserID(userFirebaseID as string)
         if (request == null) res.status(500).json({message: "Failed to get user ID."})
         else {
             res.status(200).json({
@@ -51,7 +51,7 @@ export default class userControl {
             return;
         }
     
-        const request = await dataBaseControl.DeleteUser(userID)
+        const request = await databaseControl.DeleteUser(userID)
         if (request == null) res.status(500).json({message: "Failed to delete user ID."})
         else {
             res.status(200).json({
@@ -70,7 +70,7 @@ export default class userControl {
             return;
         }
     
-        const request = await dataBaseControl.AddUserInfo(object)
+        const request = await databaseControl.AddUserInfo(object)
     
         if (request == null) res.status(500).json({message: "Failed to add new user information."})
         else {
@@ -90,7 +90,7 @@ export default class userControl {
             return;
         }
     
-        const request = await dataBaseControl.GetUserInfo(Number(userID as String))
+        const request = await databaseControl.GetUserInfo(Number(userID as String))
     
         if (request == null) res.status(500).json({message: "Failed to get user information."})
         else {
@@ -110,7 +110,7 @@ export default class userControl {
             return;
         }
     
-        const request = await dataBaseControl.GetUserEmail(Number(userID as String))
+        const request = await databaseControl.GetUserEmail(Number(userID as String))
     
         if (request == null) res.status(500).json({message: "Failed to get user email."})
         else {
@@ -130,7 +130,7 @@ export default class userControl {
             return;
         }
     
-        const request = await dataBaseControl.UpdateUserInfo(object)
+        const request = await databaseControl.UpdateUserInfo(object)
     
         if (request == null) res.status(500).json({message: "Failed to get user email."})
         else {
@@ -260,7 +260,7 @@ export default class userControl {
             return;
         }
     
-        const request = await dataBaseControl.GetAllClosedTicket(Number(userID as String))
+        const request = await databaseControl.GetAllClosedTicket(Number(userID as String))
     
         if (request == null) res.status(500).json({message: "Failed to get closed ticket."})
             else {
@@ -280,7 +280,7 @@ export default class userControl {
             return;
         }
     
-        const request = await dataBaseControl.GetClosedTicket(Number(ticketID as String))
+        const request = await databaseControl.GetClosedTicket(Number(ticketID as String))
     
         if (request == null) res.status(500).json({message: "Failed to get closed ticket."})
         else {
@@ -299,7 +299,7 @@ export default class userControl {
             return;
         }
     
-        const request = await dataBaseControl.CreateUserClosedTicket(object)
+        const request = await databaseControl.CreateUserClosedTicket(object)
     
         if (request == null) res.status(500).json({message: "Failed to create user closed ticket."})
         else {
@@ -313,7 +313,7 @@ export default class userControl {
     static async E_GetUserClosedTicket(req: Request, res:Response) : Promise<void> {
         const {userID} = req.query;
     
-        const request = await dataBaseControl.GetUserClosedTicket(Number(userID as String))
+        const request = await databaseControl.GetUserClosedTicket(Number(userID as String))
     
         if (request == null) res.status(500).json({message: "Failed to get user closed ticket."})
         else {
@@ -327,7 +327,7 @@ export default class userControl {
     static async E_GetCarparkAddress(req: Request, res:Response) : Promise<void> {
         const {carparkID} = req.query;
     
-        const request = await dataBaseControl.GetCarparkAddress(carparkID as string)
+        const request = await databaseControl.GetCarparkAddress(carparkID as string)
     
         if (request == null) res.status(500).json({message: "Failed to get carpark address."})
         else {
@@ -341,7 +341,7 @@ export default class userControl {
     static async E_GetRate(req: Request, res:Response) : Promise<void> {
         const object = req.query;
     
-        const request = await dataBaseControl.GetRate(object)
+        const request = await databaseControl.GetRate(object)
     
         if (request == null) res.status(500).json({message: "Failed to get carpark rate."})
         else {
