@@ -225,7 +225,7 @@ export default class databaseControl {
      * @param userID user ID of the informationto be searched
      * @returns String of length 8
      */
-    static async GetUserEmail( userID:number ) : Promise<string|null> {
+    static async ReadUserEmail( userID:number ) : Promise<string|null> {
         const res = await databaseRepository.Read(TableNames_App.UserInformation, 
             {  
                 [ColumnNames_App.userID]:

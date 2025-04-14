@@ -49,7 +49,7 @@ class emailControl {
         Your ${res.vehType == "M" ? "motorcycle" : "car"}, ${res.licensePlate} is parked at ${yield databaseControl_1.default.ReadCarparkAddress(res.parkingLotID)}
         The ticket starts on ${res.ticketStartTime.toISOString().replace("T", " ").substr(0, 19)} and ends on ${res.ticketEndTime.toISOString().replace("T", " ").substr(0, 19)}.
         Total fee is $${fee}.`;
-            const email = yield databaseControl_1.default.GetUserEmail(res.userID);
+            const email = yield databaseControl_1.default.ReadUserEmail(res.userID);
             if (email == null) {
                 console.error(`No existing email found for user ID: ${res.userID}`);
                 return false;
@@ -72,7 +72,7 @@ class emailControl {
         Your ${res.vehType == "M" ? "motorcycle" : "car"}, ${res.licensePlate} is parked at ${yield databaseControl_1.default.ReadCarparkAddress(res.parkingLotID)}
         The ticket ends on ${res.ticketEndTime.toISOString().replace("T", " ").substr(0, 19)}.
         Please extend or close your ticket to avoid fines.`;
-            const email = yield databaseControl_1.default.GetUserEmail(res.userID);
+            const email = yield databaseControl_1.default.ReadUserEmail(res.userID);
             if (email == null) {
                 console.error(`No existing email found for user ID: ${res.userID}`);
                 return false;

@@ -110,7 +110,7 @@ export default class userControl {
             return;
         }
     
-        const request = await databaseControl.GetUserEmail(Number(userID as String))
+        const request = await databaseControl.ReadUserEmail(Number(userID as String))
     
         if (request == null) res.status(500).json({message: "Failed to get user email."})
         else {

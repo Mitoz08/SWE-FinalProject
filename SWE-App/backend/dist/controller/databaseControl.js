@@ -118,7 +118,7 @@ class databaseControl {
             return res[0];
         });
     }
-    static GetUserEmail(userID) {
+    static ReadUserEmail(userID) {
         return __awaiter(this, void 0, void 0, function* () {
             const res = yield databaseAccess_2.default.Read(databaseAccess_1.TableNames_App.UserInformation, {
                 [databaseAccess_1.ColumnNames_App.userID]: {

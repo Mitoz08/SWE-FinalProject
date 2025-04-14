@@ -113,7 +113,7 @@ class userControl {
                 res.status(400).json({ message: "userID is required." });
                 return;
             }
-            const request = yield databaseControl_1.default.GetUserEmail(Number(userID));
+            const request = yield databaseControl_1.default.ReadUserEmail(Number(userID));
             if (request == null)
                 res.status(500).json({ message: "Failed to get user email." });
             else {
