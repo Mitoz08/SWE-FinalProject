@@ -36,7 +36,7 @@ export default class emailControl {
     `Dear Customer,
     
         You have created a new ticket with ID: ${ticketID}.\n
-        Your ${res.vehType == "M"? "motorcycle" : "car" }, ${res.licensePlate} is parked at ${await databaseControl.GetCarparkAddress(res.parkingLotID)}
+        Your ${res.vehType == "M"? "motorcycle" : "car" }, ${res.licensePlate} is parked at ${await databaseControl.ReadCarparkAddress(res.parkingLotID)}
         The ticket starts on ${res.ticketStartTime.toISOString().replace("T", " ").substr(0,19)} and ends on ${res.ticketEndTime.toISOString().replace("T", " ").substr(0,19)}.
         Total fee is $${fee}.`
 
@@ -62,7 +62,7 @@ export default class emailControl {
     `Dear Customer,
     
         You have a ticket that is expiring soon. Ticket ID: ${ticketID}.\n
-        Your ${res.vehType == "M"? "motorcycle" : "car" }, ${res.licensePlate} is parked at ${await databaseControl.GetCarparkAddress(res.parkingLotID)}
+        Your ${res.vehType == "M"? "motorcycle" : "car" }, ${res.licensePlate} is parked at ${await databaseControl.ReadCarparkAddress(res.parkingLotID)}
         The ticket ends on ${res.ticketEndTime.toISOString().replace("T", " ").substr(0,19)}.
         Please extend or close your ticket to avoid fines.`
         const email = await databaseControl.GetUserEmail(res.userID)

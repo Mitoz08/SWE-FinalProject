@@ -260,7 +260,7 @@ export default class userControl {
             return;
         }
     
-        const request = await databaseControl.GetAllClosedTicket(Number(userID as String))
+        const request = await databaseControl.ReadAllClosedTicket(Number(userID as String))
     
         if (request == null) res.status(500).json({message: "Failed to get closed ticket."})
             else {
@@ -280,7 +280,7 @@ export default class userControl {
             return;
         }
     
-        const request = await databaseControl.GetClosedTicket(Number(ticketID as String))
+        const request = await databaseControl.ReadClosedTicket(Number(ticketID as String))
     
         if (request == null) res.status(500).json({message: "Failed to get closed ticket."})
         else {
@@ -313,7 +313,7 @@ export default class userControl {
     static async E_GetUserClosedTicket(req: Request, res:Response) : Promise<void> {
         const {userID} = req.query;
     
-        const request = await databaseControl.GetUserClosedTicket(Number(userID as String))
+        const request = await databaseControl.ReadUserClosedTicket(Number(userID as String))
     
         if (request == null) res.status(500).json({message: "Failed to get user closed ticket."})
         else {
@@ -327,7 +327,7 @@ export default class userControl {
     static async E_GetCarparkAddress(req: Request, res:Response) : Promise<void> {
         const {carparkID} = req.query;
     
-        const request = await databaseControl.GetCarparkAddress(carparkID as string)
+        const request = await databaseControl.ReadCarparkAddress(carparkID as string)
     
         if (request == null) res.status(500).json({message: "Failed to get carpark address."})
         else {
