@@ -1,6 +1,6 @@
-import { serverEntity } from "../entity/serverEntity";
 import databaseControl from "./databaseControl";
 import emailControl from "./emailControl";
+import serverControl from "./serverControl";
 
 var interval: NodeJS.Timeout;
 
@@ -28,19 +28,15 @@ export default class expiryControl {
     
     // Function to check and send notification
     static async expiryNotificationSender() {
-        const tickets = serverEntity.getTicket()
-        // console.log("Checking expiry")
+        // Get open tickets from server 
+        const tickets = serverControl.getAllOpenTickets()
         for( const ticket of tickets) {
-            // console.log(ticket.ticketEndTime.getTime() - new Date().getTime() > EXPIRY_THRESHOLD)
-            // console.log(ticket.ticketEndTime)
-            // console.log(new Date())
-            // console.log(ticket.ticketEndTime.toString())
             if (ticket.ticketEndTime.getTime() - new Date().getTime() <= EXPIRY_THRESHOLD && ticket.notified == false) {
                 // Send email
                 if (await emailControl.ExpiryNotification(ticket.ticketID)) {
-                        // Set notified to true
+                    // Set notified to true
                     ticket.notified = true
-                    console.log(ticket)
+                    // console.log(ticket)
                     // Update database
                     databaseControl.UpdateOpenTicketNotified( { ticketID:ticket.ticketID, value:true } )
     
