@@ -65,6 +65,7 @@ export default class serverControl {
                 else{
                     // console.log(newEndTime)
                     ticket.ticketEndTime = new Date(newEndTime)
+                    ticket.notified = false
                     // console.log(serverControl.getOpenTicketByTicketID(ticketID))
                     return true;
                 }
