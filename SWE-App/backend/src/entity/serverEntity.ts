@@ -14,7 +14,20 @@ class ServerEntity {
         })
     }
 
-    public getTicket() {
+    public getTicket(ticketID: boolean, ID:number) {
+        if (ticketID) {
+            for (const ticket of this.openTickets){
+                if (ticket.ticketID == ID) return ticket;
+            }
+        }  else {
+            for (const ticket of this.openTickets){
+                if (ticket.userID == ID) return ticket;
+            }
+        }
+        return null
+    }
+
+    public getTickets() {
         return this.openTickets
     }
 

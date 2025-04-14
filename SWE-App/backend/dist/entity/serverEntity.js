@@ -10,7 +10,22 @@ class ServerEntity {
             return a.ticketEndTime.valueOf() - b.ticketEndTime.valueOf();
         });
     }
-    getTicket() {
+    getTicket(ticketID, ID) {
+        if (ticketID) {
+            for (const ticket of this.openTickets) {
+                if (ticket.ticketID == ID)
+                    return ticket;
+            }
+        }
+        else {
+            for (const ticket of this.openTickets) {
+                if (ticket.userID == ID)
+                    return ticket;
+            }
+        }
+        return null;
+    }
+    getTickets() {
         return this.openTickets;
     }
     addTicket(openTicket) {

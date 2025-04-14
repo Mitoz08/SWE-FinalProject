@@ -15,19 +15,16 @@ export default class serverControl {
     }
 
     static getOpenTicketByTicketID(ticketID:number) {
-        for (const ticket of serverEntity.getTicket()){
-            if (ticket.ticketID == ticketID) return ticket;
-        }
-        return null
+        return serverEntity.getTicket(true, ticketID)
     }
 
     static getOpenTicketByUserID(userID:number) {
-        for (const ticket of serverEntity.getTicket()){
-            if (ticket.userID == userID) return ticket;
-        }
-        return null
+        return serverEntity.getTicket(false, userID)
     }
 
+    static getAllOpenTickets() {
+        return serverEntity.getTickets()
+    }
 
     static async createOpenTicket(object:any ) {
         // console.log("creating open ticket")

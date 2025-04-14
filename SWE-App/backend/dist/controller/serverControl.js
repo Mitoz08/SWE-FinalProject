@@ -25,18 +25,13 @@ class serverControl {
         });
     }
     static getOpenTicketByTicketID(ticketID) {
-        for (const ticket of serverEntity_1.serverEntity.getTicket()) {
-            if (ticket.ticketID == ticketID)
-                return ticket;
-        }
-        return null;
+        return serverEntity_1.serverEntity.getTicket(true, ticketID);
     }
     static getOpenTicketByUserID(userID) {
-        for (const ticket of serverEntity_1.serverEntity.getTicket()) {
-            if (ticket.userID == userID)
-                return ticket;
-        }
-        return null;
+        return serverEntity_1.serverEntity.getTicket(false, userID);
+    }
+    static getAllOpenTickets() {
+        return serverEntity_1.serverEntity.getTickets();
     }
     static createOpenTicket(object) {
         return __awaiter(this, void 0, void 0, function* () {
