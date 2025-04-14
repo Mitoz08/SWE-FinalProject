@@ -12,7 +12,7 @@ export default class userControl {
             return;
         }
     
-        const request = await databaseControl.AddNewUser(userFirebaseID)
+        const request = await databaseControl.CreateNewUser(userFirebaseID)
     
         if (request == null) res.status(500).json({message: "Failed to add new user."})
         else {
@@ -32,7 +32,7 @@ export default class userControl {
             return;
         }
     
-        const request = await databaseControl.GetUserID(userFirebaseID as string)
+        const request = await databaseControl.ReadUserID(userFirebaseID as string)
         if (request == null) res.status(500).json({message: "Failed to get user ID."})
         else {
             res.status(200).json({
@@ -70,7 +70,7 @@ export default class userControl {
             return;
         }
     
-        const request = await databaseControl.AddUserInfo(object)
+        const request = await databaseControl.CreateUserInfo(object)
     
         if (request == null) res.status(500).json({message: "Failed to add new user information."})
         else {
@@ -90,7 +90,7 @@ export default class userControl {
             return;
         }
     
-        const request = await databaseControl.GetUserInfo(Number(userID as String))
+        const request = await databaseControl.ReadUserInfo(Number(userID as String))
     
         if (request == null) res.status(500).json({message: "Failed to get user information."})
         else {
@@ -110,7 +110,7 @@ export default class userControl {
             return;
         }
     
-        const request = await databaseControl.GetUserEmail(Number(userID as String))
+        const request = await databaseControl.ReadUserEmail(Number(userID as String))
     
         if (request == null) res.status(500).json({message: "Failed to get user email."})
         else {

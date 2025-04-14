@@ -42,7 +42,7 @@ export default class emailControl {
 
 
 
-        const email = await databaseControl.GetUserEmail(res.userID)
+        const email = await databaseControl.ReadUserEmail(res.userID)
         if (email == null) {
             console.error(`No existing email found for user ID: ${res.userID}`);
             return false;
@@ -65,7 +65,7 @@ export default class emailControl {
         Your ${res.vehType == "M"? "motorcycle" : "car" }, ${res.licensePlate} is parked at ${await databaseControl.ReadCarparkAddress(res.parkingLotID)}
         The ticket ends on ${res.ticketEndTime.toISOString().replace("T", " ").substr(0,19)}.
         Please extend or close your ticket to avoid fines.`
-        const email = await databaseControl.GetUserEmail(res.userID)
+        const email = await databaseControl.ReadUserEmail(res.userID)
         if (email == null) {
             console.error(`No existing email found for user ID: ${res.userID}`);
             return false;
