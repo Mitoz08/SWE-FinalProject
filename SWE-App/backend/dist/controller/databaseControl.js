@@ -34,7 +34,7 @@ function ErrorMsg_DeletionFailed() {
     return null;
 }
 class databaseControl {
-    static AddNewUser(userFirebaseID) {
+    static CreateNewUser(userFirebaseID) {
         return __awaiter(this, void 0, void 0, function* () {
             const res = yield databaseAccess_2.default.Create(databaseAccess_1.TableNames_App.UserID, {
                 [databaseAccess_1.ColumnNames_App.userFirebaseID]: userFirebaseID
@@ -45,7 +45,7 @@ class databaseControl {
             return res.insertId;
         });
     }
-    static GetUserID(userFirebaseID) {
+    static ReadUserID(userFirebaseID) {
         return __awaiter(this, void 0, void 0, function* () {
             const res = yield databaseAccess_2.default.Read(databaseAccess_1.TableNames_App.UserID, {
                 [databaseAccess_1.ColumnNames_App.userFirebaseID]: {
@@ -76,7 +76,7 @@ class databaseControl {
             return true;
         });
     }
-    static AddUserInfo(object) {
+    static CreateUserInfo(object) {
         return __awaiter(this, void 0, void 0, function* () {
             const { userID, userEmail, firstName, lastName, userPhoneNo } = object;
             if (userPhoneNo.length != 8) {
@@ -101,7 +101,7 @@ class databaseControl {
             return true;
         });
     }
-    static GetUserInfo(userID) {
+    static ReadUserInfo(userID) {
         return __awaiter(this, void 0, void 0, function* () {
             const res = yield databaseAccess_2.default.Read(databaseAccess_1.TableNames_App.UserInformation, {
                 [databaseAccess_1.ColumnNames_App.userID]: {

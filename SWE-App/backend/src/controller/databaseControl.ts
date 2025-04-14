@@ -35,7 +35,7 @@ export default class databaseControl {
      * @param userFirebaseID FirebaseID to be taken when they first register their account
      * @returns the inserted ID which is their user ID
      */
-        static async AddNewUser( userFirebaseID:String ) : Promise<number|null>{
+        static async CreateNewUser( userFirebaseID:String ) : Promise<number|null>{
         const res = await databaseRepository.Create(TableNames_App.UserID, 
             {
                 [ColumnNames_App.userFirebaseID] : userFirebaseID
@@ -53,7 +53,7 @@ export default class databaseControl {
      * @param userFirebaseID FirebaseID of the user to be searched
      * @returns user ID of given FirebaseID
      */
-    static async GetUserID( userFirebaseID:String ) : Promise<number|null> {
+    static async ReadUserID( userFirebaseID:String ) : Promise<number|null> {
         const res = await databaseRepository.Read(TableNames_App.UserID, 
             {  
                 [ColumnNames_App.userFirebaseID]:
@@ -167,7 +167,7 @@ export default class databaseControl {
      * @param userPhoneNo phone number to be added (String of length 8)
      * @returns true if successful
      */
-    static async AddUserInfo( object:any ) : Promise<boolean|null> {
+    static async CreateUserInfo( object:any ) : Promise<boolean|null> {
         const {userID, userEmail, firstName, lastName, userPhoneNo} = object;
         if (userPhoneNo.length != 8) { // Phone number is 8 char long
             console.error("Phone number not 8 characters long")
@@ -199,7 +199,7 @@ export default class databaseControl {
      * @param userID user ID of the informationto be searched
      * @returns UserInfomation object
      */
-    static async GetUserInfo( userID:number ) : Promise<UserInformation|null> {
+    static async ReadUserInfo( userID:number ) : Promise<UserInformation|null> {
         const res = await databaseRepository.Read(TableNames_App.UserInformation, 
             {  
                 [ColumnNames_App.userID]:

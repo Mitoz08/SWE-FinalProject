@@ -23,7 +23,7 @@ class userControl {
                 res.status(400).json({ message: "userFirebaseID is required." });
                 return;
             }
-            const request = yield databaseControl_1.default.AddNewUser(userFirebaseID);
+            const request = yield databaseControl_1.default.CreateNewUser(userFirebaseID);
             if (request == null)
                 res.status(500).json({ message: "Failed to add new user." });
             else {
@@ -41,7 +41,7 @@ class userControl {
                 res.status(400).json({ message: "userFirebaseID is required." });
                 return;
             }
-            const request = yield databaseControl_1.default.GetUserID(userFirebaseID);
+            const request = yield databaseControl_1.default.ReadUserID(userFirebaseID);
             if (request == null)
                 res.status(500).json({ message: "Failed to get user ID." });
             else {
@@ -77,7 +77,7 @@ class userControl {
                 res.status(400).json({ message: "object is required." });
                 return;
             }
-            const request = yield databaseControl_1.default.AddUserInfo(object);
+            const request = yield databaseControl_1.default.CreateUserInfo(object);
             if (request == null)
                 res.status(500).json({ message: "Failed to add new user information." });
             else {
@@ -95,7 +95,7 @@ class userControl {
                 res.status(400).json({ message: "userID is required." });
                 return;
             }
-            const request = yield databaseControl_1.default.GetUserInfo(Number(userID));
+            const request = yield databaseControl_1.default.ReadUserInfo(Number(userID));
             if (request == null)
                 res.status(500).json({ message: "Failed to get user information." });
             else {
