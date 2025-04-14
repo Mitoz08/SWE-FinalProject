@@ -4,7 +4,7 @@ import expiryControl from "./expiryControl";
 
 export default class serverControl {
     static async serverInitialiser() {
-        const res = await databaseControl.GetOpenTicket()
+        const res = await databaseControl.ReadOpenTicket()
     
         if(res != null) serverEntity.setTickets(res)
         
@@ -38,7 +38,7 @@ export default class serverControl {
 
     static async addOpenTicketToServer(ticketID:number) {
         // console.log("Adding open ticket")
-        const res = await databaseControl.GetOpenTicketByTicketID(ticketID)
+        const res = await databaseControl.ReadOpenTicketByTicketID(ticketID)
 
         if (res == null) console.error("Server fail to retrieve open ticket")
         else {

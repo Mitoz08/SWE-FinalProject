@@ -257,7 +257,7 @@ class userControl {
                 res.status(400).json({ message: "userID is required." });
                 return;
             }
-            const request = yield databaseControl_1.default.GetAllClosedTicket(Number(userID));
+            const request = yield databaseControl_1.default.ReadAllClosedTicket(Number(userID));
             if (request == null)
                 res.status(500).json({ message: "Failed to get closed ticket." });
             else {
@@ -275,7 +275,7 @@ class userControl {
                 res.status(400).json({ message: "ticketID is required." });
                 return;
             }
-            const request = yield databaseControl_1.default.GetClosedTicket(Number(ticketID));
+            const request = yield databaseControl_1.default.ReadClosedTicket(Number(ticketID));
             if (request == null)
                 res.status(500).json({ message: "Failed to get closed ticket." });
             else {
@@ -307,7 +307,7 @@ class userControl {
     static E_GetUserClosedTicket(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { userID } = req.query;
-            const request = yield databaseControl_1.default.GetUserClosedTicket(Number(userID));
+            const request = yield databaseControl_1.default.ReadUserClosedTicket(Number(userID));
             if (request == null)
                 res.status(500).json({ message: "Failed to get user closed ticket." });
             else {
@@ -321,7 +321,7 @@ class userControl {
     static E_GetCarparkAddress(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const { carparkID } = req.query;
-            const request = yield databaseControl_1.default.GetCarparkAddress(carparkID);
+            const request = yield databaseControl_1.default.ReadCarparkAddress(carparkID);
             if (request == null)
                 res.status(500).json({ message: "Failed to get carpark address." });
             else {

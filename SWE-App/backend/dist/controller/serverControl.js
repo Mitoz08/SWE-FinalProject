@@ -18,7 +18,7 @@ const expiryControl_1 = __importDefault(require("./expiryControl"));
 class serverControl {
     static serverInitialiser() {
         return __awaiter(this, void 0, void 0, function* () {
-            const res = yield databaseControl_1.default.GetOpenTicket();
+            const res = yield databaseControl_1.default.ReadOpenTicket();
             if (res != null)
                 serverEntity_1.serverEntity.setTickets(res);
             expiryControl_1.default.expiryInitialiser();
@@ -48,7 +48,7 @@ class serverControl {
     }
     static addOpenTicketToServer(ticketID) {
         return __awaiter(this, void 0, void 0, function* () {
-            const res = yield databaseControl_1.default.GetOpenTicketByTicketID(ticketID);
+            const res = yield databaseControl_1.default.ReadOpenTicketByTicketID(ticketID);
             if (res == null)
                 console.error("Server fail to retrieve open ticket");
             else {

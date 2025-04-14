@@ -454,7 +454,7 @@ export default class databaseControl {
      * @param userID user ID to be filtered
      * @returns an object containing information of the open ticket
      */
-    static async GetOpenTicketByUserID( userID:number ) : Promise<OpenTicket|null> {
+    static async ReadOpenTicketByUserID( userID:number ) : Promise<OpenTicket|null> {
         
         const res = await databaseRepository.Read(TableNames_App.OpenTickets, 
             {
@@ -485,7 +485,7 @@ export default class databaseControl {
      * @param ticketID ticketID to be filtered
      * @returns an object containing information of the open ticket
      */
-    static async GetOpenTicketByTicketID( ticketID:number ) : Promise<OpenTicket|null> {
+    static async ReadOpenTicketByTicketID( ticketID:number ) : Promise<OpenTicket|null> {
         
         const res = await databaseRepository.Read(TableNames_App.OpenTickets, 
             {
@@ -510,7 +510,7 @@ export default class databaseControl {
         return ticket;
     }
 
-    static async GetOpenTicket() : Promise<OpenTicket[]|null> {
+    static async ReadOpenTicket() : Promise<OpenTicket[]|null> {
     
         const res = await databaseRepository.Read(TableNames_App.OpenTickets)
         if (res === null) {
@@ -650,7 +650,7 @@ export default class databaseControl {
      * Function to return all the past closed tickets of the given user ID
      * @param userID user ID to be queried
      */
-    static async GetAllClosedTicket(userID:number) {
+    static async ReadAllClosedTicket(userID:number) {
         // Get all ticketIDs
         const res = await databaseRepository.Read(TableNames_App.UserClosedTickets,
             {
@@ -689,7 +689,7 @@ export default class databaseControl {
         }
 
         for (const ticket of allTickets){
-            ticket.address = await databaseControl.GetCarparkAddress(ticket.parkingLotID)
+            ticket.address = await databaseControl.ReadCarparkAddress(ticket.parkingLotID)
             ticket.fee = await databaseControl.GetRate({ carparkID: ticket.parkingLotID , vehType: ticket.vehType })
         }
 
@@ -705,7 +705,7 @@ export default class databaseControl {
      * @param ticketID ticket ID to be returned
      * @returns an object with the information of the closed tickets
      */
-    static async GetClosedTicket( ticketID:number ) : Promise<ClosedTicket|null> {
+    static async ReadClosedTicket( ticketID:number ) : Promise<ClosedTicket|null> {
         
         const res = await databaseRepository.Read(TableNames_App.ClosedTickets, 
             {
@@ -751,7 +751,7 @@ export default class databaseControl {
      * @param userID user ID to be searched
      * @returns an array of (userID,ticketID)
      */
-    static async GetUserClosedTicket(userID: number): Promise<object|null> {
+    static async ReadUserClosedTicket(userID: number): Promise<object|null> {
         const res = await databaseRepository.Read(TableNames_App.UserClosedTickets,
             {
                 [ColumnNames_App.userID]:
@@ -806,7 +806,7 @@ export default class databaseControl {
      * @param carparkID carparkID to be searched
      * @returns address of the carparkID
      */
-    static async GetCarparkAddress(carparkID: string): Promise<String|null> {
+    static async ReadCarparkAddress(carparkID: string): Promise<String|null> {
         const res = await databaseRepository.Read(TableNames_HDBInfo.HDBCarpark, {
             [ColumnNames_HDBInfo.carparkNo] : {
                 [ConditionVariable.operator] : Operator.EqualTo,

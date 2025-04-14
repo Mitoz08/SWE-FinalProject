@@ -238,7 +238,7 @@ class databaseControl {
             return res.insertId;
         });
     }
-    static GetOpenTicketByUserID(userID) {
+    static ReadOpenTicketByUserID(userID) {
         return __awaiter(this, void 0, void 0, function* () {
             const res = yield databaseAccess_2.default.Read(databaseAccess_1.TableNames_App.OpenTickets, {
                 [databaseAccess_1.ColumnNames_App.userID]: {
@@ -260,7 +260,7 @@ class databaseControl {
             return ticket;
         });
     }
-    static GetOpenTicketByTicketID(ticketID) {
+    static ReadOpenTicketByTicketID(ticketID) {
         return __awaiter(this, void 0, void 0, function* () {
             const res = yield databaseAccess_2.default.Read(databaseAccess_1.TableNames_App.OpenTickets, {
                 [databaseAccess_1.ColumnNames_App.ticketID]: {
@@ -282,7 +282,7 @@ class databaseControl {
             return ticket;
         });
     }
-    static GetOpenTicket() {
+    static ReadOpenTicket() {
         return __awaiter(this, void 0, void 0, function* () {
             const res = yield databaseAccess_2.default.Read(databaseAccess_1.TableNames_App.OpenTickets);
             if (res === null) {
@@ -378,7 +378,7 @@ class databaseControl {
             return true;
         });
     }
-    static GetAllClosedTicket(userID) {
+    static ReadAllClosedTicket(userID) {
         return __awaiter(this, void 0, void 0, function* () {
             const res = yield databaseAccess_2.default.Read(databaseAccess_1.TableNames_App.UserClosedTickets, {
                 [databaseAccess_1.ColumnNames_App.userID]: {
@@ -406,13 +406,13 @@ class databaseControl {
                 return ErrorMsg_NoEntry();
             }
             for (const ticket of allTickets) {
-                ticket.address = yield databaseControl.GetCarparkAddress(ticket.parkingLotID);
+                ticket.address = yield databaseControl.ReadCarparkAddress(ticket.parkingLotID);
                 ticket.fee = yield databaseControl.GetRate({ carparkID: ticket.parkingLotID, vehType: ticket.vehType });
             }
             return allTickets;
         });
     }
-    static GetClosedTicket(ticketID) {
+    static ReadClosedTicket(ticketID) {
         return __awaiter(this, void 0, void 0, function* () {
             const res = yield databaseAccess_2.default.Read(databaseAccess_1.TableNames_App.ClosedTickets, {
                 [databaseAccess_1.ColumnNames_App.ticketID]: {
@@ -442,7 +442,7 @@ class databaseControl {
             return true;
         });
     }
-    static GetUserClosedTicket(userID) {
+    static ReadUserClosedTicket(userID) {
         return __awaiter(this, void 0, void 0, function* () {
             const res = yield databaseAccess_2.default.Read(databaseAccess_1.TableNames_App.UserClosedTickets, {
                 [databaseAccess_1.ColumnNames_App.userID]: {
@@ -472,7 +472,7 @@ class databaseControl {
         const TimeZoneOffset = 8 * 60 * 60000;
         return new Date(date.getTime() + TimeZoneOffset);
     }
-    static GetCarparkAddress(carparkID) {
+    static ReadCarparkAddress(carparkID) {
         return __awaiter(this, void 0, void 0, function* () {
             const res = yield databaseAccess_2.default.Read(databaseAccess_1.TableNames_HDBInfo.HDBCarpark, {
                 [databaseAccess_1.ColumnNames_HDBInfo.carparkNo]: {
