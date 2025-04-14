@@ -33,7 +33,7 @@ function ErrorMsg_DeletionFailed() {
     console.error("Entry does not exist");
     return null;
 }
-class dataBaseControl {
+class databaseControl {
     static AddNewUser(userFirebaseID) {
         return __awaiter(this, void 0, void 0, function* () {
             const res = yield databaseAccess_2.default.Create(databaseAccess_1.TableNames_App.UserID, {
@@ -83,7 +83,7 @@ class dataBaseControl {
                 console.error("Phone number not 8 characters long");
                 return null;
             }
-            if (!dataBaseControl.isValidEmail(userEmail)) {
+            if (!databaseControl.isValidEmail(userEmail)) {
                 console.error("Email does not follow the right regex");
                 return null;
             }
@@ -142,7 +142,7 @@ class dataBaseControl {
                 console.error("Phone number not 8 characters long");
                 return null;
             }
-            if (!dataBaseControl.isValidEmail(userEmail)) {
+            if (!databaseControl.isValidEmail(userEmail)) {
                 console.error("Email does not follow the right regex");
                 return null;
             }
@@ -228,8 +228,8 @@ class dataBaseControl {
                 [databaseAccess_1.ColumnNames_App.vehType]: vehType,
                 [databaseAccess_1.ColumnNames_App.parkingLotID]: parkingLotID,
                 [databaseAccess_1.ColumnNames_App.licensePlate]: licensePlate,
-                [databaseAccess_1.ColumnNames_App.ticketStartTime]: dataBaseControl.dateToString(new Date(ticketStartTime)),
-                [databaseAccess_1.ColumnNames_App.ticketEndTime]: dataBaseControl.dateToString(new Date(ticketEndTime)),
+                [databaseAccess_1.ColumnNames_App.ticketStartTime]: databaseControl.dateToString(new Date(ticketStartTime)),
+                [databaseAccess_1.ColumnNames_App.ticketEndTime]: databaseControl.dateToString(new Date(ticketEndTime)),
                 [databaseAccess_1.ColumnNames_App.userID]: Number(userID)
             });
             if (res === null) {
@@ -253,9 +253,9 @@ class dataBaseControl {
                 return ErrorMsg_NoEntry();
             }
             const ticket = res[0];
-            ticket.ticketEndTime = dataBaseControl.dateOffsetPlus(ticket.ticketEndTime);
-            ticket.ticketStartTime = dataBaseControl.dateOffsetPlus(ticket.ticketStartTime);
-            const fee = yield dataBaseControl.GetRate({ carparkID: ticket.parkingLotID, vehType: ticket.vehType });
+            ticket.ticketEndTime = databaseControl.dateOffsetPlus(ticket.ticketEndTime);
+            ticket.ticketStartTime = databaseControl.dateOffsetPlus(ticket.ticketStartTime);
+            const fee = yield databaseControl.GetRate({ carparkID: ticket.parkingLotID, vehType: ticket.vehType });
             ticket.fee = fee ? fee : 0;
             return ticket;
         });
@@ -275,9 +275,9 @@ class dataBaseControl {
                 return ErrorMsg_NoEntry();
             }
             const ticket = res[0];
-            ticket.ticketEndTime = dataBaseControl.dateOffsetPlus(ticket.ticketEndTime);
-            ticket.ticketStartTime = dataBaseControl.dateOffsetPlus(ticket.ticketStartTime);
-            const fee = yield dataBaseControl.GetRate({ carparkID: ticket.parkingLotID, vehType: ticket.vehType });
+            ticket.ticketEndTime = databaseControl.dateOffsetPlus(ticket.ticketEndTime);
+            ticket.ticketStartTime = databaseControl.dateOffsetPlus(ticket.ticketStartTime);
+            const fee = yield databaseControl.GetRate({ carparkID: ticket.parkingLotID, vehType: ticket.vehType });
             ticket.fee = fee ? fee : 0;
             return ticket;
         });
@@ -293,9 +293,9 @@ class dataBaseControl {
             }
             const tickets = res;
             for (const ticket of tickets) {
-                ticket.ticketEndTime = dataBaseControl.dateOffsetPlus(ticket.ticketEndTime);
-                ticket.ticketStartTime = dataBaseControl.dateOffsetPlus(ticket.ticketStartTime);
-                const fee = yield dataBaseControl.GetRate({ carparkID: ticket.parkingLotID, vehType: ticket.vehType });
+                ticket.ticketEndTime = databaseControl.dateOffsetPlus(ticket.ticketEndTime);
+                ticket.ticketStartTime = databaseControl.dateOffsetPlus(ticket.ticketStartTime);
+                const fee = yield databaseControl.GetRate({ carparkID: ticket.parkingLotID, vehType: ticket.vehType });
                 ticket.fee = fee ? fee : 0;
             }
             return res;
@@ -306,7 +306,7 @@ class dataBaseControl {
             const { ticketID, newEndTime } = object;
             const res = yield databaseAccess_2.default.Update(databaseAccess_1.TableNames_App.OpenTickets, {
                 "set": {
-                    [databaseAccess_1.ColumnNames_App.ticketEndTime]: dataBaseControl.dateToString(new Date(newEndTime))
+                    [databaseAccess_1.ColumnNames_App.ticketEndTime]: databaseControl.dateToString(new Date(newEndTime))
                 },
                 "where": {
                     [databaseAccess_1.ColumnNames_App.ticketID]: {
@@ -368,9 +368,9 @@ class dataBaseControl {
                 [databaseAccess_1.ColumnNames_App.ticketID]: ticketID,
                 [databaseAccess_1.ColumnNames_App.parkingLotID]: parkingLotID,
                 [databaseAccess_1.ColumnNames_App.licensePlate]: licensePlate,
-                [databaseAccess_1.ColumnNames_App.ticketStartTime]: dataBaseControl.dateToString(new Date(ticketStartTime)),
-                [databaseAccess_1.ColumnNames_App.ticketEndTime]: dataBaseControl.dateToString(new Date(ticketEndTime)),
-                [databaseAccess_1.ColumnNames_App.actualEndTime]: dataBaseControl.dateToString(new Date(actualEndTime))
+                [databaseAccess_1.ColumnNames_App.ticketStartTime]: databaseControl.dateToString(new Date(ticketStartTime)),
+                [databaseAccess_1.ColumnNames_App.ticketEndTime]: databaseControl.dateToString(new Date(ticketEndTime)),
+                [databaseAccess_1.ColumnNames_App.actualEndTime]: databaseControl.dateToString(new Date(actualEndTime))
             });
             if (res === null) {
                 return ErrorMsg_MySQL();
@@ -406,8 +406,8 @@ class dataBaseControl {
                 return ErrorMsg_NoEntry();
             }
             for (const ticket of allTickets) {
-                ticket.address = yield dataBaseControl.GetCarparkAddress(ticket.parkingLotID);
-                ticket.fee = yield dataBaseControl.GetRate({ carparkID: ticket.parkingLotID, vehType: ticket.vehType });
+                ticket.address = yield databaseControl.GetCarparkAddress(ticket.parkingLotID);
+                ticket.fee = yield databaseControl.GetRate({ carparkID: ticket.parkingLotID, vehType: ticket.vehType });
             }
             return allTickets;
         });
@@ -516,4 +516,4 @@ class dataBaseControl {
         });
     }
 }
-exports.default = dataBaseControl;
+exports.default = databaseControl;

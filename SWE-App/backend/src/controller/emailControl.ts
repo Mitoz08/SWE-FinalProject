@@ -1,12 +1,12 @@
 import emailRepository from "../boundary/emailAccess";
-import dataBaseControl from "./databaseControl";
+import databaseControl from "./databaseControl";
 import serverControl from "./serverControl";
 
 
 export default class emailControl {
 
     static async feeCalculator( startTime:Date, endTime:Date, vehType:string, parkingLotID:string ) {
-        const fee = await dataBaseControl.GetRate( {carparkID: parkingLotID, vehType: vehType})
+        const fee = await databaseControl.GetRate( {carparkID: parkingLotID, vehType: vehType})
         if (!fee) {
             console.error("Error getting rate")
             return null
@@ -36,13 +36,13 @@ export default class emailControl {
     `Dear Customer,
     
         You have created a new ticket with ID: ${ticketID}.\n
-        Your ${res.vehType == "M"? "motorcycle" : "car" }, ${res.licensePlate} is parked at ${await dataBaseControl.GetCarparkAddress(res.parkingLotID)}
+        Your ${res.vehType == "M"? "motorcycle" : "car" }, ${res.licensePlate} is parked at ${await databaseControl.GetCarparkAddress(res.parkingLotID)}
         The ticket starts on ${res.ticketStartTime.toISOString().replace("T", " ").substr(0,19)} and ends on ${res.ticketEndTime.toISOString().replace("T", " ").substr(0,19)}.
         Total fee is $${fee}.`
 
 
 
-        const email = await dataBaseControl.GetUserEmail(res.userID)
+        const email = await databaseControl.GetUserEmail(res.userID)
         if (email == null) {
             console.error(`No existing email found for user ID: ${res.userID}`);
             return false;
@@ -62,10 +62,10 @@ export default class emailControl {
     `Dear Customer,
     
         You have a ticket that is expiring soon. Ticket ID: ${ticketID}.\n
-        Your ${res.vehType == "M"? "motorcycle" : "car" }, ${res.licensePlate} is parked at ${await dataBaseControl.GetCarparkAddress(res.parkingLotID)}
+        Your ${res.vehType == "M"? "motorcycle" : "car" }, ${res.licensePlate} is parked at ${await databaseControl.GetCarparkAddress(res.parkingLotID)}
         The ticket ends on ${res.ticketEndTime.toISOString().replace("T", " ").substr(0,19)}.
         Please extend or close your ticket to avoid fines.`
-        const email = await dataBaseControl.GetUserEmail(res.userID)
+        const email = await databaseControl.GetUserEmail(res.userID)
         if (email == null) {
             console.error(`No existing email found for user ID: ${res.userID}`);
             return false;

@@ -29,7 +29,7 @@ function ErrorMsg_DeletionFailed() {
 
 // Functions needed for the application
 
-export default class dataBaseControl {
+export default class databaseControl {
     /**
      * Function to add new users' FirebaseID to the database and generate a unique user ID
      * @param userFirebaseID FirebaseID to be taken when they first register their account
@@ -174,7 +174,7 @@ export default class dataBaseControl {
             return null;
         }
 
-        if (!dataBaseControl.isValidEmail(userEmail)) {
+        if (!databaseControl.isValidEmail(userEmail)) {
             console.error("Email does not follow the right regex")
             return null;
         }
@@ -262,7 +262,7 @@ export default class dataBaseControl {
             return null;
         }
 
-        if (!dataBaseControl.isValidEmail(userEmail)) {
+        if (!databaseControl.isValidEmail(userEmail)) {
             console.error("Email does not follow the right regex")
             return null;
         }
@@ -438,8 +438,8 @@ export default class dataBaseControl {
                 [ColumnNames_App.vehType] : vehType,
                 [ColumnNames_App.parkingLotID] : parkingLotID,
                 [ColumnNames_App.licensePlate] : licensePlate,
-                [ColumnNames_App.ticketStartTime] : dataBaseControl.dateToString(new Date(ticketStartTime)),
-                [ColumnNames_App.ticketEndTime] : dataBaseControl.dateToString(new Date(ticketEndTime)),
+                [ColumnNames_App.ticketStartTime] : databaseControl.dateToString(new Date(ticketStartTime)),
+                [ColumnNames_App.ticketEndTime] : databaseControl.dateToString(new Date(ticketEndTime)),
                 [ColumnNames_App.userID] : Number(userID)
             }
         )
@@ -473,9 +473,9 @@ export default class dataBaseControl {
         }
 
         const ticket = res[0] as OpenTicket
-        ticket.ticketEndTime = dataBaseControl.dateOffsetPlus(ticket.ticketEndTime)
-        ticket.ticketStartTime= dataBaseControl.dateOffsetPlus(ticket.ticketStartTime)
-        const fee = await dataBaseControl.GetRate({carparkID:ticket.parkingLotID, vehType:ticket.vehType})
+        ticket.ticketEndTime = databaseControl.dateOffsetPlus(ticket.ticketEndTime)
+        ticket.ticketStartTime= databaseControl.dateOffsetPlus(ticket.ticketStartTime)
+        const fee = await databaseControl.GetRate({carparkID:ticket.parkingLotID, vehType:ticket.vehType})
         ticket.fee = fee ? fee: 0
         return ticket;
     }
@@ -503,9 +503,9 @@ export default class dataBaseControl {
             return ErrorMsg_NoEntry();
         }
         const ticket = res[0] as OpenTicket
-        ticket.ticketEndTime = dataBaseControl.dateOffsetPlus(ticket.ticketEndTime)
-        ticket.ticketStartTime= dataBaseControl.dateOffsetPlus(ticket.ticketStartTime)
-        const fee = await dataBaseControl.GetRate({carparkID:ticket.parkingLotID, vehType:ticket.vehType})
+        ticket.ticketEndTime = databaseControl.dateOffsetPlus(ticket.ticketEndTime)
+        ticket.ticketStartTime= databaseControl.dateOffsetPlus(ticket.ticketStartTime)
+        const fee = await databaseControl.GetRate({carparkID:ticket.parkingLotID, vehType:ticket.vehType})
         ticket.fee = fee ? fee: 0
         return ticket;
     }
@@ -522,9 +522,9 @@ export default class dataBaseControl {
         const tickets = res as OpenTicket[]
         for (const ticket of tickets) {
             // const ticket = res[0] as OpenTicket
-            ticket.ticketEndTime = dataBaseControl.dateOffsetPlus(ticket.ticketEndTime)
-            ticket.ticketStartTime= dataBaseControl.dateOffsetPlus(ticket.ticketStartTime)
-            const fee = await dataBaseControl.GetRate({carparkID:ticket.parkingLotID, vehType:ticket.vehType})
+            ticket.ticketEndTime = databaseControl.dateOffsetPlus(ticket.ticketEndTime)
+            ticket.ticketStartTime= databaseControl.dateOffsetPlus(ticket.ticketStartTime)
+            const fee = await databaseControl.GetRate({carparkID:ticket.parkingLotID, vehType:ticket.vehType})
             ticket.fee = fee ? fee: 0
         }
 
@@ -544,7 +544,7 @@ export default class dataBaseControl {
         const res = await databaseRepository.Update(TableNames_App.OpenTickets,
             {
                 "set": {
-                    [ColumnNames_App.ticketEndTime] : dataBaseControl.dateToString(new Date(newEndTime))
+                    [ColumnNames_App.ticketEndTime] : databaseControl.dateToString(new Date(newEndTime))
                 },
                 "where": {
                     [ColumnNames_App.ticketID]: 
@@ -635,9 +635,9 @@ export default class dataBaseControl {
                 [ColumnNames_App.ticketID] : ticketID,
                 [ColumnNames_App.parkingLotID] : parkingLotID,
                 [ColumnNames_App.licensePlate] : licensePlate,
-                [ColumnNames_App.ticketStartTime] : dataBaseControl.dateToString(new Date(ticketStartTime)),
-                [ColumnNames_App.ticketEndTime] : dataBaseControl.dateToString(new Date(ticketEndTime)),
-                [ColumnNames_App.actualEndTime] : dataBaseControl.dateToString(new Date(actualEndTime))
+                [ColumnNames_App.ticketStartTime] : databaseControl.dateToString(new Date(ticketStartTime)),
+                [ColumnNames_App.ticketEndTime] : databaseControl.dateToString(new Date(ticketEndTime)),
+                [ColumnNames_App.actualEndTime] : databaseControl.dateToString(new Date(actualEndTime))
             }
         )
         if (res === null) {
@@ -689,8 +689,8 @@ export default class dataBaseControl {
         }
 
         for (const ticket of allTickets){
-            ticket.address = await dataBaseControl.GetCarparkAddress(ticket.parkingLotID)
-            ticket.fee = await dataBaseControl.GetRate({ carparkID: ticket.parkingLotID , vehType: ticket.vehType })
+            ticket.address = await databaseControl.GetCarparkAddress(ticket.parkingLotID)
+            ticket.fee = await databaseControl.GetRate({ carparkID: ticket.parkingLotID , vehType: ticket.vehType })
         }
 
 

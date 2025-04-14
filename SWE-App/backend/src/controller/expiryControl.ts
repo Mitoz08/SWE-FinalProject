@@ -1,5 +1,5 @@
 import { serverEntity } from "../entity/serverEntity";
-import dataBaseControl from "./databaseControl";
+import databaseControl from "./databaseControl";
 import emailControl from "./emailControl";
 
 var interval: NodeJS.Timeout;
@@ -42,7 +42,7 @@ export default class expiryControl {
                     ticket.notified = true
                     console.log(ticket)
                     // Update database
-                    dataBaseControl.UpdateOpenTicketNotified( { ticketID:ticket.ticketID, value:true } )
+                    databaseControl.UpdateOpenTicketNotified( { ticketID:ticket.ticketID, value:true } )
     
                     console.log("Expiry warning sent")
                 }
