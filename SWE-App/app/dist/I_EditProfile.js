@@ -76,7 +76,7 @@ export default function I_EditProfile({ navigation }) {
         // }
         if (!email.match(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i)) {
             alert("Please enter a valid email address");
-            return false;
+            return;
         }
         
         if (!phoneNo.match(/^(8|9)([0-9]{7}$)/i)) {
