@@ -101,8 +101,12 @@ export default function I_SignUp({navigation}) {
     const [Phone, setPhone] = useState("");
     const [Email, setEmail] = useState("");
     const [Password, setPassword] = useState("");
+    const [secureTextEntryP1, setSecureTextEntryP1] = useState(true);
+    const [secureTextEntryP2, setSecureTextEntryP2] = useState(true);
     const [ConfirmPassword, setConfirmPassword] = useState("");
     const {setIsLoggedIn} = useContext(AuthContext);
+
+
 
     return(
         <SafeAreaProvider>
@@ -154,22 +158,50 @@ export default function I_SignUp({navigation}) {
                                     value={Email}
                                     onChangeText={setEmail}
                                 />
-                                
-                                <FormInput
-                                    icon="lock"
-                                    placeholder="Password"
-                                    value={Password}
-                                    onChangeText={setPassword}
-                                    secureTextEntry
-                                />
-                                
-                                <FormInput
-                                    icon="lock-outline"
-                                    placeholder="Confirm Password"
-                                    value={ConfirmPassword}
-                                    onChangeText={setConfirmPassword}
-                                    secureTextEntry
-                                />
+
+                                <View style={styles.inputContainer}>
+                                    <MaterialIcons name="lock" size={24} color="#4682b4" style={styles.inputIcon} />
+                                    <TextInput
+                                        style={styles.input}
+                                        onChangeText={setPassword}
+                                        value={Password}
+                                        placeholder="Password"
+                                        placeholderTextColor="#666"
+                                        secureTextEntry={secureTextEntryP1}
+                                    />
+                                    <TouchableOpacity 
+                                        onPress={() => setSecureTextEntryP1(!secureTextEntryP1)}
+                                        style={styles.eyeIcon}
+                                    >
+                                        <MaterialIcons 
+                                            name={secureTextEntryP1 ? "visibility" : "visibility-off"} 
+                                            size={24} 
+                                            color="#4682b4" 
+                                        />
+                                    </TouchableOpacity>
+                                </View>
+
+                                <View style={styles.inputContainer}>
+                                    <MaterialIcons name="lock-outline" size={24} color="#4682b4" style={styles.inputIcon} />
+                                    <TextInput
+                                        style={styles.input}
+                                        onChangeText={setConfirmPassword}
+                                        value={ConfirmPassword}
+                                        placeholder="Confirm Password"
+                                        placeholderTextColor="#666"
+                                        secureTextEntry={secureTextEntryP2}
+                                    />
+                                    <TouchableOpacity 
+                                        onPress={() => setSecureTextEntryP2(!secureTextEntryP2)}
+                                        style={styles.eyeIcon}
+                                    >
+                                        <MaterialIcons 
+                                            name={secureTextEntryP2 ? "visibility" : "visibility-off"} 
+                                            size={24} 
+                                            color="#4682b4" 
+                                        />
+                                    </TouchableOpacity>
+                                </View>
 
                                 <TouchableOpacity 
                                     style={styles.signUpButton}   
@@ -298,5 +330,8 @@ const styles = StyleSheet.create({
         color: '#4682b4',
         fontSize: 16,
         fontWeight: 'bold',
+    },
+    eyeIcon: {
+        padding: 10,
     },
 });
