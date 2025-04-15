@@ -1,17 +1,17 @@
 import { initializeApp, FirebaseError } from "firebase/app";
 import {getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, User} from "firebase/auth";
 import mainControl from "./mainControl";
-//import {getDatabase} from "database.js"
- 
-const firebaseConfig = {
-    apiKey: "AIzaSyCZ8d70lgoVj-RgxMqskNHeAiMalBXNO78",
-    authDomain: "my-expo-app-aa62e.firebaseapp.com",
-    projectId: "my-expo-app-aa62e",
-    storageBucket: "my-expo-app-aa62e.firebasestorage.app",
-    messagingSenderId: "118705503114",
-    appId: "1:118705503114:web:e429be09cb899d9ddaa673"
-  };
+import {FIREBASE_KEY, FIREBASE_DOMAIN, FIREBASE_APP_ID, FIREBASE_MESSAGING_SENDER_ID, FIREBASE_PROJECT_ID, FIREBASE_STORAGE_BUCKET} from '../env'
 
+
+const firebaseConfig = {
+    apiKey: FIREBASE_KEY,
+    authDomain: FIREBASE_DOMAIN,
+    projectId: FIREBASE_PROJECT_ID,
+    storageBucket: FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: FIREBASE_MESSAGING_SENDER_ID,
+    appId: FIREBASE_APP_ID,
+      };
 const app = initializeApp(firebaseConfig)
 
 const auth = getAuth();

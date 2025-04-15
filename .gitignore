@@ -32,6 +32,7 @@ yarn-error.*
 SWE-App/app/dist/.env
 SWE-App/backend/.env
 SWE-App/app/dist/hngteck.env
+SWE-App/app/.env.json
 
 # typescript
 *.tsbuildinfo
