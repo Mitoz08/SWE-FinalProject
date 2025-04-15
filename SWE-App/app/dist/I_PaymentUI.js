@@ -189,6 +189,25 @@ export default function I_PaymentUI({ navigation, route }) {
                                 )}
                             </LinearGradient>
                         </TouchableOpacity>
+                        <TouchableOpacity
+                            style={[styles.payButton, processing && styles.disabledButton]}
+                            onPress={() => navigation.goBack()}
+                            disabled={processing}
+                        >
+                            <LinearGradient
+                                colors={processing ? ['#cccccc', '#cccccc'] : ['#4facfe', '#00f2fe']}
+                                style={styles.payButtonGradient}
+                            >
+                                {processing ? (
+                                    <ActivityIndicator color="#ffffff" />
+                                ) : (
+                                    <>
+                                        <MaterialIcons name="arrow-back" size={24} color="#fff" />
+                                        <Text style={styles.payButtonText}>Go Back</Text>
+                                    </>
+                                )}
+                            </LinearGradient>
+                        </TouchableOpacity>
 
                         {paymentErrorMsg !== "" && (
                             <View style={styles.errorContainer}>
