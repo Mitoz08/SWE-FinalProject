@@ -24,11 +24,9 @@ export default class authenticationControl {
             if (error instanceof FirebaseError) {
                 const errorCode = error.code;
                 if (errorCode === 'auth/invalid-credential') {
-                    alert('Incorrect Email or Password');
                     return false;
                 }
                 else {
-                    alert('Account Does Not Exist');
                     return false;
                 }
             }
