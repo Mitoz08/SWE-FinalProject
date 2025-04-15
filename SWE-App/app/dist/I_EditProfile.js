@@ -70,10 +70,15 @@ export default function I_EditProfile({ navigation }) {
     }
 
     const handleUpdateProfile = async (prompt, logout = false) => {
-        if (!email.match(/^[\w-\.]+[+]?[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/i)) {
+        // if (!email.match(/^[\w-\.]+[+]?[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/i)) {
+        //     alert("Please enter a valid email address");
+        //     return;
+        // }
+        if (!email.match(/\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i)) {
             alert("Please enter a valid email address");
-            return;
+            return false;
         }
+        
         if (!phoneNo.match(/^(8|9)([0-9]{7}$)/i)) {
             alert("Please enter a valid Singapore phone number");
             return;
