@@ -18,7 +18,7 @@ const serverControl_1 = __importDefault(require("./serverControl"));
 var interval;
 const TIMEZONE_OFFSET = 8 * 60 * 60 * 1000;
 const CHECK_INTERVAL = 0.25 * 60 * 1000;
-const EXPIRY_THRESHOLD = 60 * 60 * 1000 + TIMEZONE_OFFSET;
+const EXPIRY_THRESHOLD = 15 * 60 * 1000;
 class expiryControl {
     static expiryInitialiser() {
         expiryControl.clockStart();
