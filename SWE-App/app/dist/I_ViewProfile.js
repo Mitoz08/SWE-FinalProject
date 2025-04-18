@@ -6,114 +6,228 @@ import { mainEntity } from './entity/mainEntity';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 
-export default function I_ViewProfile({ navigation }) {
-    const { isLoggedIn } = useContext(AuthContext);
-    const [UserName, setUserName] = useState(mainEntity.getUserName());
-    const [UserEmail, setUserEmail] = useState(mainEntity.getUserEmail());
-    const [UserPhoneNo, setUserPhoneNo] = useState(mainEntity.getUserPhoneNo());
-    const [fadeAnim] = useState(new Animated.Value(0));
 
-    useEffect(() => {
-        // Check if user is logged in
-        if (!isLoggedIn) {
-            navigation.navigate("I_Login");
-            return;
-        }
-
-        // Fade in animation
-        Animated.timing(fadeAnim, {
-            toValue: 1,
-            duration: 1000,
-            useNativeDriver: true,
-        }).start();
-
-        return navigation.addListener('focus', (e) => {
-            setUserName(mainEntity.getUserName());
-            setUserEmail(mainEntity.getUserEmail());
-            setUserPhoneNo(mainEntity.getUserPhoneNo());
-        });
-    }, [isLoggedIn, navigation]);
-
-    const handleEditProfile = () => {
-        navigation.navigate("I_EditProfile");
-    };
-
-    const ProfileCard = ({ icon, label, value }) => (
-        <Animated.View style={[styles.profileItem, { opacity: fadeAnim }]}>
-            <View style={styles.itemIconContainer}>
-                <MaterialIcons name={icon} size={24} color="#4682b4" />
-            </View>
-            <View style={styles.itemContent}>
-                <Text style={styles.itemLabel}>{label}</Text>
-                <Text style={styles.itemValue}>{value}</Text>
-            </View>
-        </Animated.View>
-    );
-
-    return (
-        <SafeAreaProvider>
-            <SafeAreaView style={styles.container}>
-                <LinearGradient
-                    colors={['#4c669f', '#3b5998', '#192f6a']}
-                    style={styles.gradientBackground}
-                >
-                    <ScrollView 
-                        contentContainerStyle={styles.scrollContainer}
-                        showsVerticalScrollIndicator={false}
+class I_ViewProfile {
+    static Display({ navigation }) {
+        const { isLoggedIn } = useContext(AuthContext);
+        const [UserName, setUserName] = useState(mainEntity.getUserName());
+        const [UserEmail, setUserEmail] = useState(mainEntity.getUserEmail());
+        const [UserPhoneNo, setUserPhoneNo] = useState(mainEntity.getUserPhoneNo());
+        const [fadeAnim] = useState(new Animated.Value(0));
+    
+        useEffect(() => {
+            // Check if user is logged in
+            if (!isLoggedIn) {
+                navigation.navigate("I_Login");
+                return;
+            }
+    
+            // Fade in animation
+            Animated.timing(fadeAnim, {
+                toValue: 1,
+                duration: 1000,
+                useNativeDriver: true,
+            }).start();
+    
+            return navigation.addListener('focus', (e) => {
+                setUserName(mainEntity.getUserName());
+                setUserEmail(mainEntity.getUserEmail());
+                setUserPhoneNo(mainEntity.getUserPhoneNo());
+            });
+        }, [isLoggedIn, navigation]);
+    
+        const handleEditProfile = () => {
+            navigation.navigate("I_EditProfile");
+        };
+    
+        const ProfileCard = ({ icon, label, value }) => (
+            <Animated.View style={[styles.profileItem, { opacity: fadeAnim }]}>
+                <View style={styles.itemIconContainer}>
+                    <MaterialIcons name={icon} size={24} color="#4682b4" />
+                </View>
+                <View style={styles.itemContent}>
+                    <Text style={styles.itemLabel}>{label}</Text>
+                    <Text style={styles.itemValue}>{value}</Text>
+                </View>
+            </Animated.View>
+        );
+    
+        return (
+            <SafeAreaProvider>
+                <SafeAreaView style={styles.container}>
+                    <LinearGradient
+                        colors={['#4c669f', '#3b5998', '#192f6a']}
+                        style={styles.gradientBackground}
                     >
-                        <Animated.View 
-                            style={[styles.profileHeader, { opacity: fadeAnim }]}
+                        <ScrollView 
+                            contentContainerStyle={styles.scrollContainer}
+                            showsVerticalScrollIndicator={false}
                         >
-                            <View style={styles.avatarContainer}>
-                                <LinearGradient
-                                    colors={['#64b5f6', '#2196f3']}
-                                    style={styles.avatarGradient}
-                                >
-                                    <Text style={styles.avatarText}>
-                                        {UserName ? UserName.charAt(0).toUpperCase() : '?'}
-                                    </Text>
-                                </LinearGradient>
+                            <Animated.View 
+                                style={[styles.profileHeader, { opacity: fadeAnim }]}
+                            >
+                                <View style={styles.avatarContainer}>
+                                    <LinearGradient
+                                        colors={['#64b5f6', '#2196f3']}
+                                        style={styles.avatarGradient}
+                                    >
+                                        <Text style={styles.avatarText}>
+                                            {UserName ? UserName.charAt(0).toUpperCase() : '?'}
+                                        </Text>
+                                    </LinearGradient>
+                                </View>
+                                <Text style={styles.headerTitle}>Profile</Text>
+                                <Text style={styles.profileName}>{UserName}</Text>
+                            </Animated.View>
+    
+                            <View style={styles.profileDetails}>
+                                <ProfileCard
+                                    icon="email"
+                                    label="Email Address"
+                                    value={UserEmail}
+                                />
+                                <ProfileCard
+                                    icon="phone"
+                                    label="Phone Number"
+                                    value={UserPhoneNo}
+                                />
                             </View>
-                            <Text style={styles.headerTitle}>Profile</Text>
-                            <Text style={styles.profileName}>{UserName}</Text>
-                        </Animated.View>
-
-                        <View style={styles.profileDetails}>
-                            <ProfileCard
-                                icon="email"
-                                label="Email Address"
-                                value={UserEmail}
-                            />
-                            <ProfileCard
-                                icon="phone"
-                                label="Phone Number"
-                                value={UserPhoneNo}
-                            />
-                        </View>
-
-                        <View style={styles.buttonContainer}>
-                            <TouchableOpacity 
-                                style={[styles.button, styles.editButton]}
-                                onPress={handleEditProfile}
-                            >
-                                <MaterialIcons name="edit" size={24} color="white" />
-                                <Text style={styles.buttonText}>Edit Profile</Text>
-                            </TouchableOpacity>
-                            
-                            <TouchableOpacity 
-                                style={[styles.button, styles.backButton]}
-                                onPress={() => navigation.goBack()}
-                            >
-                                <MaterialIcons name="arrow-back" size={24} color="white" />
-                                <Text style={styles.buttonText}>Back</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </ScrollView>
-                </LinearGradient>
-            </SafeAreaView>
-        </SafeAreaProvider>
-    );
+    
+                            <View style={styles.buttonContainer}>
+                                <TouchableOpacity 
+                                    style={[styles.button, styles.editButton]}
+                                    onPress={handleEditProfile}
+                                >
+                                    <MaterialIcons name="edit" size={24} color="white" />
+                                    <Text style={styles.buttonText}>Edit Profile</Text>
+                                </TouchableOpacity>
+                                
+                                <TouchableOpacity 
+                                    style={[styles.button, styles.backButton]}
+                                    onPress={() => navigation.goBack()}
+                                >
+                                    <MaterialIcons name="arrow-back" size={24} color="white" />
+                                    <Text style={styles.buttonText}>Back</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </ScrollView>
+                    </LinearGradient>
+                </SafeAreaView>
+            </SafeAreaProvider>
+        );
+    }   
 }
+
+export default I_ViewProfile.Display
+
+// export default function I_ViewProfile({ navigation }) {
+//     const { isLoggedIn } = useContext(AuthContext);
+//     const [UserName, setUserName] = useState(mainEntity.getUserName());
+//     const [UserEmail, setUserEmail] = useState(mainEntity.getUserEmail());
+//     const [UserPhoneNo, setUserPhoneNo] = useState(mainEntity.getUserPhoneNo());
+//     const [fadeAnim] = useState(new Animated.Value(0));
+
+//     useEffect(() => {
+//         // Check if user is logged in
+//         if (!isLoggedIn) {
+//             navigation.navigate("I_Login");
+//             return;
+//         }
+
+//         // Fade in animation
+//         Animated.timing(fadeAnim, {
+//             toValue: 1,
+//             duration: 1000,
+//             useNativeDriver: true,
+//         }).start();
+
+//         return navigation.addListener('focus', (e) => {
+//             setUserName(mainEntity.getUserName());
+//             setUserEmail(mainEntity.getUserEmail());
+//             setUserPhoneNo(mainEntity.getUserPhoneNo());
+//         });
+//     }, [isLoggedIn, navigation]);
+
+//     const handleEditProfile = () => {
+//         navigation.navigate("I_EditProfile");
+//     };
+
+//     const ProfileCard = ({ icon, label, value }) => (
+//         <Animated.View style={[styles.profileItem, { opacity: fadeAnim }]}>
+//             <View style={styles.itemIconContainer}>
+//                 <MaterialIcons name={icon} size={24} color="#4682b4" />
+//             </View>
+//             <View style={styles.itemContent}>
+//                 <Text style={styles.itemLabel}>{label}</Text>
+//                 <Text style={styles.itemValue}>{value}</Text>
+//             </View>
+//         </Animated.View>
+//     );
+
+//     return (
+//         <SafeAreaProvider>
+//             <SafeAreaView style={styles.container}>
+//                 <LinearGradient
+//                     colors={['#4c669f', '#3b5998', '#192f6a']}
+//                     style={styles.gradientBackground}
+//                 >
+//                     <ScrollView 
+//                         contentContainerStyle={styles.scrollContainer}
+//                         showsVerticalScrollIndicator={false}
+//                     >
+//                         <Animated.View 
+//                             style={[styles.profileHeader, { opacity: fadeAnim }]}
+//                         >
+//                             <View style={styles.avatarContainer}>
+//                                 <LinearGradient
+//                                     colors={['#64b5f6', '#2196f3']}
+//                                     style={styles.avatarGradient}
+//                                 >
+//                                     <Text style={styles.avatarText}>
+//                                         {UserName ? UserName.charAt(0).toUpperCase() : '?'}
+//                                     </Text>
+//                                 </LinearGradient>
+//                             </View>
+//                             <Text style={styles.headerTitle}>Profile</Text>
+//                             <Text style={styles.profileName}>{UserName}</Text>
+//                         </Animated.View>
+
+//                         <View style={styles.profileDetails}>
+//                             <ProfileCard
+//                                 icon="email"
+//                                 label="Email Address"
+//                                 value={UserEmail}
+//                             />
+//                             <ProfileCard
+//                                 icon="phone"
+//                                 label="Phone Number"
+//                                 value={UserPhoneNo}
+//                             />
+//                         </View>
+
+//                         <View style={styles.buttonContainer}>
+//                             <TouchableOpacity 
+//                                 style={[styles.button, styles.editButton]}
+//                                 onPress={handleEditProfile}
+//                             >
+//                                 <MaterialIcons name="edit" size={24} color="white" />
+//                                 <Text style={styles.buttonText}>Edit Profile</Text>
+//                             </TouchableOpacity>
+                            
+//                             <TouchableOpacity 
+//                                 style={[styles.button, styles.backButton]}
+//                                 onPress={() => navigation.goBack()}
+//                             >
+//                                 <MaterialIcons name="arrow-back" size={24} color="white" />
+//                                 <Text style={styles.buttonText}>Back</Text>
+//                             </TouchableOpacity>
+//                         </View>
+//                     </ScrollView>
+//                 </LinearGradient>
+//             </SafeAreaView>
+//         </SafeAreaProvider>
+//     );
+// }
 
 const styles = StyleSheet.create({
     container: {
