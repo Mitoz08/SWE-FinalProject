@@ -34,6 +34,3 @@ In the project folder, open console and run:
   npm i
   node ./dist/index.js
   ```
-
-
-
