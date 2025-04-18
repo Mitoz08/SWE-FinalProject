@@ -17,145 +17,290 @@ import authenticationControl from "./controller/authenticationControl";
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 
-export default function I_Login({navigation}) {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [isLoading, setIsLoading] = useState(false);
-    const [secureTextEntry, setSecureTextEntry] = useState(true);
-    const {setIsLoggedIn} = useContext(AuthContext);
-    
-    // Animation values
-    const [fadeAnim] = useState(new Animated.Value(0));
-    const [slideAnim] = useState(new Animated.Value(50));
-
-    useEffect(() => {
-        Animated.parallel([
-            Animated.timing(fadeAnim, {
-                toValue: 1,
-                duration: 1000,
-                useNativeDriver: true,
-            }),
-            Animated.timing(slideAnim, {
-                toValue: 0,
-                duration: 1000,
-                useNativeDriver: true,
-            })
-        ]).start();
-    }, []);
-
-    const handleLogin = async () => {
-        if (!email || !password) {
-            alert("Please fill in all fields");
-            return;
-        }
+class I_Login {
+    static Display({navigation}) {
+        const [email, setEmail] = useState("");
+        const [password, setPassword] = useState("");
+        const [isLoading, setIsLoading] = useState(false);
+        const [secureTextEntry, setSecureTextEntry] = useState(true);
+        const {setIsLoggedIn} = useContext(AuthContext);
         
-        setIsLoading(true);
-        try {
-            const res = await authenticationControl.VerifyLogin(email, password);
-            setIsLoggedIn(res);
-            if (!res) {
-                alert("Invalid credentials");
+        // Animation values
+        const [fadeAnim] = useState(new Animated.Value(0));
+        const [slideAnim] = useState(new Animated.Value(50));
+    
+        useEffect(() => {
+            Animated.parallel([
+                Animated.timing(fadeAnim, {
+                    toValue: 1,
+                    duration: 1000,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(slideAnim, {
+                    toValue: 0,
+                    duration: 1000,
+                    useNativeDriver: true,
+                })
+            ]).start();
+        }, []);
+    
+        const handleLogin = async () => {
+            if (!email || !password) {
+                alert("Please fill in all fields");
+                return;
             }
-        } catch (error) {
-            console.error("Login error:", error);
-            alert("Login failed. Please try again.");
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    return (
-        <SafeAreaProvider>
-            <SafeAreaView style={styles.container}>
-                <LinearGradient
-                    colors={['#4c669f', '#3b5998', '#192f6a']}
-                    style={styles.gradientBackground}
-                >
-                    <KeyboardAvoidingView
-                        behavior={Platform.OS === "ios" ? "padding" : "height"}
-                        style={styles.keyboardAvoidView}
+            
+            setIsLoading(true);
+            try {
+                const res = await authenticationControl.VerifyLogin(email, password);
+                setIsLoggedIn(res);
+                if (!res) {
+                    alert("Invalid credentials");
+                }
+            } catch (error) {
+                console.error("Login error:", error);
+                alert("Login failed. Please try again.");
+            } finally {
+                setIsLoading(false);
+            }
+        };
+    
+        return (
+            <SafeAreaProvider>
+                <SafeAreaView style={styles.container}>
+                    <LinearGradient
+                        colors={['#4c669f', '#3b5998', '#192f6a']}
+                        style={styles.gradientBackground}
                     >
-                        <Animated.View 
-                            style={[
-                                styles.contentContainer,
-                                {
-                                    opacity: fadeAnim,
-                                    transform: [{ translateY: slideAnim }]
-                                }
-                            ]}
+                        <KeyboardAvoidingView
+                            behavior={Platform.OS === "ios" ? "padding" : "height"}
+                            style={styles.keyboardAvoidView}
                         >
-                            <Image
-                                source={require('../../assets/carpark_logo.png')}
-                                style={styles.logo}
-                            />
-                            
-                            <View style={styles.formContainer}>
-                                <Text style={styles.welcomeText}>Welcome Back!</Text>
-                                <Text style={styles.subtitleText}>Sign in to continue</Text>
-
-                                <View style={styles.inputContainer}>
-                                    <MaterialIcons name="email" size={24} color="#4682b4" style={styles.inputIcon} />
-                                    <TextInput
-                                        style={styles.input}
-                                        onChangeText={setEmail}
-                                        value={email}
-                                        placeholder="Email"
-                                        placeholderTextColor="#666"
-                                        autoCapitalize="none"
-                                        keyboardType="email-address"
-                                    />
-                                </View>
-
-                                <View style={styles.inputContainer}>
-                                    <MaterialIcons name="lock" size={24} color="#4682b4" style={styles.inputIcon} />
-                                    <TextInput
-                                        style={styles.input}
-                                        onChangeText={setPassword}
-                                        value={password}
-                                        placeholder="Password"
-                                        placeholderTextColor="#666"
-                                        secureTextEntry={secureTextEntry}
-                                    />
-                                    <TouchableOpacity 
-                                        onPress={() => setSecureTextEntry(!secureTextEntry)}
-                                        style={styles.eyeIcon}
-                                    >
-                                        <MaterialIcons 
-                                            name={secureTextEntry ? "visibility" : "visibility-off"} 
-                                            size={24} 
-                                            color="#4682b4" 
+                            <Animated.View 
+                                style={[
+                                    styles.contentContainer,
+                                    {
+                                        opacity: fadeAnim,
+                                        transform: [{ translateY: slideAnim }]
+                                    }
+                                ]}
+                            >
+                                <Image
+                                    source={require('../../assets/carpark_logo.png')}
+                                    style={styles.logo}
+                                />
+                                
+                                <View style={styles.formContainer}>
+                                    <Text style={styles.welcomeText}>Welcome Back!</Text>
+                                    <Text style={styles.subtitleText}>Sign in to continue</Text>
+    
+                                    <View style={styles.inputContainer}>
+                                        <MaterialIcons name="email" size={24} color="#4682b4" style={styles.inputIcon} />
+                                        <TextInput
+                                            style={styles.input}
+                                            onChangeText={setEmail}
+                                            value={email}
+                                            placeholder="Email"
+                                            placeholderTextColor="#666"
+                                            autoCapitalize="none"
+                                            keyboardType="email-address"
                                         />
-                                    </TouchableOpacity>
-                                </View>
-
-                                <TouchableOpacity 
-                                    style={styles.loginButton}
-                                    onPress={handleLogin}
-                                    disabled={isLoading}
-                                >
-                                    {isLoading ? (
-                                        <ActivityIndicator color="#fff" />
-                                    ) : (
-                                        <Text style={styles.buttonText}>Login</Text>
-                                    )}
-                                </TouchableOpacity>
-
-                                <View style={styles.signupContainer}>
-                                    <Text style={styles.signupText}>Don't have an account?</Text>
-                                    <TouchableOpacity
-                                        onPress={() => navigation.navigate("I_SignUp")}
+                                    </View>
+    
+                                    <View style={styles.inputContainer}>
+                                        <MaterialIcons name="lock" size={24} color="#4682b4" style={styles.inputIcon} />
+                                        <TextInput
+                                            style={styles.input}
+                                            onChangeText={setPassword}
+                                            value={password}
+                                            placeholder="Password"
+                                            placeholderTextColor="#666"
+                                            secureTextEntry={secureTextEntry}
+                                        />
+                                        <TouchableOpacity 
+                                            onPress={() => setSecureTextEntry(!secureTextEntry)}
+                                            style={styles.eyeIcon}
+                                        >
+                                            <MaterialIcons 
+                                                name={secureTextEntry ? "visibility" : "visibility-off"} 
+                                                size={24} 
+                                                color="#4682b4" 
+                                            />
+                                        </TouchableOpacity>
+                                    </View>
+    
+                                    <TouchableOpacity 
+                                        style={styles.loginButton}
+                                        onPress={handleLogin}
+                                        disabled={isLoading}
                                     >
-                                        <Text style={styles.signupLink}>Sign up here</Text>
+                                        {isLoading ? (
+                                            <ActivityIndicator color="#fff" />
+                                        ) : (
+                                            <Text style={styles.buttonText}>Login</Text>
+                                        )}
                                     </TouchableOpacity>
+    
+                                    <View style={styles.signupContainer}>
+                                        <Text style={styles.signupText}>Don't have an account?</Text>
+                                        <TouchableOpacity
+                                            onPress={() => navigation.navigate("I_SignUp")}
+                                        >
+                                            <Text style={styles.signupLink}>Sign up here</Text>
+                                        </TouchableOpacity>
+                                    </View>
                                 </View>
-                            </View>
-                        </Animated.View>
-                    </KeyboardAvoidingView>
-                </LinearGradient>
-            </SafeAreaView>
-        </SafeAreaProvider>
-    );
+                            </Animated.View>
+                        </KeyboardAvoidingView>
+                    </LinearGradient>
+                </SafeAreaView>
+            </SafeAreaProvider>
+        );
+    }
+    
 }
+
+export default I_Login.Display;
+
+// export default function I_Login({navigation}) {
+//     const [email, setEmail] = useState("");
+//     const [password, setPassword] = useState("");
+//     const [isLoading, setIsLoading] = useState(false);
+//     const [secureTextEntry, setSecureTextEntry] = useState(true);
+//     const {setIsLoggedIn} = useContext(AuthContext);
+    
+//     // Animation values
+//     const [fadeAnim] = useState(new Animated.Value(0));
+//     const [slideAnim] = useState(new Animated.Value(50));
+
+//     useEffect(() => {
+//         Animated.parallel([
+//             Animated.timing(fadeAnim, {
+//                 toValue: 1,
+//                 duration: 1000,
+//                 useNativeDriver: true,
+//             }),
+//             Animated.timing(slideAnim, {
+//                 toValue: 0,
+//                 duration: 1000,
+//                 useNativeDriver: true,
+//             })
+//         ]).start();
+//     }, []);
+
+//     const handleLogin = async () => {
+//         if (!email || !password) {
+//             alert("Please fill in all fields");
+//             return;
+//         }
+        
+//         setIsLoading(true);
+//         try {
+//             const res = await authenticationControl.VerifyLogin(email, password);
+//             setIsLoggedIn(res);
+//             if (!res) {
+//                 alert("Invalid credentials");
+//             }
+//         } catch (error) {
+//             console.error("Login error:", error);
+//             alert("Login failed. Please try again.");
+//         } finally {
+//             setIsLoading(false);
+//         }
+//     };
+
+//     return (
+//         <SafeAreaProvider>
+//             <SafeAreaView style={styles.container}>
+//                 <LinearGradient
+//                     colors={['#4c669f', '#3b5998', '#192f6a']}
+//                     style={styles.gradientBackground}
+//                 >
+//                     <KeyboardAvoidingView
+//                         behavior={Platform.OS === "ios" ? "padding" : "height"}
+//                         style={styles.keyboardAvoidView}
+//                     >
+//                         <Animated.View 
+//                             style={[
+//                                 styles.contentContainer,
+//                                 {
+//                                     opacity: fadeAnim,
+//                                     transform: [{ translateY: slideAnim }]
+//                                 }
+//                             ]}
+//                         >
+//                             <Image
+//                                 source={require('../../assets/carpark_logo.png')}
+//                                 style={styles.logo}
+//                             />
+                            
+//                             <View style={styles.formContainer}>
+//                                 <Text style={styles.welcomeText}>Welcome Back!</Text>
+//                                 <Text style={styles.subtitleText}>Sign in to continue</Text>
+
+//                                 <View style={styles.inputContainer}>
+//                                     <MaterialIcons name="email" size={24} color="#4682b4" style={styles.inputIcon} />
+//                                     <TextInput
+//                                         style={styles.input}
+//                                         onChangeText={setEmail}
+//                                         value={email}
+//                                         placeholder="Email"
+//                                         placeholderTextColor="#666"
+//                                         autoCapitalize="none"
+//                                         keyboardType="email-address"
+//                                     />
+//                                 </View>
+
+//                                 <View style={styles.inputContainer}>
+//                                     <MaterialIcons name="lock" size={24} color="#4682b4" style={styles.inputIcon} />
+//                                     <TextInput
+//                                         style={styles.input}
+//                                         onChangeText={setPassword}
+//                                         value={password}
+//                                         placeholder="Password"
+//                                         placeholderTextColor="#666"
+//                                         secureTextEntry={secureTextEntry}
+//                                     />
+//                                     <TouchableOpacity 
+//                                         onPress={() => setSecureTextEntry(!secureTextEntry)}
+//                                         style={styles.eyeIcon}
+//                                     >
+//                                         <MaterialIcons 
+//                                             name={secureTextEntry ? "visibility" : "visibility-off"} 
+//                                             size={24} 
+//                                             color="#4682b4" 
+//                                         />
+//                                     </TouchableOpacity>
+//                                 </View>
+
+//                                 <TouchableOpacity 
+//                                     style={styles.loginButton}
+//                                     onPress={handleLogin}
+//                                     disabled={isLoading}
+//                                 >
+//                                     {isLoading ? (
+//                                         <ActivityIndicator color="#fff" />
+//                                     ) : (
+//                                         <Text style={styles.buttonText}>Login</Text>
+//                                     )}
+//                                 </TouchableOpacity>
+
+//                                 <View style={styles.signupContainer}>
+//                                     <Text style={styles.signupText}>Don't have an account?</Text>
+//                                     <TouchableOpacity
+//                                         onPress={() => navigation.navigate("I_SignUp")}
+//                                     >
+//                                         <Text style={styles.signupLink}>Sign up here</Text>
+//                                     </TouchableOpacity>
+//                                 </View>
+//                             </View>
+//                         </Animated.View>
+//                     </KeyboardAvoidingView>
+//                 </LinearGradient>
+//             </SafeAreaView>
+//         </SafeAreaProvider>
+//     );
+// }
 
 const styles = StyleSheet.create({
     container: {

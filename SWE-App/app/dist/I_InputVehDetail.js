@@ -4,6 +4,24 @@ import { Dropdown } from "react-native-element-dropdown";
 import { TextInput } from "react-native-gesture-handler";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
+class I_InputVehDetail{
+    static Display({ navigation }) {
+        const [selectedVeh, setSelectedVeh] = useState(null);
+    
+        return (
+            <SafeAreaProvider>
+                <SafeAreaView>
+                    <VehDropDown onSelect={setSelectedVeh} />
+                    <VehLicensePlate />
+                    <NextButton navigation={navigation} selectedVeh={selectedVeh} />
+                </SafeAreaView>
+            </SafeAreaProvider>
+        );
+    }
+}
+
+export default I_InputVehDetail.Display;
+
 // To simplify the code, for button
 const GoToAvailability = (navigation, selectedVeh) => {
     // AvC2- Get the array of carpark
@@ -71,19 +89,19 @@ const NextButton = ({ navigation, selectedVeh }) => {
     );
 };
 
-export default function I_InputVehDetail({ navigation }) {
-    const [selectedVeh, setSelectedVeh] = useState(null);
+// export default function I_InputVehDetail({ navigation }) {
+//     const [selectedVeh, setSelectedVeh] = useState(null);
 
-    return (
-        <SafeAreaProvider>
-            <SafeAreaView>
-                <VehDropDown onSelect={setSelectedVeh} />
-                <VehLicensePlate />
-                <NextButton navigation={navigation} selectedVeh={selectedVeh} />
-            </SafeAreaView>
-        </SafeAreaProvider>
-    );
-}
+//     return (
+//         <SafeAreaProvider>
+//             <SafeAreaView>
+//                 <VehDropDown onSelect={setSelectedVeh} />
+//                 <VehLicensePlate />
+//                 <NextButton navigation={navigation} selectedVeh={selectedVeh} />
+//             </SafeAreaView>
+//         </SafeAreaProvider>
+//     );
+// }
 
 const styles = StyleSheet.create({
     input: {

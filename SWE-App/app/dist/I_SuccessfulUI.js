@@ -5,135 +5,269 @@ import { mainEntity } from "./entity/mainEntity";
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 
-export default function I_SuccessfulUI({navigation}) {
-    const ticket = mainEntity.getTicket();
-    const [address, setAddress] = useState("");
-    const [loading, setLoading] = useState(true);
+class I_SuccessfulUI {
+    static Display({navigation}) {
+        const ticket = mainEntity.getTicket();
+        const [address, setAddress] = useState("");
+        const [loading, setLoading] = useState(true);
+        
+        // Animation values
+        const [fadeAnim] = useState(new Animated.Value(0));
+        const [scaleAnim] = useState(new Animated.Value(0.9));
     
-    // Animation values
-    const [fadeAnim] = useState(new Animated.Value(0));
-    const [scaleAnim] = useState(new Animated.Value(0.9));
-
-    useEffect(() => {
-        // Fetch address
-        fetch(`http://localhost:3000/CarparkAddress?carparkID=${ticket.parkingLotID}`)
-            .then(response => response.json())
-            .then(data => {
-                setAddress(data.carparkAddress);
-                setLoading(false);
-            })
-            .catch(error => {
-                setAddress("Error fetching address");
-                setLoading(false);
-            });
-
-        // Start animations
-        Animated.parallel([
-            Animated.timing(fadeAnim, {
-                toValue: 1,
-                duration: 800,
-                useNativeDriver: true,
-            }),
-            Animated.spring(scaleAnim, {
-                toValue: 1,
-                friction: 8,
-                tension: 40,
-                useNativeDriver: true,
-            })
-        ]).start();
-    }, [ticket.parkingLotID]);
-
-    const DetailRow = ({ icon, label, value }) => (
-        <View style={styles.detailRow}>
-            <MaterialIcons name={icon} size={24} color="#4682b4" />
-            <View style={styles.detailContent}>
-                <Text style={styles.detailLabel}>{label}</Text>
-                <Text style={styles.detailValue}>{value}</Text>
+        useEffect(() => {
+            // Fetch address
+            fetch(`http://localhost:3000/CarparkAddress?carparkID=${ticket.parkingLotID}`)
+                .then(response => response.json())
+                .then(data => {
+                    setAddress(data.carparkAddress);
+                    setLoading(false);
+                })
+                .catch(error => {
+                    setAddress("Error fetching address");
+                    setLoading(false);
+                });
+    
+            // Start animations
+            Animated.parallel([
+                Animated.timing(fadeAnim, {
+                    toValue: 1,
+                    duration: 800,
+                    useNativeDriver: true,
+                }),
+                Animated.spring(scaleAnim, {
+                    toValue: 1,
+                    friction: 8,
+                    tension: 40,
+                    useNativeDriver: true,
+                })
+            ]).start();
+        }, [ticket.parkingLotID]);
+    
+        const DetailRow = ({ icon, label, value }) => (
+            <View style={styles.detailRow}>
+                <MaterialIcons name={icon} size={24} color="#4682b4" />
+                <View style={styles.detailContent}>
+                    <Text style={styles.detailLabel}>{label}</Text>
+                    <Text style={styles.detailValue}>{value}</Text>
+                </View>
             </View>
-        </View>
-    );
-
-    return(
-        <SafeAreaProvider>
-            <LinearGradient
-                colors={['#4c669f', '#3b5998', '#192f6a']}
-                style={styles.container}
-            >
-                <SafeAreaView style={styles.safeArea}>
-                    <Animated.View 
-                        style={[
-                            styles.contentContainer,
-                            {
-                                opacity: fadeAnim,
-                                transform: [{ scale: scaleAnim }]
-                            }
-                        ]}
-                    >
-                        <View style={styles.successIconContainer}>
-                            <MaterialIcons name="check-circle" size={80} color="#4CAF50" />
-                            <Text style={styles.successText}>Payment Successful!</Text>
-                        </View>
-
-                        {loading ? (
-                            <View style={styles.loadingContainer}>
-                                <ActivityIndicator size="large" color="#4682b4" />
-                                <Text style={styles.loadingText}>Loading ticket details...</Text>
-                            </View>
-                        ) : (
-                            <View style={styles.card}>
-                                <View style={styles.ticketHeader}>
-                                    <MaterialIcons name="confirmation-number" size={24} color="#4682b4" />
-                                    <Text style={styles.ticketID}>Ticket #{ticket.ticketID}</Text>
-                                </View>
-
-                                <View style={styles.divider} />
-
-                                <DetailRow 
-                                    icon="local-parking"
-                                    label="Parking Lot"
-                                    value={ticket.parkingLotID}
-                                />
-                                <DetailRow 
-                                    icon="location-on"
-                                    label="Address"
-                                    value={address}
-                                />
-                                <DetailRow 
-                                    icon="directions-car"
-                                    label="License Plate"
-                                    value={ticket.licensePlate}
-                                />
-                                <DetailRow 
-                                    icon="access-time"
-                                    label="Start Time"
-                                    value={ticket.ticketStartTime.replace("T", " ").substr(0,19)}
-                                />
-                                <DetailRow 
-                                    icon="timer"
-                                    label="End Time"
-                                    value={ticket.ticketEndTime.replace("T", " ").substr(0,19)}
-                                />
-                            </View>
-                        )}
-
-                        <TouchableOpacity 
-                            style={styles.button}
-                            onPress={() => navigation.navigate("I_MainPage")}
+        );
+    
+        return(
+            <SafeAreaProvider>
+                <LinearGradient
+                    colors={['#4c669f', '#3b5998', '#192f6a']}
+                    style={styles.container}
+                >
+                    <SafeAreaView style={styles.safeArea}>
+                        <Animated.View 
+                            style={[
+                                styles.contentContainer,
+                                {
+                                    opacity: fadeAnim,
+                                    transform: [{ scale: scaleAnim }]
+                                }
+                            ]}
                         >
-                            <LinearGradient
-                                colors={['#4facfe', '#00f2fe']}
-                                style={styles.buttonGradient}
+                            <View style={styles.successIconContainer}>
+                                <MaterialIcons name="check-circle" size={80} color="#4CAF50" />
+                                <Text style={styles.successText}>Payment Successful!</Text>
+                            </View>
+    
+                            {loading ? (
+                                <View style={styles.loadingContainer}>
+                                    <ActivityIndicator size="large" color="#4682b4" />
+                                    <Text style={styles.loadingText}>Loading ticket details...</Text>
+                                </View>
+                            ) : (
+                                <View style={styles.card}>
+                                    <View style={styles.ticketHeader}>
+                                        <MaterialIcons name="confirmation-number" size={24} color="#4682b4" />
+                                        <Text style={styles.ticketID}>Ticket #{ticket.ticketID}</Text>
+                                    </View>
+    
+                                    <View style={styles.divider} />
+    
+                                    <DetailRow 
+                                        icon="local-parking"
+                                        label="Parking Lot"
+                                        value={ticket.parkingLotID}
+                                    />
+                                    <DetailRow 
+                                        icon="location-on"
+                                        label="Address"
+                                        value={address}
+                                    />
+                                    <DetailRow 
+                                        icon="directions-car"
+                                        label="License Plate"
+                                        value={ticket.licensePlate}
+                                    />
+                                    <DetailRow 
+                                        icon="access-time"
+                                        label="Start Time"
+                                        value={ticket.ticketStartTime.replace("T", " ").substr(0,19)}
+                                    />
+                                    <DetailRow 
+                                        icon="timer"
+                                        label="End Time"
+                                        value={ticket.ticketEndTime.replace("T", " ").substr(0,19)}
+                                    />
+                                </View>
+                            )}
+    
+                            <TouchableOpacity 
+                                style={styles.button}
+                                onPress={() => navigation.navigate("I_MainPage")}
                             >
-                                <MaterialIcons name="home" size={24} color="#fff" />
-                                <Text style={styles.buttonText}>Back to Main Page</Text>
-                            </LinearGradient>
-                        </TouchableOpacity>
-                    </Animated.View>
-                </SafeAreaView>
-            </LinearGradient>
-        </SafeAreaProvider>
-    );
+                                <LinearGradient
+                                    colors={['#4facfe', '#00f2fe']}
+                                    style={styles.buttonGradient}
+                                >
+                                    <MaterialIcons name="home" size={24} color="#fff" />
+                                    <Text style={styles.buttonText}>Back to Main Page</Text>
+                                </LinearGradient>
+                            </TouchableOpacity>
+                        </Animated.View>
+                    </SafeAreaView>
+                </LinearGradient>
+            </SafeAreaProvider>
+        );
+    }
 }
+
+export default I_SuccessfulUI.Display;
+
+// export default function I_SuccessfulUI({navigation}) {
+//     const ticket = mainEntity.getTicket();
+//     const [address, setAddress] = useState("");
+//     const [loading, setLoading] = useState(true);
+    
+//     // Animation values
+//     const [fadeAnim] = useState(new Animated.Value(0));
+//     const [scaleAnim] = useState(new Animated.Value(0.9));
+
+//     useEffect(() => {
+//         // Fetch address
+//         fetch(`http://localhost:3000/CarparkAddress?carparkID=${ticket.parkingLotID}`)
+//             .then(response => response.json())
+//             .then(data => {
+//                 setAddress(data.carparkAddress);
+//                 setLoading(false);
+//             })
+//             .catch(error => {
+//                 setAddress("Error fetching address");
+//                 setLoading(false);
+//             });
+
+//         // Start animations
+//         Animated.parallel([
+//             Animated.timing(fadeAnim, {
+//                 toValue: 1,
+//                 duration: 800,
+//                 useNativeDriver: true,
+//             }),
+//             Animated.spring(scaleAnim, {
+//                 toValue: 1,
+//                 friction: 8,
+//                 tension: 40,
+//                 useNativeDriver: true,
+//             })
+//         ]).start();
+//     }, [ticket.parkingLotID]);
+
+//     const DetailRow = ({ icon, label, value }) => (
+//         <View style={styles.detailRow}>
+//             <MaterialIcons name={icon} size={24} color="#4682b4" />
+//             <View style={styles.detailContent}>
+//                 <Text style={styles.detailLabel}>{label}</Text>
+//                 <Text style={styles.detailValue}>{value}</Text>
+//             </View>
+//         </View>
+//     );
+
+//     return(
+//         <SafeAreaProvider>
+//             <LinearGradient
+//                 colors={['#4c669f', '#3b5998', '#192f6a']}
+//                 style={styles.container}
+//             >
+//                 <SafeAreaView style={styles.safeArea}>
+//                     <Animated.View 
+//                         style={[
+//                             styles.contentContainer,
+//                             {
+//                                 opacity: fadeAnim,
+//                                 transform: [{ scale: scaleAnim }]
+//                             }
+//                         ]}
+//                     >
+//                         <View style={styles.successIconContainer}>
+//                             <MaterialIcons name="check-circle" size={80} color="#4CAF50" />
+//                             <Text style={styles.successText}>Payment Successful!</Text>
+//                         </View>
+
+//                         {loading ? (
+//                             <View style={styles.loadingContainer}>
+//                                 <ActivityIndicator size="large" color="#4682b4" />
+//                                 <Text style={styles.loadingText}>Loading ticket details...</Text>
+//                             </View>
+//                         ) : (
+//                             <View style={styles.card}>
+//                                 <View style={styles.ticketHeader}>
+//                                     <MaterialIcons name="confirmation-number" size={24} color="#4682b4" />
+//                                     <Text style={styles.ticketID}>Ticket #{ticket.ticketID}</Text>
+//                                 </View>
+
+//                                 <View style={styles.divider} />
+
+//                                 <DetailRow 
+//                                     icon="local-parking"
+//                                     label="Parking Lot"
+//                                     value={ticket.parkingLotID}
+//                                 />
+//                                 <DetailRow 
+//                                     icon="location-on"
+//                                     label="Address"
+//                                     value={address}
+//                                 />
+//                                 <DetailRow 
+//                                     icon="directions-car"
+//                                     label="License Plate"
+//                                     value={ticket.licensePlate}
+//                                 />
+//                                 <DetailRow 
+//                                     icon="access-time"
+//                                     label="Start Time"
+//                                     value={ticket.ticketStartTime.replace("T", " ").substr(0,19)}
+//                                 />
+//                                 <DetailRow 
+//                                     icon="timer"
+//                                     label="End Time"
+//                                     value={ticket.ticketEndTime.replace("T", " ").substr(0,19)}
+//                                 />
+//                             </View>
+//                         )}
+
+//                         <TouchableOpacity 
+//                             style={styles.button}
+//                             onPress={() => navigation.navigate("I_MainPage")}
+//                         >
+//                             <LinearGradient
+//                                 colors={['#4facfe', '#00f2fe']}
+//                                 style={styles.buttonGradient}
+//                             >
+//                                 <MaterialIcons name="home" size={24} color="#fff" />
+//                                 <Text style={styles.buttonText}>Back to Main Page</Text>
+//                             </LinearGradient>
+//                         </TouchableOpacity>
+//                     </Animated.View>
+//                 </SafeAreaView>
+//             </LinearGradient>
+//         </SafeAreaProvider>
+//     );
+// }
 
 const styles = StyleSheet.create({
     container: {

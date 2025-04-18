@@ -6,50 +6,101 @@ import { FlatList } from "react-native-gesture-handler";
 import { AntDesign } from "@expo/vector-icons";
 import { LinearGradient } from 'expo-linear-gradient';
 
-export default function I_ViewTickets({navigation}) {
-  const [ticket, setTicket] = useState(null);
-  const [address, setAddress] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [showAddTimeModal, setAddTimeModal] = useState(false);
-  const [showCloseTicketModal, setCloseTicketModal] = useState(false);
-  const [showPastTicketModal, setPastTicketModal] = useState(false);
-  const [PastTicket, setPastTicket] = useState(null);
-  const [pastTickets, setPastTickets] = useState([]);
-
-  useEffect(() => {
-    async function fetchTicket() {
-      setLoading(true);
-      try {
-        const {address, ticket} = await viewTicketControl.getTicket();
-        const ticketArray = await viewTicketControl.getAllClosedTickets();
-        setPastTickets(ticketArray);
-        setTicket(ticket);
-        setAddress(address);
-      } catch (error) {
-        console.error("Error fetching ticket in I_ViewTickets:", error);
-      } finally {
-        setLoading(false);
+class I_ViewTickets {
+  static Display({navigation}) {
+    const [ticket, setTicket] = useState(null);
+    const [address, setAddress] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [showAddTimeModal, setAddTimeModal] = useState(false);
+    const [showCloseTicketModal, setCloseTicketModal] = useState(false);
+    const [showPastTicketModal, setPastTicketModal] = useState(false);
+    const [PastTicket, setPastTicket] = useState(null);
+    const [pastTickets, setPastTickets] = useState([]);
+  
+    useEffect(() => {
+      async function fetchTicket() {
+        setLoading(true);
+        try {
+          const {address, ticket} = await viewTicketControl.getTicket();
+          const ticketArray = await viewTicketControl.getAllClosedTickets();
+          setPastTickets(ticketArray);
+          setTicket(ticket);
+          setAddress(address);
+        } catch (error) {
+          console.error("Error fetching ticket in I_ViewTickets:", error);
+        } finally {
+          setLoading(false);
+        }
       }
-    }
+      if (loading) {
+        fetchTicket();
+      }
+    }, [loading]);
+  
     if (loading) {
-      fetchTicket();
+      return (
+        <SafeAreaProvider>
+          <SafeAreaView style={styles.container}>
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#4682b4" />
+              <Text style={styles.loadingText}>Loading ticket info...</Text>
+            </View>
+          </SafeAreaView>
+        </SafeAreaProvider>
+      );
     }
-  }, [loading]);
-
-  if (loading) {
-    return (
-      <SafeAreaProvider>
-        <SafeAreaView style={styles.container}>
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#4682b4" />
-            <Text style={styles.loadingText}>Loading ticket info...</Text>
-          </View>
-        </SafeAreaView>
-      </SafeAreaProvider>
-    );
-  }
-
-  if (!ticket?.ticketID) {
+  
+    if (!ticket?.ticketID) {
+      return (
+        <SafeAreaProvider>
+          <SafeAreaView style={styles.container}>
+            <LinearGradient
+              colors={['#4c669f', '#3b5998', '#192f6a']}
+              style={styles.gradientBackground}
+            >
+              <View style={styles.headerContainer}>
+                <Text style={styles.headerText}>No Open Tickets</Text>
+              </View>
+  
+              <FlatList
+                style={styles.pastTicketsList}
+                data={pastTickets.sort((a, b) => b.ticketID - a.ticketID)}
+                keyExtractor={(item) => item.ticketID.toString()}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={styles.pastTicketCard}
+                    onPress={() => {
+                      setPastTicket(item);
+                      setPastTicketModal(true);
+                    }}
+                  >
+                    <View style={styles.pastTicketHeader}>
+                      <Text style={styles.pastTicketId}>Ticket #{item.ticketID}</Text>
+                      <AntDesign name="right" size={20} color="#4682b4" />
+                    </View>
+                    <Text style={styles.pastTicketAddress}>{item.address}</Text>
+                  </TouchableOpacity>
+                )}
+              />
+  
+              <TouchableOpacity 
+                style={styles.mainButton}
+                onPress={() => navigation.navigate("I_MainPage")}
+              >
+                <Text style={styles.buttonText}>Back to Main Page</Text>
+              </TouchableOpacity>
+  
+              <PastTicketModal
+                ticket={PastTicket}
+                showModal={showPastTicketModal}
+                setShowModal={setPastTicketModal}
+              />
+            </LinearGradient>
+          </SafeAreaView>
+        </SafeAreaProvider>
+      );
+    }
+  
     return (
       <SafeAreaProvider>
         <SafeAreaView style={styles.container}>
@@ -57,161 +108,321 @@ export default function I_ViewTickets({navigation}) {
             colors={['#4c669f', '#3b5998', '#192f6a']}
             style={styles.gradientBackground}
           >
-            <View style={styles.headerContainer}>
-              <Text style={styles.headerText}>No Open Tickets</Text>
-            </View>
-
-            <FlatList
-              style={styles.pastTicketsList}
-              data={pastTickets.sort((a, b) => b.ticketID - a.ticketID)}
-              keyExtractor={(item) => item.ticketID.toString()}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.pastTicketCard}
-                  onPress={() => {
-                    setPastTicket(item);
-                    setPastTicketModal(true);
-                  }}
-                >
-                  <View style={styles.pastTicketHeader}>
-                    <Text style={styles.pastTicketId}>Ticket #{item.ticketID}</Text>
-                    <AntDesign name="right" size={20} color="#4682b4" />
+            <View style={styles.mainContent}>
+              <View style={styles.activeTicketCard}>
+                <Text style={styles.activeTicketHeader}>Active Ticket</Text>
+                <View style={styles.ticketDetails}>
+                  <View style={styles.detailRow}>
+                    <Text style={styles.label}>Ticket ID:</Text>
+                    <Text style={styles.value}>#{ticket.ticketID}</Text>
                   </View>
-                  <Text style={styles.pastTicketAddress}>{item.address}</Text>
+                  <View style={styles.detailRow}>
+                    <Text style={styles.label}>Parking Lot:</Text>
+                    <Text style={styles.value}>{ticket.parkingLotID}</Text>
+                  </View>
+                  <View style={styles.detailRow}>
+                    <Text style={styles.label}>Address:</Text>
+                    <Text style={styles.value}>{address}</Text>
+                  </View>
+                  <View style={styles.detailRow}>
+                    <Text style={styles.label}>License Plate:</Text>
+                    <Text style={styles.value}>{ticket.licensePlate}</Text>
+                  </View>
+                  <View style={styles.detailRow}>
+                    <Text style={styles.label}>Start Time:</Text>
+                    <Text style={styles.value}>{ticket.ticketStartTime.replace("T", " ").substr(0, 19)}</Text>
+                  </View>
+                  <View style={styles.detailRow}>
+                    <Text style={styles.label}>End Time:</Text>
+                    <Text style={styles.value}>{ticket.ticketEndTime.replace("T", " ").substr(0, 19)}</Text>
+                  </View>
+                </View>
+              </View>
+  
+              <View style={styles.actionButtonsContainer}>
+                <TouchableOpacity 
+                  style={[styles.actionButton, styles.addTimeButton]}
+                  onPress={() => setAddTimeModal(true)}
+                >
+                  <AntDesign name="clockcircle" size={24} color="white" />
+                  <Text style={styles.actionButtonText}>Add Time</Text>
                 </TouchableOpacity>
-              )}
-            />
-
-            <TouchableOpacity 
-              style={styles.mainButton}
-              onPress={() => navigation.navigate("I_MainPage")}
-            >
-              <Text style={styles.buttonText}>Back to Main Page</Text>
-            </TouchableOpacity>
-
+  
+                <TouchableOpacity 
+                  style={[styles.actionButton, styles.closeTicketButton]}
+                  onPress={() => setCloseTicketModal(true)}
+                >
+                  <AntDesign name="checkcircle" size={24} color="white" />
+                  <Text style={styles.actionButtonText}>Close Ticket</Text>
+                </TouchableOpacity>
+              </View>
+  
+              <Text style={styles.pastTicketsHeader}>Past Tickets</Text>
+              
+              <FlatList
+                style={styles.pastTicketsList}
+                data={pastTickets.sort((a, b) => b.ticketID - a.ticketID)}
+                keyExtractor={(item) => item.ticketID.toString()}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={styles.pastTicketCard}
+                    onPress={() => {
+                      setPastTicket(item);
+                      setPastTicketModal(true);
+                    }}
+                  >
+                    <View style={styles.pastTicketHeader}>
+                      <Text style={styles.pastTicketId}>Ticket #{item.ticketID}</Text>
+                      <AntDesign name="right" size={20} color="#4682b4" />
+                    </View>
+                    <Text style={styles.pastTicketAddress}>{item.address}</Text>
+                  </TouchableOpacity>
+                )}
+              />
+  
+              <TouchableOpacity 
+                style={styles.mainButton}
+                onPress={() => navigation.navigate("I_MainPage")}
+              >
+                <Text style={styles.buttonText}>Back to Main Page</Text>
+              </TouchableOpacity>
+            </View>
+  
             <PastTicketModal
               ticket={PastTicket}
               showModal={showPastTicketModal}
               setShowModal={setPastTicketModal}
+            />
+            <AddTimeModal
+              ticketID={ticket.ticketID}
+              fee={ticket.fee}
+              vehType={ticket.vehType}
+              endTime={ticket.ticketEndTime}
+              showModal={showAddTimeModal}
+              setShowModal={setAddTimeModal}
+              setLoading={setLoading}
+            />
+            <CloseTicketModal
+              ticket={ticket}
+              showModal={showCloseTicketModal}
+              setShowModal={setCloseTicketModal}
+              setLoading={setLoading}
             />
           </LinearGradient>
         </SafeAreaView>
       </SafeAreaProvider>
     );
   }
-
-  return (
-    <SafeAreaProvider>
-      <SafeAreaView style={styles.container}>
-        <LinearGradient
-          colors={['#4c669f', '#3b5998', '#192f6a']}
-          style={styles.gradientBackground}
-        >
-          <View style={styles.mainContent}>
-            <View style={styles.activeTicketCard}>
-              <Text style={styles.activeTicketHeader}>Active Ticket</Text>
-              <View style={styles.ticketDetails}>
-                <View style={styles.detailRow}>
-                  <Text style={styles.label}>Ticket ID:</Text>
-                  <Text style={styles.value}>#{ticket.ticketID}</Text>
-                </View>
-                <View style={styles.detailRow}>
-                  <Text style={styles.label}>Parking Lot:</Text>
-                  <Text style={styles.value}>{ticket.parkingLotID}</Text>
-                </View>
-                <View style={styles.detailRow}>
-                  <Text style={styles.label}>Address:</Text>
-                  <Text style={styles.value}>{address}</Text>
-                </View>
-                <View style={styles.detailRow}>
-                  <Text style={styles.label}>License Plate:</Text>
-                  <Text style={styles.value}>{ticket.licensePlate}</Text>
-                </View>
-                <View style={styles.detailRow}>
-                  <Text style={styles.label}>Start Time:</Text>
-                  <Text style={styles.value}>{ticket.ticketStartTime.replace("T", " ").substr(0, 19)}</Text>
-                </View>
-                <View style={styles.detailRow}>
-                  <Text style={styles.label}>End Time:</Text>
-                  <Text style={styles.value}>{ticket.ticketEndTime.replace("T", " ").substr(0, 19)}</Text>
-                </View>
-              </View>
-            </View>
-
-            <View style={styles.actionButtonsContainer}>
-              <TouchableOpacity 
-                style={[styles.actionButton, styles.addTimeButton]}
-                onPress={() => setAddTimeModal(true)}
-              >
-                <AntDesign name="clockcircle" size={24} color="white" />
-                <Text style={styles.actionButtonText}>Add Time</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity 
-                style={[styles.actionButton, styles.closeTicketButton]}
-                onPress={() => setCloseTicketModal(true)}
-              >
-                <AntDesign name="checkcircle" size={24} color="white" />
-                <Text style={styles.actionButtonText}>Close Ticket</Text>
-              </TouchableOpacity>
-            </View>
-
-            <Text style={styles.pastTicketsHeader}>Past Tickets</Text>
-            
-            <FlatList
-              style={styles.pastTicketsList}
-              data={pastTickets.sort((a, b) => b.ticketID - a.ticketID)}
-              keyExtractor={(item) => item.ticketID.toString()}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.pastTicketCard}
-                  onPress={() => {
-                    setPastTicket(item);
-                    setPastTicketModal(true);
-                  }}
-                >
-                  <View style={styles.pastTicketHeader}>
-                    <Text style={styles.pastTicketId}>Ticket #{item.ticketID}</Text>
-                    <AntDesign name="right" size={20} color="#4682b4" />
-                  </View>
-                  <Text style={styles.pastTicketAddress}>{item.address}</Text>
-                </TouchableOpacity>
-              )}
-            />
-
-            <TouchableOpacity 
-              style={styles.mainButton}
-              onPress={() => navigation.navigate("I_MainPage")}
-            >
-              <Text style={styles.buttonText}>Back to Main Page</Text>
-            </TouchableOpacity>
-          </View>
-
-          <PastTicketModal
-            ticket={PastTicket}
-            showModal={showPastTicketModal}
-            setShowModal={setPastTicketModal}
-          />
-          <AddTimeModal
-            ticketID={ticket.ticketID}
-            fee={ticket.fee}
-            vehType={ticket.vehType}
-            endTime={ticket.ticketEndTime}
-            showModal={showAddTimeModal}
-            setShowModal={setAddTimeModal}
-            setLoading={setLoading}
-          />
-          <CloseTicketModal
-            ticket={ticket}
-            showModal={showCloseTicketModal}
-            setShowModal={setCloseTicketModal}
-            setLoading={setLoading}
-          />
-        </LinearGradient>
-      </SafeAreaView>
-    </SafeAreaProvider>
-  );
 }
+
+export default I_ViewTickets.Display;
+
+// export default function I_ViewTickets({navigation}) {
+//   const [ticket, setTicket] = useState(null);
+//   const [address, setAddress] = useState(null);
+//   const [loading, setLoading] = useState(true);
+//   const [showAddTimeModal, setAddTimeModal] = useState(false);
+//   const [showCloseTicketModal, setCloseTicketModal] = useState(false);
+//   const [showPastTicketModal, setPastTicketModal] = useState(false);
+//   const [PastTicket, setPastTicket] = useState(null);
+//   const [pastTickets, setPastTickets] = useState([]);
+
+//   useEffect(() => {
+//     async function fetchTicket() {
+//       setLoading(true);
+//       try {
+//         const {address, ticket} = await viewTicketControl.getTicket();
+//         const ticketArray = await viewTicketControl.getAllClosedTickets();
+//         setPastTickets(ticketArray);
+//         setTicket(ticket);
+//         setAddress(address);
+//       } catch (error) {
+//         console.error("Error fetching ticket in I_ViewTickets:", error);
+//       } finally {
+//         setLoading(false);
+//       }
+//     }
+//     if (loading) {
+//       fetchTicket();
+//     }
+//   }, [loading]);
+
+//   if (loading) {
+//     return (
+//       <SafeAreaProvider>
+//         <SafeAreaView style={styles.container}>
+//           <View style={styles.loadingContainer}>
+//             <ActivityIndicator size="large" color="#4682b4" />
+//             <Text style={styles.loadingText}>Loading ticket info...</Text>
+//           </View>
+//         </SafeAreaView>
+//       </SafeAreaProvider>
+//     );
+//   }
+
+//   if (!ticket?.ticketID) {
+//     return (
+//       <SafeAreaProvider>
+//         <SafeAreaView style={styles.container}>
+//           <LinearGradient
+//             colors={['#4c669f', '#3b5998', '#192f6a']}
+//             style={styles.gradientBackground}
+//           >
+//             <View style={styles.headerContainer}>
+//               <Text style={styles.headerText}>No Open Tickets</Text>
+//             </View>
+
+//             <FlatList
+//               style={styles.pastTicketsList}
+//               data={pastTickets.sort((a, b) => b.ticketID - a.ticketID)}
+//               keyExtractor={(item) => item.ticketID.toString()}
+//               renderItem={({ item }) => (
+//                 <TouchableOpacity
+//                   style={styles.pastTicketCard}
+//                   onPress={() => {
+//                     setPastTicket(item);
+//                     setPastTicketModal(true);
+//                   }}
+//                 >
+//                   <View style={styles.pastTicketHeader}>
+//                     <Text style={styles.pastTicketId}>Ticket #{item.ticketID}</Text>
+//                     <AntDesign name="right" size={20} color="#4682b4" />
+//                   </View>
+//                   <Text style={styles.pastTicketAddress}>{item.address}</Text>
+//                 </TouchableOpacity>
+//               )}
+//             />
+
+//             <TouchableOpacity 
+//               style={styles.mainButton}
+//               onPress={() => navigation.navigate("I_MainPage")}
+//             >
+//               <Text style={styles.buttonText}>Back to Main Page</Text>
+//             </TouchableOpacity>
+
+//             <PastTicketModal
+//               ticket={PastTicket}
+//               showModal={showPastTicketModal}
+//               setShowModal={setPastTicketModal}
+//             />
+//           </LinearGradient>
+//         </SafeAreaView>
+//       </SafeAreaProvider>
+//     );
+//   }
+
+//   return (
+//     <SafeAreaProvider>
+//       <SafeAreaView style={styles.container}>
+//         <LinearGradient
+//           colors={['#4c669f', '#3b5998', '#192f6a']}
+//           style={styles.gradientBackground}
+//         >
+//           <View style={styles.mainContent}>
+//             <View style={styles.activeTicketCard}>
+//               <Text style={styles.activeTicketHeader}>Active Ticket</Text>
+//               <View style={styles.ticketDetails}>
+//                 <View style={styles.detailRow}>
+//                   <Text style={styles.label}>Ticket ID:</Text>
+//                   <Text style={styles.value}>#{ticket.ticketID}</Text>
+//                 </View>
+//                 <View style={styles.detailRow}>
+//                   <Text style={styles.label}>Parking Lot:</Text>
+//                   <Text style={styles.value}>{ticket.parkingLotID}</Text>
+//                 </View>
+//                 <View style={styles.detailRow}>
+//                   <Text style={styles.label}>Address:</Text>
+//                   <Text style={styles.value}>{address}</Text>
+//                 </View>
+//                 <View style={styles.detailRow}>
+//                   <Text style={styles.label}>License Plate:</Text>
+//                   <Text style={styles.value}>{ticket.licensePlate}</Text>
+//                 </View>
+//                 <View style={styles.detailRow}>
+//                   <Text style={styles.label}>Start Time:</Text>
+//                   <Text style={styles.value}>{ticket.ticketStartTime.replace("T", " ").substr(0, 19)}</Text>
+//                 </View>
+//                 <View style={styles.detailRow}>
+//                   <Text style={styles.label}>End Time:</Text>
+//                   <Text style={styles.value}>{ticket.ticketEndTime.replace("T", " ").substr(0, 19)}</Text>
+//                 </View>
+//               </View>
+//             </View>
+
+//             <View style={styles.actionButtonsContainer}>
+//               <TouchableOpacity 
+//                 style={[styles.actionButton, styles.addTimeButton]}
+//                 onPress={() => setAddTimeModal(true)}
+//               >
+//                 <AntDesign name="clockcircle" size={24} color="white" />
+//                 <Text style={styles.actionButtonText}>Add Time</Text>
+//               </TouchableOpacity>
+
+//               <TouchableOpacity 
+//                 style={[styles.actionButton, styles.closeTicketButton]}
+//                 onPress={() => setCloseTicketModal(true)}
+//               >
+//                 <AntDesign name="checkcircle" size={24} color="white" />
+//                 <Text style={styles.actionButtonText}>Close Ticket</Text>
+//               </TouchableOpacity>
+//             </View>
+
+//             <Text style={styles.pastTicketsHeader}>Past Tickets</Text>
+            
+//             <FlatList
+//               style={styles.pastTicketsList}
+//               data={pastTickets.sort((a, b) => b.ticketID - a.ticketID)}
+//               keyExtractor={(item) => item.ticketID.toString()}
+//               renderItem={({ item }) => (
+//                 <TouchableOpacity
+//                   style={styles.pastTicketCard}
+//                   onPress={() => {
+//                     setPastTicket(item);
+//                     setPastTicketModal(true);
+//                   }}
+//                 >
+//                   <View style={styles.pastTicketHeader}>
+//                     <Text style={styles.pastTicketId}>Ticket #{item.ticketID}</Text>
+//                     <AntDesign name="right" size={20} color="#4682b4" />
+//                   </View>
+//                   <Text style={styles.pastTicketAddress}>{item.address}</Text>
+//                 </TouchableOpacity>
+//               )}
+//             />
+
+//             <TouchableOpacity 
+//               style={styles.mainButton}
+//               onPress={() => navigation.navigate("I_MainPage")}
+//             >
+//               <Text style={styles.buttonText}>Back to Main Page</Text>
+//             </TouchableOpacity>
+//           </View>
+
+//           <PastTicketModal
+//             ticket={PastTicket}
+//             showModal={showPastTicketModal}
+//             setShowModal={setPastTicketModal}
+//           />
+//           <AddTimeModal
+//             ticketID={ticket.ticketID}
+//             fee={ticket.fee}
+//             vehType={ticket.vehType}
+//             endTime={ticket.ticketEndTime}
+//             showModal={showAddTimeModal}
+//             setShowModal={setAddTimeModal}
+//             setLoading={setLoading}
+//           />
+//           <CloseTicketModal
+//             ticket={ticket}
+//             showModal={showCloseTicketModal}
+//             setShowModal={setCloseTicketModal}
+//             setLoading={setLoading}
+//           />
+//         </LinearGradient>
+//       </SafeAreaView>
+//     </SafeAreaProvider>
+//   );
+// }
 
 const PastTicketModal = ({ticket, showModal, setShowModal}) => {
   if (!ticket) return null;

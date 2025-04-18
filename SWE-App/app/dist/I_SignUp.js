@@ -7,6 +7,146 @@ import authenticationControl from "./controller/authenticationControl";
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 
+class I_SignUp {
+    static Display({navigation}) {
+        const [FirstName, setFirstName] = useState("");
+        const [LastName, setLastName] = useState("");
+        const [Phone, setPhone] = useState("");
+        const [Email, setEmail] = useState("");
+        const [Password, setPassword] = useState("");
+        const [secureTextEntryP1, setSecureTextEntryP1] = useState(true);
+        const [secureTextEntryP2, setSecureTextEntryP2] = useState(true);
+        const [ConfirmPassword, setConfirmPassword] = useState("");
+        const {setIsLoggedIn} = useContext(AuthContext);
+    
+    
+    
+        return(
+            <SafeAreaProvider>
+                <SafeAreaView style={styles.container}>
+                    <LinearGradient
+                        colors={['#4c669f', '#3b5998', '#192f6a']}
+                        style={styles.gradientBackground}
+                    >
+                        <KeyboardAvoidingView
+                            behavior={Platform.OS === "ios" ? "padding" : "height"}
+                            style={styles.keyboardAvoidView}
+                        >
+                            <ScrollView
+                                contentContainerStyle={styles.scrollContainer}
+                                showsVerticalScrollIndicator={false}
+                            >
+                                <Image
+                                    source={require('../../assets/carpark_logo.png')}
+                                    style={styles.logo}
+                                />
+                                
+                                <View style={styles.formContainer}>
+                                    <Text style={styles.headerText}>Create Account</Text>
+                                    
+                                    <FormInput
+                                        icon="person"
+                                        placeholder="First Name"
+                                        value={FirstName}
+                                        onChangeText={setFirstName}
+                                    />
+                                    
+                                    <FormInput
+                                        icon="person-outline"
+                                        placeholder="Last Name"
+                                        value={LastName}
+                                        onChangeText={setLastName}
+                                    />
+                                    
+                                    <FormInput
+                                        icon="phone"
+                                        placeholder="Phone No."
+                                        value={Phone}
+                                        onChangeText={setPhone}
+                                    />
+                                    
+                                    <FormInput
+                                        icon="email"
+                                        placeholder="Email"
+                                        value={Email}
+                                        onChangeText={setEmail}
+                                    />
+    
+                                    <View style={styles.inputContainer}>
+                                        <MaterialIcons name="lock" size={24} color="#4682b4" style={styles.inputIcon} />
+                                        <TextInput
+                                            style={styles.input}
+                                            onChangeText={setPassword}
+                                            value={Password}
+                                            placeholder="Password"
+                                            placeholderTextColor="#666"
+                                            secureTextEntry={secureTextEntryP1}
+                                        />
+                                        <TouchableOpacity 
+                                            onPress={() => setSecureTextEntryP1(!secureTextEntryP1)}
+                                            style={styles.eyeIcon}
+                                        >
+                                            <MaterialIcons 
+                                                name={secureTextEntryP1 ? "visibility" : "visibility-off"} 
+                                                size={24} 
+                                                color="#4682b4" 
+                                            />
+                                        </TouchableOpacity>
+                                    </View>
+    
+                                    <View style={styles.inputContainer}>
+                                        <MaterialIcons name="lock-outline" size={24} color="#4682b4" style={styles.inputIcon} />
+                                        <TextInput
+                                            style={styles.input}
+                                            onChangeText={setConfirmPassword}
+                                            value={ConfirmPassword}
+                                            placeholder="Confirm Password"
+                                            placeholderTextColor="#666"
+                                            secureTextEntry={secureTextEntryP2}
+                                        />
+                                        <TouchableOpacity 
+                                            onPress={() => setSecureTextEntryP2(!secureTextEntryP2)}
+                                            style={styles.eyeIcon}
+                                        >
+                                            <MaterialIcons 
+                                                name={secureTextEntryP2 ? "visibility" : "visibility-off"} 
+                                                size={24} 
+                                                color="#4682b4" 
+                                            />
+                                        </TouchableOpacity>
+                                    </View>
+    
+                                    <TouchableOpacity 
+                                        style={styles.signUpButton}   
+                                        onPress={() => {
+                                            OnSignUp(FirstName, LastName, Phone, Email, Password, ConfirmPassword)
+                                                .then((res) => setIsLoggedIn(res));
+                                        }}
+                                    >
+                                        <Text style={styles.buttonText}>Sign Up</Text>
+                                    </TouchableOpacity>
+    
+                                    <View style={styles.loginContainer}>
+                                        <Text style={styles.loginText}>Already have an account?</Text>
+                                        <TouchableOpacity
+                                            style={styles.loginButton}
+                                            onPress={() => navigation.navigate("I_Login")}
+                                        >
+                                            <Text style={styles.loginButtonText}>Login here</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            </ScrollView>
+                        </KeyboardAvoidingView>
+                    </LinearGradient>
+                </SafeAreaView>
+            </SafeAreaProvider>
+        );
+    }
+}
+
+export default I_SignUp.Display;
+
 // Password validation functions remain unchanged
 function PasswordValidation(Password1, Password2) {
     return Password1 === Password2 ? 1 : 0;
@@ -95,141 +235,141 @@ const FormInput = ({ icon, placeholder, value, onChangeText, secureTextEntry }) 
     </View>
 );
 
-export default function I_SignUp({navigation}) {
-    const [FirstName, setFirstName] = useState("");
-    const [LastName, setLastName] = useState("");
-    const [Phone, setPhone] = useState("");
-    const [Email, setEmail] = useState("");
-    const [Password, setPassword] = useState("");
-    const [secureTextEntryP1, setSecureTextEntryP1] = useState(true);
-    const [secureTextEntryP2, setSecureTextEntryP2] = useState(true);
-    const [ConfirmPassword, setConfirmPassword] = useState("");
-    const {setIsLoggedIn} = useContext(AuthContext);
+// export default function I_SignUp({navigation}) {
+//     const [FirstName, setFirstName] = useState("");
+//     const [LastName, setLastName] = useState("");
+//     const [Phone, setPhone] = useState("");
+//     const [Email, setEmail] = useState("");
+//     const [Password, setPassword] = useState("");
+//     const [secureTextEntryP1, setSecureTextEntryP1] = useState(true);
+//     const [secureTextEntryP2, setSecureTextEntryP2] = useState(true);
+//     const [ConfirmPassword, setConfirmPassword] = useState("");
+//     const {setIsLoggedIn} = useContext(AuthContext);
 
 
 
-    return(
-        <SafeAreaProvider>
-            <SafeAreaView style={styles.container}>
-                <LinearGradient
-                    colors={['#4c669f', '#3b5998', '#192f6a']}
-                    style={styles.gradientBackground}
-                >
-                    <KeyboardAvoidingView
-                        behavior={Platform.OS === "ios" ? "padding" : "height"}
-                        style={styles.keyboardAvoidView}
-                    >
-                        <ScrollView
-                            contentContainerStyle={styles.scrollContainer}
-                            showsVerticalScrollIndicator={false}
-                        >
-                            <Image
-                                source={require('../../assets/carpark_logo.png')}
-                                style={styles.logo}
-                            />
+//     return(
+//         <SafeAreaProvider>
+//             <SafeAreaView style={styles.container}>
+//                 <LinearGradient
+//                     colors={['#4c669f', '#3b5998', '#192f6a']}
+//                     style={styles.gradientBackground}
+//                 >
+//                     <KeyboardAvoidingView
+//                         behavior={Platform.OS === "ios" ? "padding" : "height"}
+//                         style={styles.keyboardAvoidView}
+//                     >
+//                         <ScrollView
+//                             contentContainerStyle={styles.scrollContainer}
+//                             showsVerticalScrollIndicator={false}
+//                         >
+//                             <Image
+//                                 source={require('../../assets/carpark_logo.png')}
+//                                 style={styles.logo}
+//                             />
                             
-                            <View style={styles.formContainer}>
-                                <Text style={styles.headerText}>Create Account</Text>
+//                             <View style={styles.formContainer}>
+//                                 <Text style={styles.headerText}>Create Account</Text>
                                 
-                                <FormInput
-                                    icon="person"
-                                    placeholder="First Name"
-                                    value={FirstName}
-                                    onChangeText={setFirstName}
-                                />
+//                                 <FormInput
+//                                     icon="person"
+//                                     placeholder="First Name"
+//                                     value={FirstName}
+//                                     onChangeText={setFirstName}
+//                                 />
                                 
-                                <FormInput
-                                    icon="person-outline"
-                                    placeholder="Last Name"
-                                    value={LastName}
-                                    onChangeText={setLastName}
-                                />
+//                                 <FormInput
+//                                     icon="person-outline"
+//                                     placeholder="Last Name"
+//                                     value={LastName}
+//                                     onChangeText={setLastName}
+//                                 />
                                 
-                                <FormInput
-                                    icon="phone"
-                                    placeholder="Phone No."
-                                    value={Phone}
-                                    onChangeText={setPhone}
-                                />
+//                                 <FormInput
+//                                     icon="phone"
+//                                     placeholder="Phone No."
+//                                     value={Phone}
+//                                     onChangeText={setPhone}
+//                                 />
                                 
-                                <FormInput
-                                    icon="email"
-                                    placeholder="Email"
-                                    value={Email}
-                                    onChangeText={setEmail}
-                                />
+//                                 <FormInput
+//                                     icon="email"
+//                                     placeholder="Email"
+//                                     value={Email}
+//                                     onChangeText={setEmail}
+//                                 />
 
-                                <View style={styles.inputContainer}>
-                                    <MaterialIcons name="lock" size={24} color="#4682b4" style={styles.inputIcon} />
-                                    <TextInput
-                                        style={styles.input}
-                                        onChangeText={setPassword}
-                                        value={Password}
-                                        placeholder="Password"
-                                        placeholderTextColor="#666"
-                                        secureTextEntry={secureTextEntryP1}
-                                    />
-                                    <TouchableOpacity 
-                                        onPress={() => setSecureTextEntryP1(!secureTextEntryP1)}
-                                        style={styles.eyeIcon}
-                                    >
-                                        <MaterialIcons 
-                                            name={secureTextEntryP1 ? "visibility" : "visibility-off"} 
-                                            size={24} 
-                                            color="#4682b4" 
-                                        />
-                                    </TouchableOpacity>
-                                </View>
+//                                 <View style={styles.inputContainer}>
+//                                     <MaterialIcons name="lock" size={24} color="#4682b4" style={styles.inputIcon} />
+//                                     <TextInput
+//                                         style={styles.input}
+//                                         onChangeText={setPassword}
+//                                         value={Password}
+//                                         placeholder="Password"
+//                                         placeholderTextColor="#666"
+//                                         secureTextEntry={secureTextEntryP1}
+//                                     />
+//                                     <TouchableOpacity 
+//                                         onPress={() => setSecureTextEntryP1(!secureTextEntryP1)}
+//                                         style={styles.eyeIcon}
+//                                     >
+//                                         <MaterialIcons 
+//                                             name={secureTextEntryP1 ? "visibility" : "visibility-off"} 
+//                                             size={24} 
+//                                             color="#4682b4" 
+//                                         />
+//                                     </TouchableOpacity>
+//                                 </View>
 
-                                <View style={styles.inputContainer}>
-                                    <MaterialIcons name="lock-outline" size={24} color="#4682b4" style={styles.inputIcon} />
-                                    <TextInput
-                                        style={styles.input}
-                                        onChangeText={setConfirmPassword}
-                                        value={ConfirmPassword}
-                                        placeholder="Confirm Password"
-                                        placeholderTextColor="#666"
-                                        secureTextEntry={secureTextEntryP2}
-                                    />
-                                    <TouchableOpacity 
-                                        onPress={() => setSecureTextEntryP2(!secureTextEntryP2)}
-                                        style={styles.eyeIcon}
-                                    >
-                                        <MaterialIcons 
-                                            name={secureTextEntryP2 ? "visibility" : "visibility-off"} 
-                                            size={24} 
-                                            color="#4682b4" 
-                                        />
-                                    </TouchableOpacity>
-                                </View>
+//                                 <View style={styles.inputContainer}>
+//                                     <MaterialIcons name="lock-outline" size={24} color="#4682b4" style={styles.inputIcon} />
+//                                     <TextInput
+//                                         style={styles.input}
+//                                         onChangeText={setConfirmPassword}
+//                                         value={ConfirmPassword}
+//                                         placeholder="Confirm Password"
+//                                         placeholderTextColor="#666"
+//                                         secureTextEntry={secureTextEntryP2}
+//                                     />
+//                                     <TouchableOpacity 
+//                                         onPress={() => setSecureTextEntryP2(!secureTextEntryP2)}
+//                                         style={styles.eyeIcon}
+//                                     >
+//                                         <MaterialIcons 
+//                                             name={secureTextEntryP2 ? "visibility" : "visibility-off"} 
+//                                             size={24} 
+//                                             color="#4682b4" 
+//                                         />
+//                                     </TouchableOpacity>
+//                                 </View>
 
-                                <TouchableOpacity 
-                                    style={styles.signUpButton}   
-                                    onPress={() => {
-                                        OnSignUp(FirstName, LastName, Phone, Email, Password, ConfirmPassword)
-                                            .then((res) => setIsLoggedIn(res));
-                                    }}
-                                >
-                                    <Text style={styles.buttonText}>Sign Up</Text>
-                                </TouchableOpacity>
+//                                 <TouchableOpacity 
+//                                     style={styles.signUpButton}   
+//                                     onPress={() => {
+//                                         OnSignUp(FirstName, LastName, Phone, Email, Password, ConfirmPassword)
+//                                             .then((res) => setIsLoggedIn(res));
+//                                     }}
+//                                 >
+//                                     <Text style={styles.buttonText}>Sign Up</Text>
+//                                 </TouchableOpacity>
 
-                                <View style={styles.loginContainer}>
-                                    <Text style={styles.loginText}>Already have an account?</Text>
-                                    <TouchableOpacity
-                                        style={styles.loginButton}
-                                        onPress={() => navigation.navigate("I_Login")}
-                                    >
-                                        <Text style={styles.loginButtonText}>Login here</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
-                        </ScrollView>
-                    </KeyboardAvoidingView>
-                </LinearGradient>
-            </SafeAreaView>
-        </SafeAreaProvider>
-    );
-}
+//                                 <View style={styles.loginContainer}>
+//                                     <Text style={styles.loginText}>Already have an account?</Text>
+//                                     <TouchableOpacity
+//                                         style={styles.loginButton}
+//                                         onPress={() => navigation.navigate("I_Login")}
+//                                     >
+//                                         <Text style={styles.loginButtonText}>Login here</Text>
+//                                     </TouchableOpacity>
+//                                 </View>
+//                             </View>
+//                         </ScrollView>
+//                     </KeyboardAvoidingView>
+//                 </LinearGradient>
+//             </SafeAreaView>
+//         </SafeAreaProvider>
+//     );
+// }
 
 const styles = StyleSheet.create({
     container: {
